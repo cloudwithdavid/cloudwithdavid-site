@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>CloudWithDavid</title>
+  <meta name="description" content="CloudWithDavid — documenting my path into Cloud Engineering. AWS, networking fundamentals, projects, and systems thinking." />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <!-- Social preview (optional but useful) -->
+  <meta property="og:title" content="CloudWithDavid" />
+  <meta property="og:description" content="Aspiring Cloud Engineer. Learning in public. Building my path." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cloudwithdavid.com" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+
+
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="#about" aria-label="CloudWithDavid">
+        <img class="brand__mark" src="/favicon/android-chrome-192x192.png" alt="CloudWithDavid">
+        <span class="brand__text">CloudWithDavid</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#connect">Connect</a>
+      </nav>
+
+      <button class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav">
+        Menu
+      </button>
+    </div>
+
+    <div class="mobileNav container" id="mobileNav" hidden>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#connect">Connect</a>
+    </div>
+  </header>
+
+  <main id="top">
+<section class="hero container">
+  <div class="hero__left">
+    <div class="badge">
+      <span class="badge__dot"></span>
+      <span>AWS Certified Cloud Practitioner</span>
+    </div>
+
+    <h1>
+      Aspiring Cloud Engineer.<br />
+      Building in Public.<br />
+    </h1>
+
+    <p class="sub">
+      I'm open to cloud projects, learning opportunities, and collaboration.
+    </p>
+
+    <div class="ctaRow">
+      <a class="btn btn--primary" href="#connect">Let’s Connect</a>
+      <a class="btn btn--ghost" href="https://github.com/cloudwithdavid" target="_blank" rel="noreferrer">
+        View GitHub
+      </a>
+    </div>
+
+    <!-- Focus + What's Next should be HERE (left side), side-by-side -->
+    <div class="hero__cardsRow grid2">
+      <div class="card">
+        <div class="card__title">Focus</div>
+        <ul class="list">
+          <li>Ticketing Labs with Jira — IT and cloud support workflows</li>
+          <li>Complete Active Directory + Mail Server Setup</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card__title">What's Next</div>
+        <ul class="list">
+          <li>AWS Solutions Architect - Associate certification</li>
+          <li>Real-world AWS projects and case studies</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__right">
+    <!-- Foundations should be HERE (right side) -->
+    <div class="note">
+      <strong>Foundations:</strong>
+      <ul class="list">
+        <li>Cloud: AWS core services, shared responsibility model, security best practices</li>
+        <li>Networking: OSI/TCP-IP, CIDR/subnetting, DNS, foundational ports/protocols</li>
+        <li>Linux/Bash: CLI navigation, permissions, processes, SSH, scripting basics</li>
+        <li>Git/Github: commmits, branching, merges, PR basics, README best practices</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+    <section class="section container" id="about">
+      <h2>About</h2>
+      <p>
+      My transition into cloud engineering is grounded in curiosity, systems thinking, and ambition. I'm documenting this path as "Cloud With David," sharing foundational insights as I advance toward cloud architecture.
+      </p>
+      <div class="grid3">
+        <div class="mini">
+          <h3>What I share</h3>
+          <p>Learning notes, diagrams, small projects, and what actually clicked.</p>
+        </div>
+        <div class="mini">
+          <h3>What I’m optimizing</h3>
+          <p>Time-to-skill, troubleshooting instincts, and portfolio proof.</p>
+        </div>
+        <div class="mini">
+          <h3>What I’m aiming for</h3>
+          <p>Cloud support →</br>Cloud Engineering →</br>Solutions Architecture</br>(Cloud + AI workflows).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="projects">
+      <h2>Projects</h2>
+      <p class="muted"></p>
+
+      <div class="grid2">
+        <article class="project">
+          <div class="project__top">
+            <h3>Ticketing Lab Writeups</h3>
+            <span class="tag">In progress</span>
+          </div>
+          <p>Building, managing, and documenting a structured queue of simulated IT support tickets using a full ticket lifecycle.</p>
+          <div class="project__links">
+            <a href="#" class="link">Read</a>
+            <a href="#" class="link">Repo</a>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="project__top">
+            <h3>AWS Foundations</h3>
+            <span class="tag">Planned</span>
+          </div>
+          <p>VPC basics, routing patterns, NAT, security boundaries, and cost-aware defaults.</p>
+          <div class="project__links">
+            <a href="#" class="link">Read</a>
+            <a href="#" class="link">Repo</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container" id="connect">
+      <h2>Connect</h2>
+      <p class="muted"></p>
+   
+      <div class="connect">
+        <a class="btn btn--primary" href="https://www.linkedin.com/in/cloudwithdavid" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a class="btn btn--ghost" href="https://github.com/cloudwithdavid" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn btn--ghost" href="https://hashnode.com/@cloudwithdavid" target="_blank" rel="noreferrer">Hashnode</a>
+        <a class="btn btn--ghost" href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noreferrer">YouTube</a>
+      </div>
+
+      <div>
+        <p class="muted"></p>
+        <span>@cloudwithdavid on all platforms</span>
+      </div>
+
+      <div class="footerNote">
+        <span>© <span id="year"></span> CloudWithDavid</span>
+        <span class="dot">•</span>
+        <a href="#top">Back to top</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
