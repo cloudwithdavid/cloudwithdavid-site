@@ -1,690 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark light">
-    <meta name="description" content="CloudWithDavid — Cloud Support (Entry-Level) candidate | AWS Certified Cloud Practitioner | Building in public toward Solutions Architecture.">
-    <meta name="author" content="CloudWithDavid">
-    <meta property="og:title" content="CloudWithDavid | Cloud Support (Entry-Level)">
-    <meta property="og:description" content="Execution-focused cloud support journey: AWS, Linux, networking, and public proof-of-work.">
-    <meta property="og:type" content="website">
-    <title>Cloud With David</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>CloudWithDavid</title>
+  <meta name="description" content="CloudWithDavid — documenting my path into Cloud Engineering. AWS, networking fundamentals, projects, and systems thinking." />
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
 
-    <!-- Favicon -->
-    <link rel="icon" href="favicon/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" href="favicon/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="favicon/favicon-16x16.png" sizes="16x16">
-    <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
+  <!-- Social preview (optional but useful) -->
+  <meta property="og:title" content="CloudWithDavid" />
+  <meta property="og:description" content="Aspiring Cloud Engineer. Learning in public. Building my path." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cloudwithdavid.com" />
 
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
+
+
+
 <body>
-    <!-- ============================
-         Scroll Progress Bar
-         ============================ -->
-    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="#about" aria-label="CloudWithDavid">
+        <img class="brand__mark" src="/favicon/android-chrome-192x192.png" alt="CloudWithDavid">
+        <span class="brand__text">CloudWithDavid</span>
+      </a>
 
-    <!-- ============================
-         Navigation
-         ============================ -->
-    <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
-        <div class="container">
-            <a href="#" class="nav-brand" aria-label="CloudWithDavid home">
-                <img class="brand-mark" src="favicon/android-chrome-192x192.png" alt="" width="40" height="40">
-                <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
-            </a>
-            <ul class="nav-links" id="navLinks" role="menubar">
-                <li role="none"><a href="#about" role="menuitem">About</a></li>
-                <li role="none"><a href="#foundation" role="menuitem">Foundation</a></li>
-                <li role="none"><a href="#projects" role="menuitem">Projects</a></li>
-                <li role="none"><a href="#blog" role="menuitem">Writing</a></li>
-                <li role="none"><a href="#contact" role="menuitem">Connect</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </div>
-    </nav>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#connect">Connect</a>
+      </nav>
 
-    <!-- ============================
-         Hero Section
-         ============================ -->
-    <section class="hero" id="hero">
-        <!-- Animated background particles -->
-        <canvas class="hero-particles" id="heroParticles" aria-hidden="true"></canvas>
-        <div class="hero-gradient-line" aria-hidden="true"></div>
-        <div class="container">
-            <div class="hero-grid">
-                <div class="hero-content">
-                    <div class="hero-badge-row" data-animate="fade-up" data-delay="0">
-                        <div class="hero-badge hero-badge--itil">
-                            <span class="hero-badge-dot" aria-hidden="true"></span>
-                            <span>ITIL v4 Foundation</span>
-                        </div>
-                        <div class="hero-badge hero-badge--ccp">
-                            <span class="hero-badge-dot" aria-hidden="true"></span>
-                            <span>AWS Certified Cloud Practitioner</span>
-                        </div>
-                        <div class="hero-badge hero-badge--loading">
-                            <span class="hero-badge-loader" aria-hidden="true"></span>
-                            <span>AWS Solutions Architect - Associate</span>
-                        </div>
-                    </div>
-                    <h1 class="hero-title" data-animate="fade-up" data-delay="100">
-                        <span class="hero-line">Cloud Learner.</span>
-                        <br>
-                        <span class="hero-line gradient-text">Building In Public.</span>
-                    </h1>
-                    <p class="hero-description" data-animate="fade-up" data-delay="200">
-                        Documenting hands-on cloud projects, and foundational insights on my path to Cloud/AI Architecture.
-                    </p>
-                    <div class="hero-cta" data-animate="fade-up" data-delay="300">
-                        <a href="#projects" class="btn btn-primary">
-                            <span>View Projects</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="#contact" class="btn btn-secondary">
-                            <i class="fas fa-envelope"></i>
-                            <span>Contact Me</span>
-                        </a>
-                    </div>
-                    <div class="hero-social" data-animate="fade-up" data-delay="400">
-                        <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" data-tooltip="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="GitHub" data-tooltip="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="https://hashnode.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Hashnode" data-tooltip="Hashnode">
-                            <i class="fab fa-hashnode"></i>
-                        </a>
-                        <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" data-tooltip="Medium">
-                            <i class="fab fa-medium"></i>
-                        </a>
-                        <a href="https://youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube" data-tooltip="YouTube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="hero-visual" data-animate="fade-in" data-delay="200">
-                    <div class="hero-mascot-wrapper">
-                        <div class="mascot-glow" aria-hidden="true"></div>
-                        <img class="hero-mascot" src="assets/cloud-mascot-hero.png" alt="CloudWithDavid mascot — a glowing cloud character with star-filled interior" width="480" height="480" loading="eager">
-                    </div>
-                    <a href="#foundation" class="floating-card card-1" aria-label="Go to Linux foundation">
-                        <i class="fab fa-linux"></i>
-                        <span>Linux</span>
-                    </a>
-                    <a href="#foundation" class="floating-card card-2" aria-label="Go to Networking foundation">
-                        <i class="fas fa-network-wired"></i>
-                        <span>Networking</span>
-                    </a>
-                    <a href="#foundation" class="floating-card card-3" aria-label="Go to Git/GitHub foundation">
-                        <i class="fab fa-github"></i>
-                        <span>Git/GitHub</span>
-                    </a>
-                    <a href="#foundation" class="floating-card card-4" aria-label="Go to AWS foundation">
-                        <i class="fab fa-aws"></i>
-                        <span>AWS</span>
-                    </a>
-                    <a href="#foundation" class="floating-card card-5" aria-label="Go to ITIL foundation">
-                        <i class="fas fa-gear"></i>
-                        <span>ITIL</span>
-                    </a>
-                </div>
-            </div>
+      <button class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav">
+        Menu
+      </button>
+    </div>
+
+    <div class="mobileNav container" id="mobileNav" hidden>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#connect">Connect</a>
+    </div>
+  </header>
+
+  <main id="top">
+<section class="hero container">
+  <div class="hero__left">
+    <div class="badge">
+      <span class="badge__dot"></span>
+      <span>AWS Certified Cloud Practitioner</span>
+    </div>
+
+    <h1>
+      Aspiring Cloud Engineer.<br />
+      Building in Public.<br />
+    </h1>
+
+    <p class="sub">
+      I'm open to cloud projects, learning opportunities, and collaboration :)
+    </p>
+
+    <div class="ctaRow">
+      <a class="btn btn--primary" href="#connect">Let’s Connect</a>
+      <a class="btn btn--ghost" href="https://github.com/cloudwithdavid" target="_blank" rel="noreferrer">
+        View GitHub
+      </a>
+    </div>
+
+    <!-- Focus + What's Next should be HERE (left side), side-by-side -->
+    <div class="hero__cardsRow grid2">
+      <div class="card">
+        <div class="card__title">Focus</div>
+        <ul class="list">
+          <li>Ticketing Labs with Jira — IT and cloud support workflows</li>
+          <li>Complete Active Directory + DNS and Mail Server Setup</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card__title">What's Next</div>
+        <ul class="list">
+          <li>AWS Solutions Architect - Associate certification</li>
+          <li>Real-world AWS projects and case studies</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__right">
+    <!-- Foundations should be HERE (right side) -->
+    <div class="note">
+      <strong>Foundations:</strong>
+      <ul class="list">
+        <li>Cloud: AWS core services, shared responsibility model, security best practices</li>
+        <li>Networking: OSI/TCP-IP, CIDR/subnetting, DNS, foundational ports/protocols</li>
+        <li>Linux/Bash: CLI navigation, permissions, processes, SSH, scripting basics</li>
+        <li>Git/Github: commmits, branching, merges, PR basics, README best practices</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+    <section class="section container" id="about">
+      <h2>About</h2>
+      <p>
+      My transition into cloud engineering is grounded in curiosity, systems thinking, and ambition. I'm documenting this path as "Cloud With David," sharing foundational insights as I advance toward cloud architecture.
+      </p>
+      <div class="grid3">
+        <div class="mini">
+          <h3>What I share</h3>
+          <p>Learning notes, diagrams, small projects, and what actually clicked.</p>
         </div>
+        <div class="mini">
+          <h3>What I’m optimizing</h3>
+          <p>Time-to-skill, troubleshooting instincts, and portfolio proof.</p>
+        </div>
+        <div class="mini">
+          <h3>What I’m aiming for</h3>
+          <p>Cloud support →</br>Cloud Engineering →</br>Solutions Architecture</br>(Cloud + AI workflows).</p>
+        </div>
+      </div>
     </section>
 
-    <!-- ============================
-         Proof Snapshot
-         ============================ -->
-    <section class="proof-snapshot" id="proof">
-        <div class="container">
-            <div class="proof-strip" data-animate="fade-up">
-                <div class="proof-item">
-                    <span class="proof-label">Certifications</span>
-                    <strong class="proof-value"><span class="stats-number" data-count="2">0</span> Earned</strong>
-                    <span class="proof-meta">ITIL v4 + AWS CCP</span>
-                </div>
-                <div class="proof-item">
-                    <span class="proof-label">Portfolio Projects</span>
-                    <strong class="proof-value"><span class="stats-number" data-count="3">0</span> Total</strong>
-                    <span class="proof-meta">Completed + In Progress + Planned</span>
-                </div>
-                <div class="proof-item">
-                    <span class="proof-label">Core Skill Areas</span>
-                    <strong class="proof-value"><span class="stats-number" data-count="5">0</span> Active</strong>
-                    <span class="proof-meta">Linux, Networking, Git, AWS, ITIL</span>
-                </div>
-                <div class="proof-item">
-                    <span class="proof-label">Learning Consistency</span>
-                    <strong class="proof-value"><span class="stats-number" data-count="365" data-suffix="+">0</span> Days</strong>
-                    <span class="proof-meta">Documented Progress</span>
-                </div>
-                <div class="proof-links">
-                    <a href="https://www.credly.com/users/cloudwithdavid/badges#credly" target="_blank" rel="noopener noreferrer">Verify Credentials (Credly)</a>
-                </div>
-            </div>
-        </div>
+    <section class="section container" id="projects">
+      <h2>Projects</h2>
+      <p class="muted"></p>
+
+      <div class="grid2">
+        <article class="project">
+          <div class="project__top">
+            <h3>Ticketing Lab Writeups</h3>
+            <span class="tag">In progress</span>
+          </div>
+          <p>Building, managing, and documenting a structured queue of simulated IT support tickets using a full ticket lifecycle.</p>
+          <div class="project__links">
+            <a href="#" class="link">Read</a>
+            <a href="#" class="link">Repo</a>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="project__top">
+            <h3>AWS Foundations</h3>
+            <span class="tag">Planned</span>
+          </div>
+          <p>VPC basics, routing patterns, NAT, security boundaries, and cost-aware defaults.</p>
+          <div class="project__links">
+            <a href="#" class="link">Read</a>
+            <a href="#" class="link">Repo</a>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <!-- ============================
-         About Section
-         ============================ -->
-    <section id="about" class="section about">
-        <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-user"></i> About Me</span>
-                <h2 class="section-title">Driven by Curiosity,<br><span class="gradient-text">Grounded in Fundamentals</span></h2>
-                <p class="section-subtitle">Systems thinking, continuous learning, and collaborative growth</p>
-            </div>
-            <div class="about-stats about-stats--inline" data-animate="fade-up">
-                <div class="stat-card" data-animate="fade-up" data-delay="0">
-                    <div class="stat-icon"><i class="fas fa-brain"></i></div>
-                    <div class="stat-info">
-                        <h3>Systems Thinking</h3>
-                        <p>First-principles approach</p>
-                    </div>
-                    <div class="stat-arrow"><i class="fas fa-arrow-right"></i></div>
-                </div>
-                <div class="stat-card" data-animate="fade-up" data-delay="100">
-                    <div class="stat-icon"><i class="fas fa-arrows-rotate"></i></div>
-                    <div class="stat-info">
-                        <h3><span class="stat-nowrap">Continuous&nbsp;Learning</span> <span class="stat-tail">&amp;&nbsp;Improvement</span></h3>
-                        <p>Iterative Growth Mindset</p>
-                    </div>
-                    <div class="stat-arrow"><i class="fas fa-arrow-right"></i></div>
-                </div>
-                <div class="stat-card stat-card--no-arrow" data-animate="fade-up" data-delay="200">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3>Collaboration & Communication</h3>
-                        <p>Clear, reliable communication</p>
-                    </div>
-                    <div class="stat-arrow"><i class="fas fa-arrow-right"></i></div>
-                </div>
-            </div>
-            <div class="about-grid">
-                <div class="about-text" data-animate="fade-right">
-                    
-                    <p>
-                        Currently targeting entry-level Cloud Support roles and pursuing a B.S. in Cloud and Network Engineering while building toward Cloud/AI Architecture. My approach is to build a strong technical foundation while learning in public, 
-                        creating projects that reflect my growing expertise and sharing what I learn along the way. 
-                        I believe in the power of community and collaboration, and I'm excited to connect with others 
-                        on similar journeys.
-                    </p>
-                    <div class="about-highlights">
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>First-principles thinking</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Learning in public</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Public accountability</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Quality-first mindset</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="section container" id="connect">
+      <h2>Connect</h2>
+      <p class="muted"></p>
+   
+      <div class="connect">
+        <a class="btn btn--primary" href="https://www.linkedin.com/in/cloudwithdavid" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a class="btn btn--ghost" href="https://github.com/cloudwithdavid" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn btn--ghost" href="https://hashnode.com/@cloudwithdavid" target="_blank" rel="noreferrer">Hashnode</a>
+        <a class="btn btn--ghost" href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noreferrer">YouTube</a>
+      </div>
+
+      <div>
+        <p class="muted"></p>
+        <span>@cloudwithdavid on all platforms</span>
+      </div>
+
+      <div class="footerNote">
+        <span>© <span id="year"></span> CloudWithDavid</span>
+        <span class="dot">•</span>
+        <a href="#top">Back to top</a>
+      </div>
     </section>
+  </main>
 
-    <!-- ============================
-         Technical Foundation Section
-         ============================ -->
-    <section id="foundation" class="section foundation">
-        <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-layer-group"></i> Technical Foundation</span>
-                <h2 class="section-title">Core <span class="gradient-text">Building Blocks</span></h2>
-                <p class="section-subtitle">The fundamentals that support everything I'm learning in cloud</p>
-            </div>
-            <div class="foundation-grid">
-                <article class="foundation-card" data-animate="fade-up" data-delay="0">
-                    <div class="fcard-header">
-                        <div class="fcard-icon"><i class="fab fa-linux"></i></div>
-                        <h3>Bash & Linux CLI</h3>
-                    </div>
-                    <p>Practiced command-line for navigation, permissions, and basic troubleshooting.</p>
-                    <ul class="fcard-list">
-                        <li>Shell navigation &amp; file permissions</li>
-                        <li>Service/process checks &amp; log inspection</li>
-                        <li>Basic scripting/automation (early stage)</li>
-                    </ul>
-                </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="100">
-                    <div class="fcard-header">
-                        <div class="fcard-icon"><i class="fas fa-network-wired"></i></div>
-                        <h3>Networking fundamentals</h3>
-                    </div>
-                    <p>Building core networking intuition for cloud: DNS, routing, ports, and connectivity troubleshooting.</p>
-                    <ul class="fcard-list">
-                        <li>IP, DNS, and routing basics</li>
-                        <li>Ports/protocols &amp; security group concepts</li>
-                        <li>Connectivity troubleshooting paths</li>
-                    </ul>
-                </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="200">
-                    <div class="fcard-header">
-                        <div class="fcard-icon"><i class="fab fa-git-alt"></i></div>
-                        <h3>Git / GitHub basics</h3>
-                    </div>
-                    <p>Version control habits that keep iteration clean and collaborative.</p>
-                    <ul class="fcard-list">
-                        <li>Branching, commits &amp; pull requests</li>
-                        <li>Repo organization &amp; documentation</li>
-                        <li>Consistent change tracking</li>
-                    </ul>
-                </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="300">
-                    <div class="fcard-header">
-                        <div class="fcard-icon"><i class="fab fa-aws"></i></div>
-                        <h3>AWS Cloud</h3>
-                    </div>
-                    <p>Hands-on practice across foundational services and architecture decisions.</p>
-                    <ul class="fcard-list">
-                        <li>Core services (IAM, EC2, S3, VPC)</li>
-                        <li>Security &amp; cost-aware decisions</li>
-                        <li>Designing for reliability &amp; scale</li>
-                    </ul>
-                </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="400">
-                    <div class="fcard-header">
-                        <div class="fcard-icon"><i class="fas fa-gear"></i></div>
-                        <h3>ITIL & Operations </h3>
-                    </div>
-                    <p>ITSM perspective for incident/service workflows and continuous improvement.</p>
-                    <ul class="fcard-list">
-                        <li>Value-driven service thinking</li>
-                        <li>Incident/problem/change awareness</li>
-                        <li>Continuous improvement mindset</li>
-                    </ul>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================
-         Projects Section
-         ============================ -->
-    <section id="projects" class="section projects">
-        <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-code-branch"></i> Projects</span>
-                <h2 class="section-title">What I've Built &amp; <span class="gradient-text">What's Next</span></h2>
-                <p class="section-subtitle">Hands-on work that demonstrates real learning</p>
-            </div>
-            <div class="project-filters" data-animate="fade-up">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="completed">Completed</button>
-                <button class="filter-btn" data-filter="in-progress">In Progress</button>
-                <button class="filter-btn" data-filter="planned">Planned</button>
-            </div>
-            <div class="projects-groups" id="projectsGrid">
-                <section class="project-group" data-group="completed">
-                    <h3 class="project-group-title">Completed</h3>
-                    <div class="projects-grid">
-                        <article class="project-card" data-status="completed" data-animate="fade-up" data-delay="0">
-                            <div class="project-card-top">
-                                <span class="project-status status-complete">
-                                    <i class="fas fa-check-circle"></i> Completed
-                                </span>
-                                <div class="project-icons">
-                                    <a href="https://github.com/cloudwithdavid/cloudwithdavid-site" target="_blank" rel="noopener noreferrer" aria-label="View on GitHub"><i class="fab fa-github"></i></a>
-                                </div>
-                            </div>
-                            <h4>Cloud Portfolio Website</h4>
-                            <p>Designed and deployed a personal portfolio site to showcase core proofs, and track progress publicly.
-                            </p>
-                            <div class="project-tags">
-                                <span>UI/UX</span>
-                                <span>Personal Brand</span>
-                                <span>HTML/CSS</span>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-
-                <section class="project-group" data-group="in-progress">
-                    <h3 class="project-group-title">In Progress</h3>
-                    <div class="projects-grid">
-                        <article class="project-card" data-status="in-progress" data-animate="fade-up" data-delay="0">
-                            <div class="project-card-top">
-                                <span class="project-status status-progress">
-                                    <i class="fas fa-spinner fa-spin"></i> In Progress
-                                </span>
-                                <div class="project-icons">
-                                    <button type="button" class="project-repo-soon" data-repo-soon data-toast-trigger data-profile-url="https://github.com/cloudwithdavid" aria-label="Repository coming soon">
-                                        <i class="fab fa-github" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <h4>Jira Service Management Ticketing Lab</h4>
-                            <p>Building a simulated IT support environment to practice ITSM ticket triage, resolution notes, and KB documentation.</p>
-                            <div class="project-tags">
-                                <span>ITSM</span>
-                                <span>Documentation</span>
-                                <span>Ticketing</span>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-
-                <section class="project-group" data-group="planned">
-                    <h3 class="project-group-title">Planned</h3>
-                    <div class="projects-grid">
-                        <article class="project-card" data-status="planned" data-animate="fade-up" data-delay="0">
-                            <div class="project-card-top">
-                                <span class="project-status status-planned">
-                                    <i class="fas fa-calendar-alt"></i> Planned
-                                </span>
-                            </div>
-                            <h4>AWS Solutions Architect Track Labs</h4>
-                            <p>Working through SAA-focused labs to build and document architecture patterns (VPC design, IAM, storage, and reliability/cost tradeoffs).</p>
-                            <div class="project-tags">
-                                <span>AWS</span>
-                                <span>Architecture</span>
-                                <span>Labs</span>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- ============================
-         Blog Preview Section
-         ============================ -->
-    <section id="blog" class="section blog-preview">
-        <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-pen-nib"></i> Writing</span>
-                <h2 class="section-title">Latest <span class="gradient-text">Insights</span></h2>
-                <p class="section-subtitle">Thoughts, tutorials, and reflections from the cloud journey</p>
-            </div>
-            <div class="blog-grid">
-                <article class="blog-card" data-animate="fade-up" data-delay="0">
-                    <div class="blog-card-meta">
-                        <span class="blog-date"><i class="far fa-calendar"></i> Dec 2025</span>
-                        <span class="blog-read"><i class="far fa-clock"></i> 2 min read</span>
-                    </div>
-                    <h3>Troubleshooting .pem File Permissions for WSL SSH into Amazon EC2</h3>
-                    <p>My first SSH into EC2 from WSL; troubleshooting an issue.</p>
-                    <a href="https://cloudwithdavid.hashnode.dev/troubleshooting-pem-file-permissions-for-wsl-ssh-into-amazon-ec2" target="_blank" rel="noopener noreferrer" class="blog-link">
-                        Read on Hashnode <i class="fas fa-arrow-right"></i>
-                    </a>
-                </article>
-                <article class="blog-card" data-animate="fade-up" data-delay="100">
-                    <div class="blog-card-meta">
-                        <span class="blog-date"><i class="far fa-calendar"></i></span>
-                        <span class="blog-read"><i class="far fa-clock"></i></span>
-                    </div>
-                    <h3>How I Passed the AWS Cloud Practitioner Exam</h3>
-                    <p>My study strategy, resources, timeline, and the mindset shifts that made the difference.</p>
-                    <span class="blog-link blog-link--upcoming" aria-disabled="true">
-                        Upcoming <i class="fas fa-clock" aria-hidden="true"></i>
-                    </span>
-                </article>
-                <article class="blog-card" data-animate="fade-up" data-delay="200">
-                    <div class="blog-card-meta">
-                        <span class="blog-date"><i class="far fa-calendar"></i></span>
-                        <span class="blog-read"><i class="far fa-clock"></i></span>
-                    </div>
-                    <h3>Why I Started Learning in Public</h3>
-                    <p>The decision to document every step of my cloud journey — and why accountability is the best learning accelerator.</p>
-                    <span class="blog-link blog-link--upcoming" aria-disabled="true">
-                        Upcoming <i class="fas fa-clock" aria-hidden="true"></i>
-                    </span>
-                </article> 
-            </div>
-        </div>
-    </section>
-
-
-    <!-- ============================
-         Learning Timeline Section
-         ============================ -->
-    <section id="timeline" class="section timeline">
-        <div class="container">
-            <div class="section-header timeline-dropdown" data-animate="fade-up">
-                <button type="button" class="section-tag timeline-toggle" id="timelineToggle" aria-expanded="false" aria-controls="timelineDropdownContent">
-                    <i class="fas fa-road"></i>
-                    <span>Learning Timeline</span>
-                    <i class="fas fa-chevron-up timeline-toggle-chevron" aria-hidden="true"></i>
-                </button>
-                <div class="timeline-dropdown-content is-collapsed" id="timelineDropdownContent">
-                    <h2 class="section-title">My <span class="gradient-text">Journey So Far</span></h2>
-                    <p class="section-subtitle">Key milestones and turning points</p>
-                    <div class="timeline-track">
-                <div class="timeline-line" aria-hidden="true"></div>
-                <div class="timeline-item" data-animate="fade-up" data-delay="0">
-                    <div class="timeline-dot" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Early 2025</span>
-                        <h3>The Decision</h3>
-                        <p>Committed to a tech path while pursuing a BS in IT. Began documenting publicly while exploring which field to pursue.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-animate="fade-up" data-delay="100">
-                    <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Q2 2025</span>
-                        <h3>ITIL v4 Foundation — Certified ✓</h3>
-                        <p>Became ITIL certified, understanding service management perspective and IT operations frameworks. </br><strong>Cloud began pulling my interest.</strong></p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-animate="fade-up" data-delay="200">
-                    <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Q3 2025</span>
-                        <h3>The Pivot to Cloud</h3>
-                        <p>Shifted from general IT to cloud and switched my BS track to WGU’s Cloud & Network Engineering program.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-animate="fade-up" data-delay="300">
-                    <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Q4 2025</span>
-                        <h3>AWS Certified Cloud Practitioner — Certified ✓</h3>
-                        <p>Became AWS certified. Solidified understanding of core AWS services, cloud concepts, billing, and security fundamentals.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-animate="fade-up" data-delay="400">
-                    <div class="timeline-dot timeline-dot--current" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Next</span>
-                        <h3>Solutions Architect Associate Track</h3>
-                        <p>Prepare for the SAA-C03 while building hands-on AWS labs and projects.</p>
-                    </div>
-                </div>
-                <div class="timeline-item timeline-item--future" data-animate="fade-up" data-delay="500">
-                    <div class="timeline-dot timeline-dot--future" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Next</span>
-                        <h3>IaC, CI/CD, and Beyond</h3>
-                        <p>Terraform, GitHub Actions, containerization, and stepping into advanced architecture patterns and DevOps practices.</p>
-                    </div>
-                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ============================
-         Contact Section
-         ============================ -->
-    <section id="contact" class="section contact">
-        <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-user-group"></i> Connect</span>
-                <h2 class="section-title">Let's Build <span class="gradient-text">Together</span></h2>
-                <p class="section-subtitle">Whether you're starting out or are a veteran — let's connect, collaborate, and grow</p>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-info" data-animate="fade-right">
-                    <div class="contact-methods">
-                        <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" class="contact-link">
-                            <div class="contact-link-icon"><i class="fab fa-linkedin"></i></div>
-                            <div class="contact-link-info">
-                                <strong>LinkedIn</strong>
-                                <span>Connect with me</span>
-                            </div>
-                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
-                        </a>
-                        <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" class="contact-link">
-                            <div class="contact-link-icon"><i class="fab fa-github"></i></div>
-                            <div class="contact-link-info">
-                                <strong>GitHub</strong>
-                                <span>Check out my repos</span>
-                            </div>
-                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
-                        </a>
-                        <a href="https://hashnode.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" class="contact-link">
-                            <div class="contact-link-icon"><i class="fab fa-hashnode"></i></div>
-                            <div class="contact-link-info">
-                                <strong>Hashnode</strong>
-                                <span>Read my blog</span>
-                            </div>
-                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
-                        </a>
-                        <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" class="contact-link">
-                            <div class="contact-link-icon"><i class="fab fa-medium"></i></div>
-                            <div class="contact-link-info">
-                                <strong>Medium</strong>
-                                <span>Read my articles</span>
-                            </div>
-                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
-                        </a>
-                        <a href="https://youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" class="contact-link">
-                            <div class="contact-link-icon"><i class="fab fa-youtube"></i></div>
-                            <div class="contact-link-info">
-                                <strong>YouTube</strong>
-                                <span>Watch my videos</span>
-                            </div>
-                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="contact-form-wrapper" data-animate="fade-left">
-                    <form class="contact-form" id="contactForm" name="contact" method="POST" action="/thank-you.html" data-netlify="true" netlify-honeypot="bot-field">
-                        <input type="hidden" name="form-name" value="contact">
-                        <p class="form-honeypot" aria-hidden="true">
-                            <label for="bot-field">Don't fill this out if you're human:</label>
-                            <input type="text" id="bot-field" name="bot-field" tabindex="-1" autocomplete="off">
-                        </p>
-                        <h3>Send a Message</h3>
-                        <a href="mailto:contact@cloudwithdavid.com" class="contact-email">
-                            <i class="fas fa-envelope"></i>
-                            <span>contact@cloudwithdavid.com</span>
-                        </a>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" id="name" name="name" required placeholder="Your name" autocomplete="name">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" id="email" name="email" required placeholder="your@email.com" autocomplete="email">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" required placeholder="What's this about?">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required placeholder="Your message..."></textarea>
-                        </div>
-                        <p class="form-status" id="formStatus" role="status" aria-live="assertive" aria-atomic="true"></p>
-                        <button type="submit" class="btn btn-primary btn-submit">
-                            <span>Send Message</span>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================
-         Footer
-         ============================ -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand-col">
-                    <a href="#" class="footer-brand">
-                        <img class="brand-mark" src="favicon/android-chrome-192x192.png" alt="" width="36" height="36">
-                        <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
-                    </a>
-                    <p class="footer-tagline">
-                        Documenting the path into cloud support, one step at a time.
-                    </p>
-                </div>
-                <div class="footer-col">
-                    <h4 class="footer-heading">Navigation</h4>
-                    <ul class="footer-links">
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#projects">Projects</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4 class="footer-heading">Connect</h4>
-                    <div class="footer-social">
-                        <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                        <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="https://hashnode.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Hashnode"><i class="fab fa-hashnode"></i></a>
-                        <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium"><i class="fab fa-medium"></i></a>
-                        <a href="https://youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p class="footer-copyright">
-                    &copy; 2026 CloudWithDavid. All Rights Reserved.
-                </p>
-                <p class="footer-note">Building cloud expertise with intention and clarity.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Back to Top -->
-    <button class="back-to-top" id="backToTop" aria-label="Back to top" title="Back to top">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
-    <!-- Notification Container -->
-    <div class="notification-container" id="notificationContainer" aria-live="polite"></div>
-
-    <script src="js/main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
