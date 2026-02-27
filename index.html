@@ -20,11 +20,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 
     <!-- Favicon -->
-    <link rel="icon" href="favicon/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" href="favicon/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="favicon/favicon-16x16.png" sizes="16x16">
-    <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="assets/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="assets/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="assets/favicon/site.webmanifest">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
@@ -41,19 +41,24 @@
     <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
         <div class="container">
             <a href="#" class="nav-brand" aria-label="CloudWithDavid home">
-                <img class="brand-mark" src="favicon/android-chrome-192x192.png" alt="" width="40" height="40">
+                <img class="brand-mark" src="assets/favicon/android-chrome-192x192.png" alt="" width="40" height="40">
                 <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
             </a>
             <ul class="nav-links" id="navLinks" role="menubar">
+                <li role="none" class="nav-theme-item">
+                    <button type="button" class="nav-theme-toggle" data-theme-toggle role="menuitem" aria-label="Switch theme mode" title="Switch theme mode">
+                        <i class="fas fa-moon" data-theme-icon aria-hidden="true"></i>
+                        <span data-theme-label>Switch to Light Mode</span>
+                    </button>
+                </li>
                 <li role="none"><a href="#about" role="menuitem">About</a></li>
-                <li role="none"><a href="#foundation" role="menuitem">Foundation</a></li>
                 <li role="none"><a href="#projects" role="menuitem">Projects</a></li>
                 <li role="none"><a href="#blog" role="menuitem">Writing</a></li>
                 <li role="none"><a href="#contact" role="menuitem">Connect</a></li>
             </ul>
             <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">
-                    <i class="fas fa-moon" id="themeIcon"></i>
+                <button class="theme-toggle" id="themeToggle" data-theme-toggle aria-label="Switch theme mode" title="Switch theme mode">
+                    <i class="fas fa-moon" id="themeIcon" data-theme-icon></i>
                 </button>
                 <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
                     <span></span>
@@ -75,11 +80,11 @@
             <div class="hero-grid">
                 <div class="hero-content">
                     <div class="hero-badge-row" data-animate="fade-up" data-delay="0">
-                        <div class="hero-badge hero-badge--itil">
+                        <div class="hero-badge hero-badge--itil cert-pill" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open ITIL v4 Foundation credential" data-modal-type="image" data-modal-src="assets/certs/itil-v4.png">
                             <span class="hero-badge-dot" aria-hidden="true"></span>
                             <span>ITIL v4 Foundation</span>
                         </div>
-                        <div class="hero-badge hero-badge--ccp">
+                        <div class="hero-badge hero-badge--ccp cert-pill" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open AWS Certified Cloud Practitioner credential" data-modal-type="image" data-modal-src="assets/certs/aws-ccp.png">
                             <span class="hero-badge-dot" aria-hidden="true"></span>
                             <span>AWS Certified Cloud Practitioner</span>
                         </div>
@@ -94,7 +99,7 @@
                         <span class="hero-line gradient-text">Building In Public.</span>
                     </h1>
                     <p class="hero-description" data-animate="fade-up" data-delay="200">
-                        Documenting hands-on cloud projects, and foundational insights on my path to Cloud/AI Architecture.
+                        Documenting hands-on cloud projects and foundational insights on my path to Cloud/AI Architecture.
                     </p>
                     <div class="hero-cta" data-animate="fade-up" data-delay="300">
                         <a href="#projects" class="btn btn-primary">
@@ -163,7 +168,7 @@
                 <div class="proof-item">
                     <span class="proof-label">Certifications</span>
                     <strong class="proof-value"><span class="stats-number" data-count="2">0</span> Earned</strong>
-                    <span class="proof-meta">ITIL v4 + AWS CCP</span>
+                    <span class="proof-meta">ITIL v4 &</br>AWS CCP</span>
                 </div>
                 <div class="proof-item">
                     <span class="proof-label">Portfolio Projects</span>
@@ -195,7 +200,7 @@
             <div class="section-header" data-animate="fade-up">
                 <span class="section-tag"><i class="fas fa-user"></i> About Me</span>
                 <h2 class="section-title">Driven by Curiosity,<br><span class="gradient-text">Grounded in Fundamentals</span></h2>
-                <p class="section-subtitle">Systems thinking, continuous learning, and collaborative growth</p>
+                <p class="section-subtitle">Structured thinking, practical building, and relentless iteration</p>
             </div>
             <div class="about-stats about-stats--inline" data-animate="fade-up">
                 <div class="stat-card" data-animate="fade-up" data-delay="0">
@@ -227,44 +232,31 @@
                 <div class="about-text" data-animate="fade-right">
                     
                     <p>
-                        Currently targeting entry-level Cloud Support roles and pursuing a B.S. in Cloud and Network Engineering while building toward Cloud/AI Architecture. My approach is to build a strong technical foundation while learning in public, 
-                        creating projects that reflect my growing expertise and sharing what I learn along the way. 
-                        I believe in the power of community and collaboration, and I'm excited to connect with others 
-                        on similar journeys.
+                        Currently targeting entry-level cloud roles while building toward Cloud/AI architecture. I focus on fundamentals, then prove them through hands-on projects and clear documentation. I value clear communication, feedback loops, and building systems that are reliable and repeatable.
                     </p>
-                    <div class="about-highlights">
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>First-principles thinking</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Learning in public</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Public accountability</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Quality-first mindset</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================
-         Technical Foundation Section
+         Foundation Section
          ============================ -->
     <section id="foundation" class="section foundation">
         <div class="container">
-            <div class="section-header" data-animate="fade-up">
-                <span class="section-tag"><i class="fas fa-layer-group"></i> Technical Foundation</span>
+            <div class="section-header timeline-dropdown" data-animate="fade-up">
+                <div class="timeline-toggle-row">
+                    <button type="button" class="section-tag timeline-toggle timeline-toggle-main" id="foundationToggle" data-foundation-toggle aria-expanded="false" aria-controls="foundationDropdownContent">
+                        <i class="fas fa-layer-group" aria-hidden="true"></i>
+                        <span>Foundation</span>
+                    </button>
+                    <button type="button" class="section-tag timeline-toggle timeline-toggle-icon" data-foundation-toggle aria-expanded="false" aria-controls="foundationDropdownContent" aria-label="Toggle foundation details">
+                        <i class="fas fa-chevron-up timeline-toggle-chevron" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="timeline-dropdown-content is-collapsed" id="foundationDropdownContent">
                 <h2 class="section-title">Core <span class="gradient-text">Building Blocks</span></h2>
-                <p class="section-subtitle">The fundamentals that support everything I'm learning in cloud</p>
-            </div>
+                <p class="section-subtitle">A living snapshot of the skills I’m building and using across projects</p>
             <div class="foundation-grid">
                 <article class="foundation-card" data-animate="fade-up" data-delay="0">
                     <div class="fcard-header">
@@ -322,10 +314,12 @@
                     <p>ITSM perspective for incident/service workflows and continuous improvement.</p>
                     <ul class="fcard-list">
                         <li>Value-driven service thinking</li>
-                        <li>Incident/problem/change awareness</li>
+                        <li>Incident / problem / change awareness</li>
                         <li>Continuous improvement mindset</li>
                     </ul>
                 </article>
+            </div>
+                </div>
             </div>
         </div>
     </section>
@@ -338,7 +332,7 @@
             <div class="section-header" data-animate="fade-up">
                 <span class="section-tag"><i class="fas fa-code-branch"></i> Projects</span>
                 <h2 class="section-title">What I've Built &amp; <span class="gradient-text">What's Next</span></h2>
-                <p class="section-subtitle">Hands-on work that demonstrates real learning</p>
+                <p class="section-subtitle">Work that shows how I think, build, and document</p>
             </div>
             <div class="project-filters" data-animate="fade-up">
                 <button class="filter-btn active" data-filter="all">All</button>
@@ -360,12 +354,12 @@
                                 </div>
                             </div>
                             <h4>Cloud Portfolio Website</h4>
-                            <p>Designed and deployed a personal portfolio site to showcase core proofs, and track progress publicly.
+                            <p>Designed and deployed a personal portfolio site to showcase proofs, and track progress publicly.
                             </p>
                             <div class="project-tags">
                                 <span>UI/UX</span>
-                                <span>Personal Brand</span>
                                 <span>HTML/CSS</span>
+                                <span>Personal Brand</span>
                             </div>
                         </article>
                     </div>
@@ -428,7 +422,7 @@
             <div class="section-header" data-animate="fade-up">
                 <span class="section-tag"><i class="fas fa-pen-nib"></i> Writing</span>
                 <h2 class="section-title">Latest <span class="gradient-text">Insights</span></h2>
-                <p class="section-subtitle">Thoughts, tutorials, and reflections from the cloud journey</p>
+                <p class="section-subtitle">Notes, tutorials, and reflections from the cloud journey</p>
             </div>
             <div class="blog-grid">
                 <article class="blog-card" data-animate="fade-up" data-delay="0">
@@ -436,33 +430,25 @@
                         <span class="blog-date"><i class="far fa-calendar"></i> Dec 2025</span>
                         <span class="blog-read"><i class="far fa-clock"></i> 2 min read</span>
                     </div>
-                    <h3>Troubleshooting .pem File Permissions for WSL SSH into Amazon EC2</h3>
-                    <p>My first SSH into EC2 from WSL; troubleshooting an issue.</p>
-                    <a href="https://cloudwithdavid.hashnode.dev/troubleshooting-pem-file-permissions-for-wsl-ssh-into-amazon-ec2" target="_blank" rel="noopener noreferrer" class="blog-link">
-                        Read on Hashnode <i class="fas fa-arrow-right"></i>
+                    <h3>My First SSH into EC2 from WSL</h3>
+                    <p>My first successful SSH into an Amazon Linux EC2 instance from WSL, and the key permission trap that blocked it.</p>
+                    <a href="https://medium.com/@cloudwithdavid/my-first-ssh-into-ec2-from-wsl-a2a4b44b8375" target="_blank" rel="noopener noreferrer" class="blog-link">
+                        Read on Medium <i class="fas fa-arrow-right"></i>
                     </a>
                 </article>
-                <article class="blog-card" data-animate="fade-up" data-delay="100">
+                <article class="blog-card blog-card--no-cta" data-animate="fade-up" data-delay="100" data-status="upcoming">
                     <div class="blog-card-meta">
-                        <span class="blog-date"><i class="far fa-calendar"></i></span>
-                        <span class="blog-read"><i class="far fa-clock"></i></span>
+                        <span class="blog-upcoming-badge" aria-label="Upcoming post"><i class="fas fa-clock" aria-hidden="true"></i> Upcoming</span>
                     </div>
                     <h3>How I Passed the AWS Cloud Practitioner Exam</h3>
                     <p>My study strategy, resources, timeline, and the mindset shifts that made the difference.</p>
-                    <span class="blog-link blog-link--upcoming" aria-disabled="true">
-                        Upcoming <i class="fas fa-clock" aria-hidden="true"></i>
-                    </span>
                 </article>
-                <article class="blog-card" data-animate="fade-up" data-delay="200">
+                <article class="blog-card blog-card--no-cta" data-animate="fade-up" data-delay="200" data-status="upcoming">
                     <div class="blog-card-meta">
-                        <span class="blog-date"><i class="far fa-calendar"></i></span>
-                        <span class="blog-read"><i class="far fa-clock"></i></span>
+                        <span class="blog-upcoming-badge" aria-label="Upcoming post"><i class="fas fa-clock" aria-hidden="true"></i> Upcoming</span>
                     </div>
                     <h3>Why I Started Learning in Public</h3>
                     <p>The decision to document every step of my cloud journey — and why accountability is the best learning accelerator.</p>
-                    <span class="blog-link blog-link--upcoming" aria-disabled="true">
-                        Upcoming <i class="fas fa-clock" aria-hidden="true"></i>
-                    </span>
                 </article> 
             </div>
         </div>
@@ -470,16 +456,20 @@
 
 
     <!-- ============================
-         Learning Timeline Section
+         Timeline Section
          ============================ -->
     <section id="timeline" class="section timeline">
         <div class="container">
             <div class="section-header timeline-dropdown" data-animate="fade-up">
-                <button type="button" class="section-tag timeline-toggle" id="timelineToggle" aria-expanded="false" aria-controls="timelineDropdownContent">
-                    <i class="fas fa-road"></i>
-                    <span>Learning Timeline</span>
-                    <i class="fas fa-chevron-up timeline-toggle-chevron" aria-hidden="true"></i>
-                </button>
+                <div class="timeline-toggle-row">
+                    <button type="button" class="section-tag timeline-toggle timeline-toggle-main" id="timelineToggle" data-timeline-toggle aria-expanded="false" aria-controls="timelineDropdownContent">
+                        <i class="fas fa-road" aria-hidden="true"></i>
+                        <span>Timeline</span>
+                    </button>
+                    <button type="button" class="section-tag timeline-toggle timeline-toggle-icon" data-timeline-toggle aria-expanded="false" aria-controls="timelineDropdownContent" aria-label="Toggle learning timeline details">
+                        <i class="fas fa-chevron-up timeline-toggle-chevron" aria-hidden="true"></i>
+                    </button>
+                </div>
                 <div class="timeline-dropdown-content is-collapsed" id="timelineDropdownContent">
                     <h2 class="section-title">My <span class="gradient-text">Journey So Far</span></h2>
                     <p class="section-subtitle">Key milestones and turning points</p>
@@ -498,7 +488,7 @@
                     <div class="timeline-content">
                         <span class="timeline-date">Q2 2025</span>
                         <h3>ITIL v4 Foundation — Certified ✓</h3>
-                        <p>Became ITIL certified, understanding service management perspective and IT operations frameworks. </br><strong>Cloud began pulling my interest.</strong></p>
+                        <p>Earned ITIL v4, strengthening my understanding of how IT services are delivered and improved across operations.</br><strong>Cloud began to pull my interest.</strong></p>
                     </div>
                 </div>
                 <div class="timeline-item" data-animate="fade-up" data-delay="200">
@@ -522,7 +512,7 @@
                     <div class="timeline-content">
                         <span class="timeline-date">Next</span>
                         <h3>Solutions Architect Associate Track</h3>
-                        <p>Prepare for the SAA-C03 while building hands-on AWS labs and projects.</p>
+                        <p>Strengthening architectural core by preparing for the SAA-C03 while shipping AWS labs, diagrams, and short write-ups.</p>
                     </div>
                 </div>
                 <div class="timeline-item timeline-item--future" data-animate="fade-up" data-delay="500">
@@ -546,7 +536,7 @@
             <div class="section-header" data-animate="fade-up">
                 <span class="section-tag"><i class="fas fa-user-group"></i> Connect</span>
                 <h2 class="section-title">Let's Build <span class="gradient-text">Together</span></h2>
-                <p class="section-subtitle">Whether you're starting out or are a veteran — let's connect, collaborate, and grow</p>
+                <p class="section-subtitle">Whether you’re learning or leading, let’s connect and collaborate</p>
             </div>
             <div class="contact-grid">
                 <div class="contact-info" data-animate="fade-right">
@@ -642,11 +632,11 @@
             <div class="footer-grid">
                 <div class="footer-brand-col">
                     <a href="#" class="footer-brand">
-                        <img class="brand-mark" src="favicon/android-chrome-192x192.png" alt="" width="36" height="36">
+                        <img class="brand-mark" src="assets/favicon/android-chrome-192x192.png" alt="" width="36" height="36">
                         <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
                     </a>
                     <p class="footer-tagline">
-                        Documenting the path into cloud support, one step at a time.
+                        Documenting the path into cloud architecture, one step at a time.
                     </p>
                 </div>
                 <div class="footer-col">
@@ -654,7 +644,8 @@
                     <ul class="footer-links">
                         <li><a href="#about">About</a></li>
                         <li><a href="#projects">Projects</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#blog">Writing</a></li>
+                        <li><a href="#contact">Connect</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -672,7 +663,7 @@
                 <p class="footer-copyright">
                     &copy; 2026 CloudWithDavid. All Rights Reserved.
                 </p>
-                <p class="footer-note">Building cloud expertise with intention and clarity.</p>
+                <p class="footer-note"></p>
             </div>
         </div>
     </footer>
@@ -684,6 +675,16 @@
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer" aria-live="polite"></div>
+
+    <!-- Credential Modal -->
+    <div class="cert-modal" id="certModal" aria-hidden="true">
+        <div class="cert-modal-dialog" role="dialog" aria-modal="true" aria-label="Credential preview">
+            <button type="button" class="cert-modal-close" id="certModalClose" aria-label="Close credential preview">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div class="cert-modal-content" id="certModalContent"></div>
+        </div>
+    </div>
 
     <script src="js/main.js"></script>
 </body>

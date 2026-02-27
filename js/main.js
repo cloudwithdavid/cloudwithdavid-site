@@ -15,8 +15,9 @@
     const navbar = $('#navbar');
     const navToggle = $('#navToggle');
     const navLinks = $('#navLinks');
-    const themeToggle = $('#themeToggle');
-    const themeIcon = $('#themeIcon');
+    const themeToggles = $$('[data-theme-toggle]');
+    const themeIcons = $$('[data-theme-icon]');
+    const themeLabels = $$('[data-theme-label]');
     const scrollProgress = $('#scrollProgress');
     const backToTop = $('#backToTop');
     const heroCanvas = $('#heroParticles');
@@ -38,16 +39,31 @@
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.style.colorScheme = theme;
-        if (themeIcon) {
-            themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        }
+        const nextTheme = theme === 'dark' ? 'light' : 'dark';
+        themeIcons.forEach(icon => {
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        });
+        themeLabels.forEach(label => {
+            label.textContent = nextTheme === 'dark' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+        });
+        themeToggles.forEach(toggle => {
+            const actionLabel = `Switch to ${nextTheme} mode`;
+            toggle.setAttribute('aria-label', actionLabel);
+            toggle.setAttribute('title', actionLabel);
+        });
         localStorage.setItem('cwd-theme', theme);
     }
 
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') || 'dark';
-            applyTheme(current === 'dark' ? 'light' : 'dark');
+    if (themeToggles.length) {
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                if (toggle.disabled) return;
+                const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+                if (toggle.classList.contains('nav-theme-toggle')) {
+                    closeMobileMenu();
+                }
+            });
         });
     }
 
@@ -200,22 +216,160 @@
     });
 
     // ===========================
-    // 6. Timeline Dropdown Toggle
+    // 6. Credential Modal
     // ===========================
-    function initTimelineDropdown() {
-        const toggle = $('#timelineToggle');
-        const content = $('#timelineDropdownContent');
-        if (!toggle || !content) return;
+    function initCredentialModal() {
+        const modal = $('#certModal');
+        const modalClose = $('#certModalClose');
+        const modalContent = $('#certModalContent');
+        const pills = $$('.cert-pill');
+        if (!modal || !modalClose || !modalContent || !pills.length) return;
 
-        toggle.addEventListener('click', () => {
-            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-            const nextExpanded = !isExpanded;
-            toggle.setAttribute('aria-expanded', String(nextExpanded));
-            content.classList.toggle('is-collapsed', !nextExpanded);
+        let previousBodyOverflow = '';
+
+        function normalizeModalSrc(raw, modalType) {
+            if (!raw) return '';
+
+            let value = String(raw).trim();
+            if (!value) return '';
+
+            // Handle HTML-encoded quotes from copied embed snippets.
+            value = value
+                .replace(/&quot;|&#34;/gi, '"')
+                .replace(/&apos;|&#39;/gi, "'");
+
+            if (/<iframe/i.test(value) || /<img/i.test(value)) {
+                const srcMatch = value.match(/src\s*=\s*["']([^"']+)["']/i);
+                value = srcMatch ? srcMatch[1].trim() : '';
+            } else {
+                value = value.replace(/^['"]+|['"]+$/g, '').trim();
+            }
+
+            if (!value || /^javascript:/i.test(value)) return '';
+
+            if (modalType !== 'iframe') return value;
+
+            try {
+                const url = new URL(value, window.location.href);
+                if (!/^https?:$/i.test(url.protocol)) return '';
+
+                if (/drive\.google\.com$/i.test(url.hostname)) {
+                    const idFromPath = url.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    const fileId = idFromPath ? idFromPath[1] : (url.searchParams.get('id') || '');
+                    if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+
+                return url.toString();
+            } catch {
+                return '';
+            }
+        }
+
+        const clearModalContent = () => {
+            modalContent.innerHTML = '';
+        };
+
+        const closeModal = () => {
+            if (!modal.classList.contains('is-open')) return;
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            clearModalContent();
+            document.body.style.overflow = previousBodyOverflow;
+        };
+
+        const openModal = (pill) => {
+            const modalType = (pill.dataset.modalType || '').toLowerCase();
+            const rawModalSrc = pill.dataset.modalSrc || '';
+            const src = normalizeModalSrc(rawModalSrc, modalType);
+            if (modalType !== 'iframe' && modalType !== 'image') return;
+            if (!src) {
+                console.error('Invalid modal src:', rawModalSrc);
+                return;
+            }
+
+            clearModalContent();
+
+            // TEMP DEBUG: remove after modal sources are verified in production.
+            console.log('modal src:', src);
+            let mediaEl;
+
+            if (modalType === 'image') {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `${pill.textContent.trim()} credential`;
+                img.loading = 'lazy';
+                mediaEl = img;
+            } else {
+                const iframe = document.createElement('iframe');
+                iframe.src = src;
+                iframe.loading = 'lazy';
+                iframe.referrerPolicy = 'no-referrer';
+                iframe.allowFullscreen = true;
+                iframe.title = `${pill.textContent.trim()} preview`;
+                mediaEl = iframe;
+            }
+            modalContent.appendChild(mediaEl);
+
+            previousBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            modalClose.focus({ preventScroll: true });
+        };
+
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => openModal(pill));
+            pill.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                e.preventDefault();
+                openModal(pill);
+            });
+        });
+
+        modalClose.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
         });
     }
 
-    initTimelineDropdown();
+    initCredentialModal();
+
+    // ===========================
+    // 7. Section Dropdown Toggles
+    // ===========================
+    function initSectionDropdown(toggleSelector, contentSelector) {
+        const toggles = $$(toggleSelector);
+        const content = $(contentSelector);
+        if (!toggles.length || !content) return;
+
+        const setExpanded = (expanded) => {
+            toggles.forEach(toggle => {
+                toggle.setAttribute('aria-expanded', String(expanded));
+            });
+            content.classList.toggle('is-collapsed', !expanded);
+        };
+
+        const initiallyExpanded = !content.classList.contains('is-collapsed');
+        setExpanded(initiallyExpanded);
+
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const isExpanded = toggles[0].getAttribute('aria-expanded') === 'true';
+                const nextExpanded = !isExpanded;
+                setExpanded(nextExpanded);
+            });
+        });
+    }
+
+    initSectionDropdown('[data-foundation-toggle]', '#foundationDropdownContent');
+    initSectionDropdown('[data-timeline-toggle]', '#timelineDropdownContent');
 
     // ===========================
     // 7. Scroll Animations (IntersectionObserver)
@@ -365,7 +519,44 @@
     initProjectFilters();
 
     // ===========================
-    // 11. Repo Coming Soon Trigger
+    // 11. Writing Card CTA Guard
+    // ===========================
+    function initWritingCardCtas() {
+        const cards = $$('.blog-card');
+        if (!cards.length) return;
+
+        const isValidExternalUrl = (href) => {
+            if (!href) return false;
+            try {
+                const url = new URL(href, window.location.href);
+                const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
+                return isHttp && url.origin !== window.location.origin;
+            } catch {
+                return false;
+            }
+        };
+
+        cards.forEach(card => {
+            const cta = $('.blog-link', card);
+            const status = (card.dataset.status || '').toLowerCase();
+            const isUpcoming = status === 'upcoming' || Boolean($('.blog-upcoming-badge', card));
+            const href = cta ? (cta.getAttribute('href') || '').trim() : '';
+            const hasValidCta = cta ? isValidExternalUrl(href) : false;
+
+            if (isUpcoming || !hasValidCta) {
+                if (cta) cta.remove();
+                card.classList.add('blog-card--no-cta');
+                return;
+            }
+
+            card.classList.remove('blog-card--no-cta');
+        });
+    }
+
+    initWritingCardCtas();
+
+    // ===========================
+    // 12. Repo Coming Soon Trigger
     // ===========================
     function initRepoComingSoonTriggers() {
         const triggers = $$('[data-repo-soon]');
@@ -876,27 +1067,84 @@
     initLoadingBadge();
 
     // ===========================
-    // 19. Easter Egg Console
+    // 19. Completed Badge Sheen Loop
+    // ===========================
+    function initCompletedBadgeSheenLoop() {
+        const badges = $$('.status-complete');
+        if (!badges.length) return;
+
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (reducedMotion.matches) return;
+
+        const parseDurationMs = (rawValue, fallbackMs) => {
+            const value = String(rawValue || '').trim();
+            if (!value) return fallbackMs;
+
+            if (value.endsWith('ms')) {
+                const ms = Number.parseFloat(value.slice(0, -2));
+                return Number.isFinite(ms) ? ms : fallbackMs;
+            }
+
+            if (value.endsWith('s')) {
+                const sec = Number.parseFloat(value.slice(0, -1));
+                return Number.isFinite(sec) ? sec * 1000 : fallbackMs;
+            }
+
+            const numeric = Number.parseFloat(value);
+            return Number.isFinite(numeric) ? numeric * 1000 : fallbackMs;
+        };
+
+        const restartSweep = (badge) => {
+            badge.classList.remove('is-sweeping');
+            void badge.offsetWidth; // force reflow to retrigger CSS animation
+            badge.classList.add('is-sweeping');
+        };
+
+        const runLoop = (badge, initialDelayMs = 0) => {
+            const tick = () => {
+                if (!document.body.contains(badge)) return;
+
+                const styles = getComputedStyle(badge);
+                const sweepMs = parseDurationMs(styles.getPropertyValue('--complete-sheen-sweep'), 1100);
+                const gapMs = parseDurationMs(styles.getPropertyValue('--complete-sheen-gap'), 3200);
+                const nextMs = Math.max(150, sweepMs + gapMs);
+
+                restartSweep(badge);
+                const timerId = window.setTimeout(tick, nextMs);
+                badge.dataset.sheenTimerId = String(timerId);
+            };
+
+            const initialTimer = window.setTimeout(tick, initialDelayMs);
+            badge.dataset.sheenTimerId = String(initialTimer);
+        };
+
+        badges.forEach((badge, index) => {
+            const existing = Number(badge.dataset.sheenTimerId || 0);
+            if (existing) clearTimeout(existing);
+            runLoop(badge, 220 + (index * 120));
+        });
+    }
+
+    initCompletedBadgeSheenLoop();
+
+    // ===========================
+    // 20. Easter Egg Console
     // ===========================
     console.log(
-        '%c☁️ CloudWithDavid',
+        '%c☁️ Cloud With David',
         'font-size: 2rem; font-weight: bold; color: #4EA0FF; text-shadow: 0 2px 10px rgba(78,160,255,0.3);'
     );
     console.log(
-        '%cCloud Support (Entry-Level) | Building in Public',
+        '%cWhat\'s up! Thanks for checking out my site! If you have any questions or want to connect, feel free to reach out.',
         'font-size: 1rem; color: #00E5FF;'
     );
     console.log(
         '%c🔗 https://linkedin.com/in/cloudwithdavid',
         'font-size: 0.9rem; color: #8FA6CC;'
     );
-    console.log(
-        '%c🐙 https://github.com/cloudwithdavid',
-        'font-size: 0.9rem; color: #8FA6CC;'
-    );
 
     // ===========================
-    // 20. Performance: Lazy load images
+    // 21. Performance: Lazy load images
     // ===========================
     function initLazyLoading() {
         const images = $$('img[loading="lazy"]');
