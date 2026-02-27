@@ -15,59 +15,180 @@
     const navbar = $('#navbar');
     const navToggle = $('#navToggle');
     const navLinks = $('#navLinks');
-    const themeToggles = $$('[data-theme-toggle]');
-    const themeIcons = $$('[data-theme-icon]');
-    const themeLabels = $$('[data-theme-label]');
+    const themeControls = $$('[data-theme-segmented]');
+    const themeSegments = $$('[data-theme-option]');
     const scrollProgress = $('#scrollProgress');
     const backToTop = $('#backToTop');
     const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
     const notificationContainer = $('#notificationContainer');
     const TOAST_TRIGGER_COOLDOWN_MS = 2000;
+    const THEME_STORAGE_KEY = 'cwd-theme';
+    const THEME_PULSE_SEEN_KEY = 'cwd-theme-pulse-seen';
+    const THEME_PULSE_CLASS = 'theme-segmented--pulse';
+    const THEME_PULSE_VARIANTS = ['desktop', 'mobile-inline'];
     let nextToastAllowedAt = 0;
 
     // ===========================
     // 1. Theme Toggle (Dark/Light)
     // ===========================
+    const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function getStoredTheme() {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        return stored === 'dark' || stored === 'light' ? stored : '';
+    }
+
+    function getSystemTheme() {
+        return systemThemeMedia.matches ? 'dark' : 'light';
+    }
+
+    function updateThemeControlState(theme) {
+        themeSegments.forEach(segment => {
+            const isActive = segment.dataset.themeOption === theme;
+            segment.classList.toggle('is-active', isActive);
+            segment.setAttribute('aria-pressed', String(isActive));
+            segment.setAttribute('aria-selected', String(isActive));
+        });
+
+        themeControls.forEach(control => {
+            control.setAttribute('data-active-theme', theme);
+        });
+    }
+
+    function applyTheme(theme, { persist = true } = {}) {
+        const nextTheme = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        document.documentElement.style.colorScheme = nextTheme;
+        updateThemeControlState(nextTheme);
+        if (persist) {
+            localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        }
+    }
+
+    function readPulseSeenVariants() {
+        const raw = localStorage.getItem(THEME_PULSE_SEEN_KEY);
+        if (!raw) return new Set();
+        // Backward compatibility with previous single-flag format.
+        if (raw === '1') return new Set(THEME_PULSE_VARIANTS);
+        return new Set(
+            raw
+                .split(',')
+                .map(v => v.trim())
+                .filter(Boolean)
+        );
+    }
+
+    function writePulseSeenVariants(seenSet) {
+        if (!seenSet || !seenSet.size) return;
+        const serialized = [...seenSet]
+            .filter(v => THEME_PULSE_VARIANTS.includes(v))
+            .join(',');
+        if (serialized) {
+            localStorage.setItem(THEME_PULSE_SEEN_KEY, serialized);
+        }
+    }
+
+    function isElementVisible(element) {
+        if (!element) return false;
+        const styles = window.getComputedStyle(element);
+        return styles.display !== 'none' && styles.visibility !== 'hidden' && element.getClientRects().length > 0;
+    }
+
+    function triggerThemePulse(control) {
+        if (!control) return;
+        control.classList.remove(THEME_PULSE_CLASS);
+        // Force reflow to restart finite pulse animation when needed.
+        void control.offsetWidth;
+        const cleanupPulse = () => control.classList.remove(THEME_PULSE_CLASS);
+        control.addEventListener('animationend', (event) => {
+            if (event.animationName !== 'themeSegmentedPulse') return;
+            cleanupPulse();
+        }, { once: true });
+        control.classList.add(THEME_PULSE_CLASS);
+        setTimeout(cleanupPulse, 6000);
+    }
+
+    function maybeShowThemePulse() {
+        if (getStoredTheme()) return;
+
+        const seenVariants = readPulseSeenVariants();
+        let didUpdate = false;
+
+        THEME_PULSE_VARIANTS.forEach(variant => {
+            if (seenVariants.has(variant)) return;
+            const control = $(`[data-theme-segmented][data-theme-variant="${variant}"]`);
+            if (!isElementVisible(control)) return;
+            triggerThemePulse(control);
+            seenVariants.add(variant);
+            didUpdate = true;
+        });
+
+        if (didUpdate) {
+            writePulseSeenVariants(seenVariants);
+        }
+    }
+
     function initTheme() {
-        const stored = localStorage.getItem('cwd-theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (prefersDark ? 'dark' : 'dark'); // default dark
-        applyTheme(theme);
+        const stored = getStoredTheme();
+        if (stored) {
+            applyTheme(stored, { persist: false });
+            return;
+        }
+        applyTheme(getSystemTheme(), { persist: false });
     }
 
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.style.colorScheme = theme;
-        const nextTheme = theme === 'dark' ? 'light' : 'dark';
-        themeIcons.forEach(icon => {
-            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        });
-        themeLabels.forEach(label => {
-            label.textContent = nextTheme === 'dark' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
-        });
-        themeToggles.forEach(toggle => {
-            const actionLabel = `Switch to ${nextTheme} mode`;
-            toggle.setAttribute('aria-label', actionLabel);
-            toggle.setAttribute('title', actionLabel);
-        });
-        localStorage.setItem('cwd-theme', theme);
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || getSystemTheme();
+        applyTheme(current === 'dark' ? 'light' : 'dark');
     }
 
-    if (themeToggles.length) {
-        themeToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                if (toggle.disabled) return;
-                const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                applyTheme(current === 'dark' ? 'light' : 'dark');
-                if (toggle.classList.contains('nav-theme-toggle')) {
+    if (themeSegments.length) {
+        themeSegments.forEach(segment => {
+            segment.addEventListener('click', () => {
+                const control = segment.closest('[data-theme-segmented]');
+                const variant = control ? control.dataset.themeVariant : '';
+                const shouldToggleDirectly = variant === 'mobile-inline' || variant === 'desktop';
+                if (shouldToggleDirectly) {
+                    toggleTheme();
+                } else {
+                    const targetTheme = segment.dataset.themeOption;
+                    if (targetTheme !== 'dark' && targetTheme !== 'light') return;
+                    applyTheme(targetTheme);
+                }
+                if (segment.closest('.nav-theme-item')) {
                     closeMobileMenu();
                 }
             });
         });
     }
 
+    if (themeControls.length) {
+        themeControls.forEach(control => {
+            control.addEventListener('click', (e) => {
+                if (e.target.closest('[data-theme-option]')) return;
+                toggleTheme();
+                if (control.closest('.nav-theme-item')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    }
+
+    const syncWithSystemTheme = (event) => {
+        if (getStoredTheme()) return;
+        applyTheme(event.matches ? 'dark' : 'light', { persist: false });
+    };
+
+    if (typeof systemThemeMedia.addEventListener === 'function') {
+        systemThemeMedia.addEventListener('change', syncWithSystemTheme);
+    } else if (typeof systemThemeMedia.addListener === 'function') {
+        systemThemeMedia.addListener(syncWithSystemTheme);
+    }
+
     initTheme();
+    maybeShowThemePulse();
+    window.addEventListener('resize', maybeShowThemePulse, { passive: true });
 
     // ===========================
     // 2. Mobile Navigation
@@ -77,6 +198,9 @@
         navLinks.classList.remove('active');
         navToggle.classList.remove('active');
         navToggle.setAttribute('aria-expanded', 'false');
+        if (navbar) {
+            navbar.classList.remove('nav-menu-open');
+        }
     }
 
     if (navToggle) {
@@ -84,6 +208,12 @@
             const isOpen = navLinks.classList.toggle('active');
             navToggle.classList.toggle('active');
             navToggle.setAttribute('aria-expanded', String(isOpen));
+            if (navbar) {
+                navbar.classList.toggle('nav-menu-open', isOpen);
+            }
+            if (isOpen) {
+                maybeShowThemePulse();
+            }
         });
     }
 
@@ -142,6 +272,123 @@
             ticking = true;
         }
     }, { passive: true });
+
+    // ===========================
+    // 3c. Credly Scroll Range Glow
+    // ===========================
+    function initCredlyScrollRangeGlow() {
+        const credlyLink = $('.proof-link-secondary');
+        if (!credlyLink) return;
+
+        const targets = {
+            hero: $('.hero'),
+            proof: $('#proof'),
+            about: $('#about'),
+            foundation: $('#foundation'),
+            projects: $('#projects'),
+            blog: $('#blog'),
+            timeline: $('#timeline'),
+            contact: $('#contact')
+        };
+
+        const lower = {
+            hero: 0.758,
+            proof: 0.225,
+            about: 0.000,
+            foundation: 0.000,
+            projects: 0.000,
+            blog: 0.000,
+            timeline: 0.000,
+            contact: 0.000
+        };
+
+        const upper = {
+            hero: 1.000,
+            proof: 0.815,
+            about: 0.276,
+            foundation: 0.000,
+            projects: 0.000,
+            blog: 0.000,
+            timeline: 0.000,
+            contact: 0.000
+        };
+
+        const lowerPhoneTablet = {
+            hero: 1.000,
+            proof: 0.603,
+            about: 0.006,
+            foundation: 0.000,
+            projects: 0.000,
+            blog: 0.000,
+            timeline: 0.000,
+            contact: 0.000
+        };
+
+        const upperPhoneTablet = {
+            hero: 1.000,
+            proof: 0.858,
+            about: 0.219,
+            foundation: 0.000,
+            projects: 0.000,
+            blog: 0.000,
+            timeline: 0.000,
+            contact: 0.000
+        };
+
+        const clamp01 = (n) => Math.max(0, Math.min(1, n));
+
+        function getProgress(el) {
+            if (!el) return 0;
+            const top = el.offsetTop;
+            const height = Math.max(el.offsetHeight, 1);
+            const start = top - window.innerHeight * 0.8;
+            const end = top + height - window.innerHeight * 0.2;
+            const raw = (window.scrollY - start) / Math.max(end - start, 1);
+            return clamp01(raw);
+        }
+
+        function inRange(name, value) {
+            const isPhoneTablet = window.innerWidth <= 1024;
+            const lo = isPhoneTablet ? lowerPhoneTablet[name] : lower[name];
+            const hi = isPhoneTablet ? upperPhoneTablet[name] : upper[name];
+            if (lo === 0 && hi === 0) {
+                return value <= 0.02;
+            }
+            return value >= lo && value <= hi;
+        }
+
+        function update() {
+            const progress = {
+                hero: getProgress(targets.hero),
+                proof: getProgress(targets.proof),
+                about: getProgress(targets.about),
+                foundation: getProgress(targets.foundation),
+                projects: getProgress(targets.projects),
+                blog: getProgress(targets.blog),
+                timeline: getProgress(targets.timeline),
+                contact: getProgress(targets.contact)
+            };
+
+            const shouldGlow = Object.keys(progress).every((name) => inRange(name, progress[name]));
+            credlyLink.classList.toggle('proof-link-secondary--scroll-glow', shouldGlow);
+        }
+
+        let rangeTicking = false;
+        const onRangeScroll = () => {
+            if (rangeTicking) return;
+            rangeTicking = true;
+            requestAnimationFrame(() => {
+                update();
+                rangeTicking = false;
+            });
+        };
+
+        window.addEventListener('scroll', onRangeScroll, { passive: true });
+        window.addEventListener('resize', onRangeScroll);
+        update();
+    }
+
+    initCredlyScrollRangeGlow();
 
     // Back to top click
     if (backToTop) {
@@ -567,7 +814,7 @@
                 e.stopPropagation();
                 const profileUrl = trigger.dataset.profileUrl || 'https://github.com/cloudwithdavid';
                 showNotification(
-                    `Repo coming soon. Check out my <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="notification-link">GitHub profile</a>.`,
+                    `Repo coming soon. <span class="notification-mobile-break">Check out my <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="notification-link">GitHub profile</a>.</span>`,
                     'success',
                     { allowHTML: true }
                 );
@@ -689,6 +936,9 @@
         const mascot = $('.hero-mascot');
         const floatingCards = $$('.floating-card');
         if (!mascot) return;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isDesktopPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const enableFloatingCardParallax = isDesktopPointer && !prefersReducedMotion && window.innerWidth >= 1024;
 
         let parallaxTicking = false;
 
@@ -700,10 +950,12 @@
                     
                     if (scrolled < window.innerHeight) {
                         mascot.style.transform = `translateY(${-rate * 0.5}px)`;
-                        floatingCards.forEach((card, i) => {
-                            const offset = rate * (0.2 + i * 0.05);
-                            card.style.transform = `translateY(${-offset}px)`;
-                        });
+                        if (enableFloatingCardParallax) {
+                            floatingCards.forEach((card, i) => {
+                                const offset = rate * (0.2 + i * 0.05);
+                                card.style.transform = `translateY(${-offset}px)`;
+                            });
+                        }
                     }
                     parallaxTicking = false;
                 });
