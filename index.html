@@ -213,24 +213,34 @@
                         <img class="hero-mascot" src="assets/cloud-mascot-hero.png" alt="CloudWithDavid mascot — a glowing cloud character with star-filled interior" width="480" height="480" loading="eager">
                     </div>
                     <a href="#foundation" class="floating-card card-1" aria-label="Go to Linux foundation">
-                        <i class="fab fa-linux"></i>
-                        <span>Linux</span>
+                        <span class="floating-card-inner">
+                            <i class="fab fa-linux"></i>
+                            <span>Linux</span>
+                        </span>
                     </a>
                     <a href="#foundation" class="floating-card card-2" aria-label="Go to Networking foundation">
-                        <i class="fas fa-network-wired"></i>
-                        <span>Networking</span>
+                        <span class="floating-card-inner">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Networking</span>
+                        </span>
                     </a>
                     <a href="#foundation" class="floating-card card-3" aria-label="Go to Git/GitHub foundation">
-                        <i class="fab fa-github"></i>
-                        <span>Git/GitHub</span>
+                        <span class="floating-card-inner">
+                            <i class="fab fa-github"></i>
+                            <span>Git/GitHub</span>
+                        </span>
                     </a>
                     <a href="#foundation" class="floating-card card-4" aria-label="Go to AWS foundation">
-                        <i class="fab fa-aws"></i>
-                        <span>AWS</span>
+                        <span class="floating-card-inner">
+                            <i class="fab fa-aws"></i>
+                            <span>AWS</span>
+                        </span>
                     </a>
                     <a href="#foundation" class="floating-card card-5" aria-label="Go to ITIL foundation">
-                        <i class="fas fa-gear"></i>
-                        <span>ITIL</span>
+                        <span class="floating-card-inner">
+                            <i class="fas fa-gear"></i>
+                            <span>ITIL</span>
+                        </span>
                     </a>
                 </div>
             </div>
@@ -669,8 +679,7 @@
                     </div>
                 </div>
                 <div class="contact-form-wrapper" data-animate="fade-left">
-                    <form class="contact-form" id="contactForm" name="contact" method="POST" action="/thank-you.html" data-netlify="true" netlify-honeypot="bot-field">
-                        <input type="hidden" name="form-name" value="contact">
+                    <form class="contact-form" id="contactForm" name="contact" method="POST" action="/thank-you.html">
                         <p class="form-honeypot" aria-hidden="true">
                             <label for="bot-field">Don't fill this out if you're human:</label>
                             <input type="text" id="bot-field" name="bot-field" tabindex="-1" autocomplete="off">
@@ -699,6 +708,7 @@
                             <textarea id="message" name="message" rows="5" required placeholder="Your message..."></textarea>
                         </div>
                         <p class="form-status" id="formStatus" role="status" aria-live="assertive" aria-atomic="true"></p>
+                        <div class="cf-turnstile" data-sitekey="PASTE_TURNSTILE_SITE_KEY_HERE" data-size="invisible"></div>
                         <button type="submit" class="btn btn-primary btn-submit">
                             <span>Send Message</span>
                             <i class="fas fa-paper-plane"></i>
@@ -771,6 +781,7 @@
         </div>
     </div>
 
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="js/main.js"></script>
 </body>
 </html>

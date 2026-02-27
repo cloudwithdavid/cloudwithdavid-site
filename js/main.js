@@ -934,11 +934,7 @@
     // ===========================
     function initParallax() {
         const mascot = $('.hero-mascot');
-        const floatingCards = $$('.floating-card');
         if (!mascot) return;
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const isDesktopPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-        const enableFloatingCardParallax = isDesktopPointer && !prefersReducedMotion && window.innerWidth >= 1024;
 
         let parallaxTicking = false;
 
@@ -950,12 +946,6 @@
                     
                     if (scrolled < window.innerHeight) {
                         mascot.style.transform = `translateY(${-rate * 0.5}px)`;
-                        if (enableFloatingCardParallax) {
-                            floatingCards.forEach((card, i) => {
-                                const offset = rate * (0.2 + i * 0.05);
-                                card.style.transform = `translateY(${-offset}px)`;
-                            });
-                        }
                     }
                     parallaxTicking = false;
                 });
@@ -974,13 +964,18 @@
 
         const submitBtn = contactForm.querySelector('.btn-submit');
         const formStatus = $('#formStatus', contactForm);
+        const honeypotField = $('#bot-field', contactForm);
+        const turnstileElement = $('.cf-turnstile', contactForm);
         if (!submitBtn) return;
 
         const originalHTML = submitBtn.innerHTML;
         const FORM_SUBMIT_COOLDOWN_MS = 15000;
         const CONTACT_COOLDOWN_STORAGE_KEY = 'cwd-contact-next-submit-at';
         const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+        const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email contact@cloudwithdavid.com.';
         let nextContactSubmitAt = 0;
+        let turnstileWidgetId = null;
+        let pendingTurnstileRequest = null;
 
         const fields = {
             name: $('#name', contactForm),
@@ -1065,9 +1060,102 @@
             return true;
         }
 
+        function waitForTurnstile(timeoutMs = 8000) {
+            if (window.turnstile) {
+                return Promise.resolve(window.turnstile);
+            }
+
+            return new Promise((resolve, reject) => {
+                const start = Date.now();
+                const timerId = setInterval(() => {
+                    if (window.turnstile) {
+                        clearInterval(timerId);
+                        resolve(window.turnstile);
+                        return;
+                    }
+                    if (Date.now() - start >= timeoutMs) {
+                        clearInterval(timerId);
+                        reject(new Error('Turnstile unavailable'));
+                    }
+                }, 100);
+            });
+        }
+
+        function ensureTurnstileWidget(turnstile) {
+            if (!turnstileElement) {
+                throw new Error('Turnstile element missing');
+            }
+            if (turnstileWidgetId !== null) {
+                return turnstileWidgetId;
+            }
+
+            const sitekey = (turnstileElement.dataset.sitekey || '').trim();
+            if (!sitekey || sitekey === 'PASTE_TURNSTILE_SITE_KEY_HERE') {
+                throw new Error('Turnstile site key missing');
+            }
+
+            turnstileWidgetId = turnstile.render(turnstileElement, {
+                sitekey,
+                size: 'invisible',
+                callback: (token) => {
+                    if (!pendingTurnstileRequest) return;
+                    const { resolve, timeoutId } = pendingTurnstileRequest;
+                    clearTimeout(timeoutId);
+                    pendingTurnstileRequest = null;
+                    resolve(token);
+                },
+                'error-callback': () => {
+                    if (!pendingTurnstileRequest) return;
+                    const { reject, timeoutId } = pendingTurnstileRequest;
+                    clearTimeout(timeoutId);
+                    pendingTurnstileRequest = null;
+                    reject(new Error('Turnstile challenge failed'));
+                },
+                'expired-callback': () => {
+                    if (turnstileWidgetId !== null) {
+                        try {
+                            turnstile.reset(turnstileWidgetId);
+                        } catch {
+                            // Ignore Turnstile reset failures.
+                        }
+                    }
+                }
+            });
+
+            return turnstileWidgetId;
+        }
+
+        async function getTurnstileToken() {
+            const turnstile = await waitForTurnstile();
+            const widgetId = ensureTurnstileWidget(turnstile);
+
+            if (typeof turnstile.getResponse === 'function') {
+                const existingToken = turnstile.getResponse(widgetId);
+                if (existingToken) {
+                    return existingToken;
+                }
+            }
+
+            return new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    if (!pendingTurnstileRequest) return;
+                    pendingTurnstileRequest = null;
+                    reject(new Error('Turnstile timed out'));
+                }, 10000);
+
+                pendingTurnstileRequest = { resolve, reject, timeoutId };
+
+                try {
+                    turnstile.execute(widgetId);
+                } catch (err) {
+                    clearTimeout(timeoutId);
+                    pendingTurnstileRequest = null;
+                    reject(err);
+                }
+            });
+        }
+
         contactForm.addEventListener('submit', async (e) => {
-            // Progressive enhancement: if fetch is unavailable, let the browser
-            // perform the normal Netlify POST + redirect flow.
             if (!window.fetch) return;
             e.preventDefault();
 
@@ -1098,15 +1186,24 @@
             setFormStatus('Sending your message...', 'info');
 
             try {
-                const payload = new URLSearchParams(new FormData(contactForm)).toString();
-                const response = await fetch('/', {
+                const turnstileToken = await getTurnstileToken();
+                const payload = {
+                    name: fields.name ? fields.name.value.trim() : '',
+                    email: fields.email ? fields.email.value.trim() : '',
+                    subject: fields.subject ? fields.subject.value.trim() : '',
+                    message: fields.message ? fields.message.value.trim() : '',
+                    honeypot: honeypotField ? honeypotField.value.trim() : '',
+                    turnstileToken
+                };
+
+                const response = await fetch('/api/contact', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: payload
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Netlify form submission failed (${response.status})`);
+                    throw new Error(`Contact API request failed (${response.status})`);
                 }
 
                 submitBtn.innerHTML = '<span>Message Sent!</span><i class="fas fa-check"></i>';
@@ -1120,23 +1217,15 @@
                     'success',
                     { allowHTML: true }
                 );
-
-                // Reset button
                 setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHTML;
-                    submitBtn.style.background = '';
-                }, 3000);
+                    window.location.href = '/thank-you.html';
+                }, 600);
             } catch (err) {
                 nextContactSubmitAt = 0;
                 setPersistedCooldown(0);
-                const networkDown = typeof navigator !== 'undefined' && navigator.onLine === false;
-                const errorMessage = networkDown
-                    ? 'You appear to be offline. Please reconnect and try again.'
-                    : 'Message could not be sent right now. Please try again in a moment or email contact@cloudwithdavid.com.';
 
-                setFormStatus(errorMessage, 'error');
-                showNotification(errorMessage, 'error');
+                setFormStatus(CONTACT_ERROR_MESSAGE, 'error');
+                showNotification(CONTACT_ERROR_MESSAGE, 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.style.background = '';
