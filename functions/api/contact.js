@@ -100,7 +100,13 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (!resendResponse.ok) {
-        return json({ ok: false, error: 'email' }, 502);
+        let details = '';
+        try {
+            details = await resendResponse.text();
+        } catch {
+            details = '';
+        }
+        return json({ ok: false, error: 'email', details }, 502);
     }
 
     return json({ ok: true }, 200);
