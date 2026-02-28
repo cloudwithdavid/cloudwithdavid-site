@@ -1029,12 +1029,12 @@
                     pendingTurnstileRequest = null;
                     resolve(token);
                 },
-                'error-callback': () => {
+                'error-callback': (code) => {
                     if (!pendingTurnstileRequest) return;
                     const { reject, timeoutId } = pendingTurnstileRequest;
                     clearTimeout(timeoutId);
                     pendingTurnstileRequest = null;
-                    reject(new Error('Turnstile challenge failed'));
+                    reject(new Error(`Turnstile challenge failed${code ? ` (${code})` : ''}`));
                 },
                 'expired-callback': () => {
                     if (turnstileWidgetId !== null) {
@@ -1160,13 +1160,26 @@
                 setPersistedCooldown(0);
 
                 const apiError = String(err?.apiError || '').trim();
+                const rawErrorMessage = String(err?.message || '').trim();
                 let friendlyError = CONTACT_ERROR_MESSAGE;
-                if (apiError === 'turnstile') {
+                if (apiError === 'turnstile' || /turnstile/i.test(rawErrorMessage)) {
                     friendlyError = 'Security check failed. Please try again.';
                 } else if (apiError === 'server_config') {
                     friendlyError = 'Contact form is temporarily unavailable. Please email contact@cloudwithdavid.com.';
                 } else if (apiError === 'email') {
                     friendlyError = 'Message could not be delivered right now. Please try again shortly.';
+                }
+
+                if (turnstileWidgetId !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
+                    try {
+                        window.turnstile.reset(turnstileWidgetId);
+                    } catch {
+                        // Ignore Turnstile reset failures.
+                    }
+                }
+
+                if (rawErrorMessage) {
+                    console.error('Contact form submit error:', rawErrorMessage);
                 }
 
                 setFormStatus(friendlyError, 'error');
