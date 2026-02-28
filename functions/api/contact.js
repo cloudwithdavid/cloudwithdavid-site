@@ -71,17 +71,16 @@ export async function onRequestPost({ request, env }) {
     const resendBody = {
         from,
         to: [to],
-        subject: `[CWD] ${subject}`,
+        subject,
         reply_to: email,
         text: [
-            'Cloud With David contact form submission',
+            '*Contact form submission*',
             '',
+            message,
+            '',
+            '---',
             `Name: ${name}`,
-            `Email: ${email}`,
-            `Subject: ${subject}`,
-            '',
-            'Message:',
-            message
+            `Email: ${email}`
         ].join('\n')
     };
 
