@@ -147,6 +147,47 @@ html {
     font-size: 16px;
     color-scheme: dark;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove mobile tap flash overlays on interactive controls. */
+a,
+button,
+input,
+textarea,
+select,
+summary,
+[role="button"],
+[tabindex]:not([tabindex="-1"]) {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Preserve visible keyboard focus indication site-wide. */
+:where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [tabindex]:not([tabindex="-1"])
+):focus-visible {
+    outline: 2px solid rgba(78, 160, 255, 0.72);
+    outline-offset: 2px;
+}
+
+[data-theme="light"] :where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [tabindex]:not([tabindex="-1"])
+):focus-visible {
+    outline-color: rgba(37, 99, 235, 0.58);
 }
 
 body {
@@ -232,6 +273,10 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: clamp(2.25rem, 5vw, 3.75rem); }
 h2 { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
 h3 { font-size: clamp(1.25rem, 2vw, 1.625rem); }
+
+@media (min-width: 769px) {
+    h2 { font-size: clamp(1.25rem, 3.0vw, 2.25rem); }
+}
 
 p {
     line-height: 1.7;
@@ -1058,6 +1103,10 @@ p {
     color: var(--text-2);
 }
 
+.proof-meta-tail {
+    white-space: nowrap;
+}
+
 .proof-links {
     grid-column: 1 / -1;
     display: grid;
@@ -1101,7 +1150,8 @@ p {
 .proof-link-secondary {
     grid-column: 1 / -1;
     margin-left: 0;
-    margin-top: -0.3rem;
+    margin-top: -0.7rem;
+    margin-bottom: 0.35rem;
     margin-right: -1rem;
     justify-self: end;
     align-self: start;
@@ -1131,7 +1181,7 @@ p {
 .proof-link-secondary.proof-link-secondary--scroll-glow .proof-link-arrow {
     opacity: 1;
     transform: translateX(0) scale(var(--proof-link-arrow-scale, 0.9));
-    color: var(--primary-dark);
+    color: var(--primary);
     text-shadow: none;
 }
 
@@ -1178,7 +1228,7 @@ p {
 [data-theme="light"] .proof-link-secondary:hover .proof-link-arrow,
 [data-theme="light"] .proof-link-secondary:focus-visible .proof-link-arrow,
 [data-theme="light"] .proof-link-secondary.proof-link-secondary--scroll-glow .proof-link-arrow {
-    color: #00a7ea;
+    color: var(--primary);
     text-shadow: none;
 }
 
@@ -2367,6 +2417,12 @@ p {
     color: var(--primary);
 }
 
+.contact-link.contact-link--scroll-active .contact-link-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--primary);
+}
+
 /* Contact Form */
 .contact-form-wrapper {
     background: var(--bg-card);
@@ -2396,7 +2452,12 @@ p {
     transition: all var(--t-fast);
     max-width: 100%;
     white-space: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.contact-email-tld {
+    white-space: nowrap;
 }
 
 .contact-email i {
@@ -3206,6 +3267,14 @@ p {
     /* Grids */
     .proof-strip {
         grid-template-columns: 1fr;
+    }
+
+    .proof-meta {
+        line-height: 1.2;
+    }
+
+    .proof-status-line .proof-meta {
+        line-height: 1.15;
     }
 
     .foundation-grid,

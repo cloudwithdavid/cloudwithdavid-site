@@ -315,6 +315,54 @@
 
     initCredlyScrollRangeGlow();
 
+    // ===========================
+    // 3d. Contact Link Mobile Scroll Activation
+    // ===========================
+    function initContactLinkScrollActivation() {
+        const contactLinks = $$('.contact-link');
+        if (!contactLinks.length) return;
+
+        const MOBILE_MAX_WIDTH = 768;
+        const MOBILE_ACTIVE_BAND_TOP_PX = 375;
+        const MOBILE_ACTIVE_BAND_BOTTOM_PX = 425;
+
+        function update() {
+            const isMobileViewport = window.innerWidth <= MOBILE_MAX_WIDTH;
+            const bandTopPx = MOBILE_ACTIVE_BAND_TOP_PX;
+            const bandBottomPx = MOBILE_ACTIVE_BAND_BOTTOM_PX;
+
+            contactLinks.forEach((link) => {
+                if (!isMobileViewport) {
+                    link.classList.remove('contact-link--scroll-active');
+                    return;
+                }
+
+                const rect = link.getBoundingClientRect();
+                const shouldActivate =
+                    rect.bottom > bandTopPx &&
+                    rect.top < bandBottomPx;
+
+                link.classList.toggle('contact-link--scroll-active', shouldActivate);
+            });
+        }
+
+        let rangeTicking = false;
+        const onRangeScroll = () => {
+            if (rangeTicking) return;
+            rangeTicking = true;
+            requestAnimationFrame(() => {
+                update();
+                rangeTicking = false;
+            });
+        };
+
+        window.addEventListener('scroll', onRangeScroll, { passive: true });
+        window.addEventListener('resize', onRangeScroll);
+        update();
+    }
+
+    initContactLinkScrollActivation();
+
     // Back to top click
     if (backToTop) {
         backToTop.addEventListener('click', () => {
@@ -978,7 +1026,6 @@
             if (firstInvalid) {
                 firstInvalid.focus();
                 setFormStatus('Please complete all fields with valid information before sending.', 'error');
-                showNotification('Please complete all fields with valid information.', 'error');
                 return false;
             }
 
@@ -1098,7 +1145,6 @@
                 const waitSeconds = Math.ceil((nextContactSubmitAt - now) / 1000);
                 const cooldownMessage = `Please wait ${waitSeconds}s before sending another message.`;
                 setFormStatus(cooldownMessage, 'error');
-                showNotification(cooldownMessage, 'error');
                 return;
             }
             nextContactSubmitAt = now + FORM_SUBMIT_COOLDOWN_MS;
@@ -1141,20 +1187,11 @@
                     throw error;
                 }
 
-                submitBtn.innerHTML = '<span>Message Sent!</span><i class="fas fa-check"></i>';
+                submitBtn.innerHTML = '<span>Message sent</span><i class="fas fa-check"></i>';
                 submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                 contactForm.reset();
                 clearFieldErrors();
                 setFormStatus('Message sent successfully! I will get back to you soon.', 'success');
-
-                showNotification(
-                    'Message sent successfully! <span class="notification-mobile-break">I\'ll get back to you soon.</span>',
-                    'success',
-                    { allowHTML: true }
-                );
-                setTimeout(() => {
-                    window.location.href = '/thank-you.html';
-                }, 600);
             } catch (err) {
                 nextContactSubmitAt = 0;
                 setPersistedCooldown(0);
@@ -1183,7 +1220,6 @@
                 }
 
                 setFormStatus(friendlyError, 'error');
-                showNotification(friendlyError, 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.style.background = '';
