@@ -279,97 +279,22 @@
     function initCredlyScrollRangeGlow() {
         const credlyLink = $('.proof-link-secondary');
         if (!credlyLink) return;
-
-        const targets = {
-            hero: $('.hero'),
-            proof: $('#proof'),
-            about: $('#about'),
-            foundation: $('#foundation'),
-            projects: $('#projects'),
-            blog: $('#blog'),
-            timeline: $('#timeline'),
-            contact: $('#contact')
-        };
-
-        const lower = {
-            hero: 0.758,
-            proof: 0.225,
-            about: 0.000,
-            foundation: 0.000,
-            projects: 0.000,
-            blog: 0.000,
-            timeline: 0.000,
-            contact: 0.000
-        };
-
-        const upper = {
-            hero: 1.000,
-            proof: 0.815,
-            about: 0.276,
-            foundation: 0.000,
-            projects: 0.000,
-            blog: 0.000,
-            timeline: 0.000,
-            contact: 0.000
-        };
-
-        const lowerPhoneTablet = {
-            hero: 1.000,
-            proof: 0.603,
-            about: 0.006,
-            foundation: 0.000,
-            projects: 0.000,
-            blog: 0.000,
-            timeline: 0.000,
-            contact: 0.000
-        };
-
-        const upperPhoneTablet = {
-            hero: 1.000,
-            proof: 0.858,
-            about: 0.219,
-            foundation: 0.000,
-            projects: 0.000,
-            blog: 0.000,
-            timeline: 0.000,
-            contact: 0.000
-        };
-
-        const clamp01 = (n) => Math.max(0, Math.min(1, n));
-
-        function getProgress(el) {
-            if (!el) return 0;
-            const top = el.offsetTop;
-            const height = Math.max(el.offsetHeight, 1);
-            const start = top - window.innerHeight * 0.8;
-            const end = top + height - window.innerHeight * 0.2;
-            const raw = (window.scrollY - start) / Math.max(end - start, 1);
-            return clamp01(raw);
-        }
-
-        function inRange(name, value) {
-            const isPhoneTablet = window.innerWidth <= 1024;
-            const lo = isPhoneTablet ? lowerPhoneTablet[name] : lower[name];
-            const hi = isPhoneTablet ? upperPhoneTablet[name] : upper[name];
-            if (lo === 0 && hi === 0) {
-                return value <= 0.02;
-            }
-            return value >= lo && value <= hi;
-        }
+        const MOBILE_GLOW_BAND_TOP = 0.21;
+        const MOBILE_GLOW_BAND_BOTTOM = 0.88;
 
         function update() {
-            const progress = {
-                hero: getProgress(targets.hero),
-                proof: getProgress(targets.proof),
-                about: getProgress(targets.about),
-                foundation: getProgress(targets.foundation),
-                projects: getProgress(targets.projects),
-                blog: getProgress(targets.blog),
-                timeline: getProgress(targets.timeline),
-                contact: getProgress(targets.contact)
-            };
+            const isMobileViewport = window.innerWidth <= 768;
+            if (!isMobileViewport) {
+                credlyLink.classList.remove('proof-link-secondary--scroll-glow');
+                return;
+            }
 
-            const shouldGlow = Object.keys(progress).every((name) => inRange(name, progress[name]));
+            // Mobile: glow when the Credly link itself is within a comfortable viewport band.
+            const rect = credlyLink.getBoundingClientRect();
+            const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+            const shouldGlow =
+                rect.bottom > vh * MOBILE_GLOW_BAND_TOP &&
+                rect.top < vh * MOBILE_GLOW_BAND_BOTTOM;
             credlyLink.classList.toggle('proof-link-secondary--scroll-glow', shouldGlow);
         }
 
@@ -1203,7 +1128,17 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Contact API request failed (${response.status})`);
+                    let apiError = '';
+                    try {
+                        const errorBody = await response.json();
+                        apiError = String(errorBody?.error || '').trim();
+                    } catch {
+                        apiError = '';
+                    }
+
+                    const error = new Error(`Contact API request failed (${response.status})`);
+                    error.apiError = apiError;
+                    throw error;
                 }
 
                 submitBtn.innerHTML = '<span>Message Sent!</span><i class="fas fa-check"></i>';
@@ -1224,8 +1159,18 @@
                 nextContactSubmitAt = 0;
                 setPersistedCooldown(0);
 
-                setFormStatus(CONTACT_ERROR_MESSAGE, 'error');
-                showNotification(CONTACT_ERROR_MESSAGE, 'error');
+                const apiError = String(err?.apiError || '').trim();
+                let friendlyError = CONTACT_ERROR_MESSAGE;
+                if (apiError === 'turnstile') {
+                    friendlyError = 'Security check failed. Please try again.';
+                } else if (apiError === 'server_config') {
+                    friendlyError = 'Contact form is temporarily unavailable. Please email contact@cloudwithdavid.com.';
+                } else if (apiError === 'email') {
+                    friendlyError = 'Message could not be delivered right now. Please try again shortly.';
+                }
+
+                setFormStatus(friendlyError, 'error');
+                showNotification(friendlyError, 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.style.background = '';
@@ -1347,7 +1292,7 @@
             const dx = e.clientX - cx;
             const dy = e.clientY - cy;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxShift = 8;
+            const maxShift = 7;
             const factor = Math.min(dist / 500, 1);
 
             mouseX = (dx / dist) * maxShift * factor || 0;
@@ -1359,7 +1304,7 @@
             currentY += (mouseY - currentY) * 0.08;
 
             const scrolled = window.pageYOffset;
-            const baseY = Math.sin(Date.now() / 1000) * 8; // floating
+            const baseY = Math.sin(Date.now() / 1000) * 6.5; // floating
 
             if (scrolled < window.innerHeight) {
                 mascot.style.transform = `translate(${currentX}px, ${baseY + currentY - scrolled * 0.08}px)`;
