@@ -274,17 +274,18 @@
     }, { passive: true });
 
     // ===========================
-    // 3c. Credly Scroll Range Glow
+    // 3c. Credly Scroll Range Glow (Mobile + Tablet)
     // ===========================
     function initCredlyScrollRangeGlow() {
         const credlyLink = $('.proof-link-secondary');
         if (!credlyLink) return;
-        const MOBILE_GLOW_BAND_TOP = 0.21;
-        const MOBILE_GLOW_BAND_BOTTOM = 0.88;
+        const MOBILE_TABLET_MAX_WIDTH = 1024;
+        const MOBILE_GLOW_BAND_TOP = 0.18;
+        const MOBILE_GLOW_BAND_BOTTOM = 0.60;
 
         function update() {
-            const isMobileViewport = window.innerWidth <= 768;
-            if (!isMobileViewport) {
+            const isMobileTabletViewport = window.innerWidth <= MOBILE_TABLET_MAX_WIDTH;
+            if (!isMobileTabletViewport) {
                 credlyLink.classList.remove('proof-link-secondary--scroll-glow');
                 return;
             }
@@ -316,31 +317,40 @@
     initCredlyScrollRangeGlow();
 
     // ===========================
-    // 3d. Contact Link Mobile Scroll Activation
+    // 3d. Contact Link Scroll Activation (Mobile + Tablet)
     // ===========================
     function initContactLinkScrollActivation() {
         const contactLinks = $$('.contact-link');
         if (!contactLinks.length) return;
 
-        const MOBILE_MAX_WIDTH = 768;
-        const MOBILE_ACTIVE_BAND_TOP_PX = 375;
-        const MOBILE_ACTIVE_BAND_BOTTOM_PX = 425;
+        const MOBILE_TABLET_MAX_WIDTH = 1024;
+        const TABLET_MIN_WIDTH = 770;
+        const MID_MOBILE_MIN_WIDTH = 455;
+
+        function getActiveBandPx(viewportWidth) {
+            if (viewportWidth > MOBILE_TABLET_MAX_WIDTH) return null;
+            if (viewportWidth >= TABLET_MIN_WIDTH) {
+                return { topPx: 475, bottomPx: 525 };
+            }
+            if (viewportWidth >= MID_MOBILE_MIN_WIDTH) {
+                return { topPx: 450, bottomPx: 500 };
+            }
+            return { topPx: 425, bottomPx: 475 };
+        }
 
         function update() {
-            const isMobileViewport = window.innerWidth <= MOBILE_MAX_WIDTH;
-            const bandTopPx = MOBILE_ACTIVE_BAND_TOP_PX;
-            const bandBottomPx = MOBILE_ACTIVE_BAND_BOTTOM_PX;
+            const activeBand = getActiveBandPx(window.innerWidth);
 
             contactLinks.forEach((link) => {
-                if (!isMobileViewport) {
+                if (!activeBand) {
                     link.classList.remove('contact-link--scroll-active');
                     return;
                 }
 
                 const rect = link.getBoundingClientRect();
                 const shouldActivate =
-                    rect.bottom > bandTopPx &&
-                    rect.top < bandBottomPx;
+                    rect.bottom > activeBand.topPx &&
+                    rect.top < activeBand.bottomPx;
 
                 link.classList.toggle('contact-link--scroll-active', shouldActivate);
             });

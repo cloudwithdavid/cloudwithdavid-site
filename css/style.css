@@ -906,8 +906,8 @@ p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 380px;
-    height: 380px;
+    width: 360px;
+    height: 360px;
     z-index: 1;
 }
 
@@ -2966,7 +2966,6 @@ p {
 
     .hero-visual {
         height: 350px;
-        order: -1;
     }
 
     .hero-mascot-wrapper {

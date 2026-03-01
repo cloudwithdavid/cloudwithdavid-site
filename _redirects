@@ -1,1 +1,1 @@
-https://www.cloudwithdavid.com/* https://cloudwithdavid.com/:splat 301
+# Hostname canonicalization is handled in functions/_middleware.js
