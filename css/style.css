@@ -968,6 +968,10 @@ p {
     transition: transform var(--t-base) var(--ease-out);
 }
 
+.card-5 .floating-card-inner {
+    gap: 0.45rem;
+}
+
 @media (hover: hover) and (pointer: fine) {
     .floating-card:hover {
         box-shadow: var(--shadow-xl), var(--shadow-glow);
@@ -988,13 +992,9 @@ p {
     background-clip: text;
 }
 
-.card-1 i {
-    font-size: 2rem;
-}
-
-.card-3 i {
-    font-size: 1.85rem;
-}
+.card-1 i { font-size: 2rem; }
+.card-2 i { font-size: 1.625rem; }
+.card-3 i { font-size: 2.2rem;}
 
 .floating-card span {
     font-size: 0.75rem;
@@ -1428,10 +1428,6 @@ p {
     display: none;
 }
 
-.about-stats--inline .stat-card:hover {
-    transform: translateY(-3px);
-}
-
 .about-stats--inline .stat-card:hover .stat-arrow {
     opacity: 1;
     transform: translateX(3px);
@@ -1452,7 +1448,6 @@ p {
 .stat-card:hover {
     border-color: var(--border-medium);
     background: var(--bg-card-hover);
-    transform: translateX(6px);
     box-shadow: var(--shadow-md);
 }
 
@@ -1634,6 +1629,10 @@ p {
     font-size: 1.15rem;
     font-weight: 700;
     min-width: 0;
+}
+
+.fcard-title-tail {
+    white-space: nowrap;
 }
 
 .foundation-card > p {

@@ -429,6 +429,15 @@
     // ===========================
     // 5. Smooth Scroll
     // ===========================
+    function expandFoundationDropdown() {
+        const content = $('#foundationDropdownContent');
+        if (!content) return;
+        $$('[data-foundation-toggle]').forEach(toggle => {
+            toggle.setAttribute('aria-expanded', 'true');
+        });
+        content.classList.remove('is-collapsed');
+    }
+
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
@@ -436,6 +445,10 @@
             const target = $(href);
             if (!target) return;
             e.preventDefault();
+
+            if (href === '#foundation' && this.classList.contains('floating-card')) {
+                expandFoundationDropdown();
+            }
 
             const navHeight = navbar ? navbar.offsetHeight : 72;
             const gap = 20;
