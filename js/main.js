@@ -926,31 +926,43 @@
     initParticles();
 
     // ===========================
-    // 13. Parallax Effect
+    // 13. Hero Visual Parallax
     // ===========================
-    function initParallax() {
-        const mascot = $('.hero-mascot');
-        if (!mascot) return;
+    function initHeroVisualParallax() {
+        const heroVisual = $('.hero-visual');
+        if (!heroVisual) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-        let parallaxTicking = false;
+        let ticking = false;
+        const getParallaxFactor = () => {
+            const viewportWidth = window.innerWidth;
+            if (viewportWidth <= 768) return 0.05;
+            if (viewportWidth <= 1024) return 0.06;
+            return 0.075;
+        };
+
+        const updateParallax = () => {
+            const scrolled = window.pageYOffset;
+            const parallaxFactor = getParallaxFactor();
+            const clampedScroll = Math.min(scrolled, window.innerHeight);
+            const offsetY = -(clampedScroll * parallaxFactor);
+            heroVisual.style.setProperty('--hero-cloud-parallax-y', `${offsetY.toFixed(2)}px`);
+        };
 
         window.addEventListener('scroll', () => {
-            if (!parallaxTicking) {
-                requestAnimationFrame(() => {
-                    const scrolled = window.pageYOffset;
-                    const rate = scrolled * 0.15;
-                    
-                    if (scrolled < window.innerHeight) {
-                        mascot.style.transform = `translateY(${-rate * 0.5}px)`;
-                    }
-                    parallaxTicking = false;
-                });
-                parallaxTicking = true;
-            }
+            if (ticking) return;
+            ticking = true;
+
+            requestAnimationFrame(() => {
+                updateParallax();
+                ticking = false;
+            });
         }, { passive: true });
+
+        updateParallax();
     }
 
-    initParallax();
+    initHeroVisualParallax();
 
     // ===========================
     // 14. Contact Form
@@ -1346,49 +1358,6 @@
     document.addEventListener('mousedown', () => {
         document.body.classList.remove('keyboard-user');
     });
-
-    // ===========================
-    // 17. Mascot Eyes Follow Cursor
-    // ===========================
-    function initMascotInteraction() {
-        const mascot = $('.hero-mascot');
-        if (!mascot) return;
-
-        let mouseX = 0, mouseY = 0;
-        let currentX = 0, currentY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            const rect = mascot.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            const dx = e.clientX - cx;
-            const dy = e.clientY - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxShift = 7;
-            const factor = Math.min(dist / 500, 1);
-
-            mouseX = (dx / dist) * maxShift * factor || 0;
-            mouseY = (dy / dist) * maxShift * factor || 0;
-        });
-
-        function animateMascot() {
-            currentX += (mouseX - currentX) * 0.08;
-            currentY += (mouseY - currentY) * 0.08;
-
-            const scrolled = window.pageYOffset;
-            const baseY = Math.sin(Date.now() / 1000) * 6.5; // floating
-
-            if (scrolled < window.innerHeight) {
-                mascot.style.transform = `translate(${currentX}px, ${baseY + currentY - scrolled * 0.08}px)`;
-            }
-
-            requestAnimationFrame(animateMascot);
-        }
-
-        animateMascot();
-    }
-
-    initMascotInteraction();
 
     // ===========================
     // 18. Typing Effect (Hero badge area)
