@@ -905,7 +905,7 @@ p {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate3d(-50%, calc(-50% + var(--hero-cloud-parallax-y, 0px)), 0);
+    transform: translate3d(-50%, calc(-50% + var(--hero-parallax-y, 0px)), 0);
     width: min(420px, 92%);
     z-index: 1;
     pointer-events: none;
@@ -1083,8 +1083,8 @@ p {
 }
 
 @keyframes floatingCardDrift {
-    0%, 100% { transform: translate3d(0, 0, 0); }
-    50% { transform: translate3d(0, -18px, 0); }
+    0%, 100% { transform: translate3d(0, var(--hero-parallax-y, 0px), 0); }
+    50% { transform: translate3d(0, calc(var(--hero-parallax-y, 0px) - 18px), 0); }
 }
 
 @media (hover: none), (pointer: coarse) {
