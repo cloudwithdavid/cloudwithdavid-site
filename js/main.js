@@ -936,9 +936,9 @@
         let ticking = false;
         const getParallaxFactor = () => {
             const viewportWidth = window.innerWidth;
-            if (viewportWidth <= 768) return .08;
-            if (viewportWidth <= 1024) return .1;
-            return .21;
+            if (viewportWidth <= 768) return 0.04;
+            if (viewportWidth <= 1024) return 0.055;
+            return 0.075;
         };
 
         const updateParallax = () => {
