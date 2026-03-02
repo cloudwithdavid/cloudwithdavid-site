@@ -899,16 +899,26 @@ p {
 .hero-visual {
     position: relative;
     height: 500px;
+    --hero-parallax-y: 0px;
 }
 
 .hero-clouds-wrapper {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate3d(-50%, -50%, 0);
+    transform: translate3d(-50%, calc(-50% + var(--hero-parallax-y, 0px)), 0);
     width: min(420px, 92%);
     z-index: 1;
     pointer-events: none;
+    will-change: transform;
+}
+
+.hero-cards-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    transform: translate3d(0, var(--hero-parallax-y, 0px), 0);
     will-change: transform;
 }
 
@@ -1013,7 +1023,8 @@ p {
     transition: box-shadow var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
     text-decoration: none;
     color: inherit;
-    z-index: 3;
+    z-index: 1;
+    pointer-events: auto;
     animation: floatingCardDrift 7.2s ease-in-out infinite;
     animation-delay: var(--float-delay, 0s);
     will-change: transform;
