@@ -929,24 +929,28 @@
     // 13. Hero Visual Parallax
     // ===========================
     function initHeroVisualParallax() {
-        const heroVisual = $('.hero-visual');
-        if (!heroVisual) return;
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const cloudWrapper = $('.hero-clouds-wrapper');
+        const cardsLayer = $('.hero-cards-layer');
+        if (!cloudWrapper || !cardsLayer) return;
 
         let ticking = false;
         const getParallaxFactor = () => {
             const viewportWidth = window.innerWidth;
-            if (viewportWidth <= 768) return 0.05;
-            if (viewportWidth <= 1024) return 0.06;
-            return 0.075;
+            if (viewportWidth <= 768) return .08;
+            if (viewportWidth <= 1024) return .1;
+            return .21;
         };
 
         const updateParallax = () => {
             const scrolled = window.pageYOffset;
             const parallaxFactor = getParallaxFactor();
             const clampedScroll = Math.min(scrolled, window.innerHeight);
-            const offsetY = -(clampedScroll * parallaxFactor);
-            heroVisual.style.setProperty('--hero-parallax-y', `${offsetY.toFixed(2)}px`);
+            const offsetY = clampedScroll * parallaxFactor;
+            const offsetValue = `${offsetY.toFixed(2)}px`;
+
+            cloudWrapper.style.transform =
+                `translate3d(-50%, -50%, 0) translate3d(0, ${offsetValue}, 0)`;
+            cardsLayer.style.transform = `translate3d(0, ${offsetValue}, 0)`;
         };
 
         window.addEventListener('scroll', () => {
