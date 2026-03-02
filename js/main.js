@@ -946,7 +946,7 @@
             const parallaxFactor = getParallaxFactor();
             const clampedScroll = Math.min(scrolled, window.innerHeight);
             const offsetY = -(clampedScroll * parallaxFactor);
-            heroVisual.style.setProperty('--hero-parallax-y', `${offsetY.toFixed(2)}px`);
+            heroVisual.style.transform = `translateY(${offsetY.toFixed(2)}px)`;
         };
 
         window.addEventListener('scroll', () => {
