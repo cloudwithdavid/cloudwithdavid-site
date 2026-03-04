@@ -17,6 +17,8 @@
     const navLinks = $('#navLinks');
     const themeControls = $$('[data-theme-segmented]');
     const themeSegments = $$('[data-theme-option]');
+    const themeToggles = $$('[data-theme-toggle]');
+    const themeToggleIcons = $$('[data-theme-toggle-icon]');
     const scrollProgress = $('#scrollProgress');
     const backToTop = $('#backToTop');
     const heroCanvas = $('#heroParticles');
@@ -49,6 +51,18 @@
             segment.classList.toggle('is-active', isActive);
             segment.setAttribute('aria-pressed', String(isActive));
             segment.setAttribute('aria-selected', String(isActive));
+        });
+
+        const nextThemeLabel = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+        themeToggles.forEach(toggle => {
+            toggle.setAttribute('aria-label', nextThemeLabel);
+            toggle.setAttribute('title', nextThemeLabel);
+        });
+
+        themeToggleIcons.forEach(icon => {
+            const showsDarkModeSymbol = theme === 'light';
+            icon.classList.toggle('fa-moon', showsDarkModeSymbol);
+            icon.classList.toggle('fa-sun', !showsDarkModeSymbol);
         });
 
         themeControls.forEach(control => {
@@ -163,10 +177,21 @@
         });
     }
 
+    if (themeToggles.length) {
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggleTheme();
+                if (toggle.closest('.nav-theme-item')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    }
+
     if (themeControls.length) {
         themeControls.forEach(control => {
             control.addEventListener('click', (e) => {
-                if (e.target.closest('[data-theme-option]')) return;
+                if (e.target.closest('[data-theme-option], [data-theme-toggle]')) return;
                 toggleTheme();
                 if (control.closest('.nav-theme-item')) {
                     closeMobileMenu();

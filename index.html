@@ -46,7 +46,7 @@
     <link rel="manifest" href="/assets/favicon/site.webmanifest">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20260301-2">
+    <link rel="stylesheet" href="css/style.css?v=20260304-1">
     
     <!-- JSON-LD Entity Schema -->
     <script type="application/ld+json">
@@ -68,7 +68,7 @@
         "name": "David Rodriguez",
         "alternateName": ["Cloud With David", "cloudwithdavid", "@cloudwithdavid"],
         "url": "https://cloudwithdavid.com/",
-        "description": "Cloud With David is the home base for my cloud journey: hands-on labs, builds, write-ups, and everything I publish as CWD—building toward Cloud/AI architecture.",
+        "description": "Cloud With David is the home base for my cloud journey: hands-on labs, builds, write-ups, and everything I publish as CWD—building toward Cloud / AI architecture.",
         "image": "https://cloudwithdavid.com/assets/og/og-image.png",
         "sameAs": [
             "https://github.com/cloudwithdavid",
@@ -99,15 +99,9 @@
             </a>
             <ul class="nav-links" id="navLinks" role="menubar">
                 <li role="none" class="nav-theme-item">
-                    <div class="theme-segmented theme-segmented--mobile" data-theme-segmented data-theme-variant="mobile" role="group" aria-label="Choose theme mode">
-                        <button type="button" class="theme-segment" data-theme-option="dark" aria-pressed="false" aria-selected="false">
-                            <span class="theme-segment-label">Dark</span>
-                            <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon"></i></span>
-                        </button>
-                        <span class="theme-segment-divider" aria-hidden="true"></span>
-                        <button type="button" class="theme-segment" data-theme-option="light" aria-pressed="false" aria-selected="false">
-                            <span class="theme-segment-label">Light</span>
-                            <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-sun"></i></span>
+                    <div class="theme-segmented theme-segmented--mobile theme-segmented--single" data-theme-segmented data-theme-variant="mobile" role="group" aria-label="Choose theme mode">
+                        <button type="button" class="theme-segment theme-segment--toggle" data-theme-toggle aria-label="Toggle theme">
+                            <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon" data-theme-toggle-icon></i></span>
                         </button>
                     </div>
                 </li>
@@ -117,26 +111,14 @@
                 <li role="none"><a href="#contact" role="menuitem">Connect</a></li>
             </ul>
             <div class="nav-actions">
-                <div class="theme-segmented theme-segmented--desktop" data-theme-segmented data-theme-variant="desktop" role="group" aria-label="Choose theme mode">
-                    <button type="button" class="theme-segment" data-theme-option="dark" aria-pressed="false" aria-selected="false">
-                        <span class="theme-segment-label">Dark</span>
-                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon"></i></span>
-                    </button>
-                    <span class="theme-segment-divider" aria-hidden="true"></span>
-                    <button type="button" class="theme-segment" data-theme-option="light" aria-pressed="false" aria-selected="false">
-                        <span class="theme-segment-label">Light</span>
-                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-sun"></i></span>
+                <div class="theme-segmented theme-segmented--desktop theme-segmented--single" data-theme-segmented data-theme-variant="desktop" role="group" aria-label="Choose theme mode">
+                    <button type="button" class="theme-segment theme-segment--toggle" data-theme-toggle aria-label="Toggle theme">
+                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon" data-theme-toggle-icon></i></span>
                     </button>
                 </div>
-                <div class="theme-segmented theme-segmented--mobile-inline" data-theme-segmented data-theme-variant="mobile-inline" role="group" aria-label="Choose theme mode">
-                    <button type="button" class="theme-segment" data-theme-option="dark" aria-pressed="false" aria-selected="false" aria-label="Use dark theme">
-                        <span class="theme-segment-label">Dark</span>
-                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon"></i></span>
-                    </button>
-                    <span class="theme-segment-divider" aria-hidden="true"></span>
-                    <button type="button" class="theme-segment" data-theme-option="light" aria-pressed="false" aria-selected="false" aria-label="Use light theme">
-                        <span class="theme-segment-label">Light</span>
-                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-sun"></i></span>
+                <div class="theme-segmented theme-segmented--mobile-inline theme-segmented--single" data-theme-segmented data-theme-variant="mobile-inline" role="group" aria-label="Choose theme mode">
+                    <button type="button" class="theme-segment theme-segment--toggle" data-theme-toggle aria-label="Toggle theme">
+                        <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon" data-theme-toggle-icon></i></span>
                     </button>
                 </div>
                 <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -347,7 +329,7 @@
                 <div class="about-text" data-animate="fade-right">
                     
                     <p>
-                        Currently targeting entry-level cloud roles while building toward Cloud/AI architecture.</br>I focus on fundamentals, then prove them through hands-on projects and clear documentation.</br>I value clear communication, feedback loops, and building systems that are reliable and repeatable.
+                        Currently targeting entry-level cloud roles while building toward Cloud / AI architecture.</br>I focus on fundamentals, then prove them through hands-on projects and clear documentation.</br>I value clear communication, feedback loops, and building systems that are reliable and repeatable.</br> Admitted B.S. Cloud & Network Engineering student at WGU (Target Q2 2028)
                     </p>
                 </div>
             </div>
@@ -545,8 +527,19 @@
             <div class="blog-grid">
                 <article class="blog-card" data-animate="fade-up" data-delay="0">
                     <div class="blog-card-meta">
+                        <span class="blog-date"><i class="far fa-calendar"></i> Mar 2026</span>
+                        <span class="blog-read"><i class="far fa-clock"></i> 5 min read</span>
+                    </div>
+                    <h3>Visibility Is the Variable</h3>
+                    <p>Why I started building in public and it's implications — from the perspective of a self-taught cloud career path.</p>
+                    <a href="https://medium.com/@cloudwithdavid/visibility-is-the-variable-8a2a05b0a668" target="_blank" rel="noopener noreferrer" class="blog-link">
+                        Read on Medium <i class="fas fa-arrow-right"></i>
+                    </a>
+                </article>
+                <article class="blog-card" data-animate="fade-up" data-delay="100">
+                    <div class="blog-card-meta">
                         <span class="blog-date"><i class="far fa-calendar"></i> Dec 2025</span>
-                        <span class="blog-read"><i class="far fa-clock"></i> 2 min read</span>
+                        <span class="blog-read"><i class="far fa-clock"></i> 3 min read</span>
                     </div>
                     <h3>My First SSH into EC2 from WSL</h3>
                     <p>My first successful SSH into an Amazon Linux EC2 instance from WSL, and the key permission trap that blocked it.</p>
@@ -554,19 +547,12 @@
                         Read on Medium <i class="fas fa-arrow-right"></i>
                     </a>
                 </article>
-                <article class="blog-card blog-card--no-cta" data-animate="fade-up" data-delay="100" data-status="upcoming">
+                <article class="blog-card blog-card--no-cta" data-animate="fade-up" data-delay="200" data-status="upcoming">
                     <div class="blog-card-meta">
                         <span class="blog-upcoming-badge" aria-label="Upcoming post"><i class="fas fa-clock" aria-hidden="true"></i> Upcoming</span>
                     </div>
                     <h3>How I Passed the AWS Cloud Practitioner Exam</h3>
                     <p>My study strategy, resources, timeline, and the mindset shifts that made the difference.</p>
-                </article>
-                <article class="blog-card blog-card--no-cta" data-animate="fade-up" data-delay="200" data-status="upcoming">
-                    <div class="blog-card-meta">
-                        <span class="blog-upcoming-badge" aria-label="Upcoming post"><i class="fas fa-clock" aria-hidden="true"></i> Upcoming</span>
-                    </div>
-                    <h3>Why I Started Learning in Public</h3>
-                    <p>The decision to document every step of my cloud journey — and why accountability is the best learning accelerator.</p>
                 </article> 
             </div>
         </div>
@@ -805,6 +791,6 @@
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script src="js/main.js?v=20260302-2"></script>
+    <script src="js/main.js?v=20260304-1"></script>
 </body>
 </html>
