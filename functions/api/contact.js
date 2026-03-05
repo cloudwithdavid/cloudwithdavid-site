@@ -1,6 +1,4 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-const DEFAULT_RATE_LIMIT_MAX = 5;
-const DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60;
 const NAME_MAX_LENGTH = 80;
 const EMAIL_MAX_LENGTH = 254;
 const SUBJECT_MAX_LENGTH = 160;
@@ -20,88 +18,11 @@ function json(data, status = 200) {
     });
 }
 
-function toPositiveInteger(value, fallback) {
-    const parsed = Number.parseInt(String(value || ''), 10);
-    if (Number.isFinite(parsed) && parsed > 0) {
-        return parsed;
-    }
-    return fallback;
-}
-
 function normalizeText(value) {
     return String(value || '')
         .replace(/[\u0000-\u001f\u007f]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-}
-
-function getClientIp(request) {
-    const cfIp = String(request.headers.get('CF-Connecting-IP') || '').trim();
-    if (cfIp) return cfIp;
-
-    const forwarded = String(request.headers.get('X-Forwarded-For') || '').trim();
-    if (!forwarded) return 'unknown';
-
-    return forwarded.split(',')[0].trim() || 'unknown';
-}
-
-function hasKvBinding(env) {
-    return Boolean(
-        env.CONTACT_RATE_LIMIT_KV &&
-        typeof env.CONTACT_RATE_LIMIT_KV.get === 'function' &&
-        typeof env.CONTACT_RATE_LIMIT_KV.put === 'function'
-    );
-}
-
-async function consumeRateLimitToken(env, clientKey, maxRequests, windowMs) {
-    if (!hasKvBinding(env)) {
-        return { allowed: false, error: 'missing_kv' };
-    }
-
-    const now = Date.now();
-    const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
-    const key = `contact-rate:${clientKey}`;
-    let bucket = null;
-
-    try {
-        bucket = await env.CONTACT_RATE_LIMIT_KV.get(key, 'json');
-    } catch {
-        return { allowed: false, error: 'kv_read_failed' };
-    }
-
-    const current = bucket && typeof bucket === 'object' ? bucket : {};
-    const resetAt = Number(current.resetAt || 0);
-    const count = Number(current.count || 0);
-
-    if (!resetAt || resetAt <= now) {
-        const nextState = { count: 1, resetAt: now + windowMs };
-        try {
-            await env.CONTACT_RATE_LIMIT_KV.put(key, JSON.stringify(nextState), {
-                expirationTtl: windowSeconds * 2
-            });
-        } catch {
-            return { allowed: false, error: 'kv_write_failed' };
-        }
-        return { allowed: true, retryAfterSeconds: 0 };
-    }
-
-    if (count >= maxRequests) {
-        return {
-            allowed: false,
-            retryAfterSeconds: Math.max(1, Math.ceil((resetAt - now) / 1000))
-        };
-    }
-
-    const updatedState = { count: count + 1, resetAt };
-    try {
-        await env.CONTACT_RATE_LIMIT_KV.put(key, JSON.stringify(updatedState), {
-            expirationTtl: Math.max(1, Math.ceil((resetAt - now) / 1000) + 5)
-        });
-    } catch {
-        return { allowed: false, error: 'kv_write_failed' };
-    }
-
-    return { allowed: true, retryAfterSeconds: 0 };
 }
 
 function getAllowedTurnstileHostnames(env) {
@@ -157,37 +78,6 @@ export async function onRequestPost({ request, env }) {
         honeypot.length > HONEYPOT_MAX_LENGTH
     ) {
         return json({ ok: false, error: 'invalid_length' }, 400);
-    }
-
-    const rateLimitMax = toPositiveInteger(env.CONTACT_RATE_LIMIT_MAX, DEFAULT_RATE_LIMIT_MAX);
-    const rateLimitWindowSeconds = toPositiveInteger(
-        env.CONTACT_RATE_LIMIT_WINDOW_SECONDS,
-        DEFAULT_RATE_LIMIT_WINDOW_SECONDS
-    );
-    const clientIp = getClientIp(request);
-    const rateLimitResult = await consumeRateLimitToken(
-        env,
-        clientIp,
-        rateLimitMax,
-        rateLimitWindowSeconds * 1000
-    );
-
-    if (!rateLimitResult.allowed) {
-        if (rateLimitResult.error) {
-            console.error('Contact rate limiter error', {
-                error: rateLimitResult.error,
-                clientIp
-            });
-            return json({ ok: false, error: 'server_config' }, 500);
-        }
-
-        return new Response(JSON.stringify({ ok: false, error: 'rate_limited' }), {
-            status: 429,
-            headers: {
-                ...DEFAULT_SECURITY_HEADERS,
-                'Retry-After': String(rateLimitResult.retryAfterSeconds)
-            }
-        });
     }
 
     if (!env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY) {
