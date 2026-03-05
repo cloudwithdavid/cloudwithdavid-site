@@ -47,38 +47,53 @@
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/style.css?v=20260304-1">
-    
+
     <!-- JSON-LD Entity Schema -->
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Cloud With David",
-        "alternateName": ["CloudWithDavid", "cloudwithdavid", "Cloud With David"],
-        "url": "https://cloudwithdavid.com/",
-        "author": { "@id": "https://cloudwithdavid.com/#person" }
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "@id": "https://cloudwithdavid.com/#person",
-        "name": "David Rodriguez",
-        "alternateName": ["Cloud With David", "cloudwithdavid", "@cloudwithdavid"],
-        "url": "https://cloudwithdavid.com/",
-        "description": "Cloud With David is the home base for my cloud journey: hands-on labs, builds, write-ups, and everything I publish as CWD—building toward Cloud / AI architecture.",
-        "image": "https://cloudwithdavid.com/assets/og/og-image.png",
-        "sameAs": [
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://cloudwithdavid.com/#website",
+          "name": "Cloud With David",
+          "alternateName": ["cloudwithdavid", "CloudWithDavid"],
+          "url": "https://cloudwithdavid.com/",
+          "publisher": { "@id": "https://cloudwithdavid.com/#brand" }
+        },
+        {
+          "@type": ["Organization", "Brand"],
+          "@id": "https://cloudwithdavid.com/#brand",
+          "name": "Cloud With David",
+          "alternateName": ["cloudwithdavid", "CloudWithDavid"],
+          "url": "https://cloudwithdavid.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://cloudwithdavid.com/assets/og/og-image.png"
+          },
+          "sameAs": [
             "https://github.com/cloudwithdavid",
-            "https://x.com/cloudwithdavid",
             "https://medium.com/@cloudwithdavid",
             "https://hashnode.com/@cloudwithdavid",
-            "https://cloudwithdavid.substack.com/",
+            "https://cloudwithdavid.substack.com",
             "https://www.youtube.com/@cloudwithdavid",
+            "https://x.com/cloudwithdavid"
+          ],
+          "founder": { "@id": "https://cloudwithdavid.com/#person" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://cloudwithdavid.com/#person",
+          "name": "David Rodriguez",
+          "url": "https://cloudwithdavid.com/",
+          "description": "David Rodriguez is the creator of Cloud With David—documenting cloud projects, hands-on labs, and clear technical writing while building toward Cloud / AI architecture.",
+          "image": "https://cloudwithdavid.com/assets/og/og-image.png",
+          "sameAs": [
             "https://www.linkedin.com/in/cloudwithdavid/"
-        ]
+          ],
+          "worksFor": { "@id": "https://cloudwithdavid.com/#brand" }
+        }
+      ]
     }
     </script>
 </head>

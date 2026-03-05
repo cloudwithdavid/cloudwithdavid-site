@@ -59,7 +59,7 @@
     --sp-xl: 3rem;
     --sp-2xl: 4rem;
     --sp-3xl: 6rem;
-    --sp-section: 7rem;
+    --sp-section: 6rem;
 
     /* ---- Typography ---- */
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1408,7 +1408,7 @@ p {
 
 .section-header {
     text-align: center;
-    margin-bottom: var(--sp-3xl);
+    margin-bottom: calc(var(--sp-section) * 0.72);
 }
 
 .section-tag {
@@ -1546,7 +1546,7 @@ p {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--sp-md);
-    margin: 0 auto var(--sp-2xl);
+    margin: 0 auto calc(var(--sp-2xl) * 0.82);
 }
 
 .about-stats--inline .stat-card {
@@ -1852,7 +1852,7 @@ p {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: var(--sp-xl);
+    margin-bottom: calc(var(--sp-xl) * 0.82);
     flex-wrap: wrap;
 }
 
@@ -2729,14 +2729,14 @@ p {
 .footer {
     background: var(--bg-surface);
     border-top: 1px solid var(--border-subtle);
-    padding: var(--sp-2xl) 0 var(--sp-lg);
+    padding: calc(var(--sp-2xl) * 0.74) 0 calc(var(--sp-lg) * 0.72);
 }
 
 .footer-grid {
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr;
     gap: var(--sp-xl);
-    margin-bottom: var(--sp-xl);
+    margin-bottom: calc(var(--sp-xl) * 0.72);
 }
 
 .footer-brand {
@@ -2812,7 +2812,7 @@ p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: var(--sp-lg);
+    padding-top: calc(var(--sp-lg) * 0.72);
     border-top: 1px solid var(--border-subtle);
 }
 
@@ -3217,7 +3217,7 @@ p {
    ========================= */
 @media (max-width: 768px) {
     :root {
-        --sp-section: 4rem;
+        --sp-section: 3.5rem;
         --nav-h: 64px;
     }
 
@@ -3554,7 +3554,7 @@ p {
 
 @media (max-width: 480px) {
     :root {
-        --sp-section: 3rem;
+        --sp-section: 2.75rem;
     }
 
     .navbar .container {
@@ -3617,7 +3617,7 @@ p {
     }
 
     .section-header {
-        margin-bottom: var(--sp-xl);
+        margin-bottom: calc(var(--sp-section) * 0.9);
     }
 
     .back-to-top {
