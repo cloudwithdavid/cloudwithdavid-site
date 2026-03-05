@@ -25,6 +25,11 @@
     const contactForm = $('#contactForm');
     const notificationContainer = $('#notificationContainer');
     const TOAST_TRIGGER_COOLDOWN_MS = 2000;
+    const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
+    const DEPLOY_BEACON_FLAG_VALUE = 'key';
+    const DEPLOY_BEACON_START = 0;
+    const DEPLOY_BEACON_COUNTER_KEY = 'cwd-deploy-beacon-counter';
+    const DEPLOY_BEACON_LAST_VERSION_KEY = 'cwd-deploy-beacon-last-version';
     const THEME_STORAGE_KEY = 'cwd-theme';
     const THEME_PULSE_SEEN_KEY = 'cwd-theme-pulse-seen';
     const THEME_PULSE_CLASS = 'theme-segmented--pulse';
@@ -211,8 +216,68 @@
         systemThemeMedia.addListener(syncWithSystemTheme);
     }
 
+    function getMainScriptVersion() {
+        const mainScript = $('script[src*="js/main.js"]');
+        if (!mainScript) return '';
+
+        try {
+            const scriptUrl = new URL(mainScript.getAttribute('src'), window.location.href);
+            return scriptUrl.searchParams.get('v') || '';
+        } catch {
+            return '';
+        }
+    }
+
+    function getDeployBeaconId(jsVersion) {
+        let counter = DEPLOY_BEACON_START;
+
+        try {
+            const storedCounter = Number.parseInt(localStorage.getItem(DEPLOY_BEACON_COUNTER_KEY) || '', 10);
+            if (Number.isFinite(storedCounter)) {
+                counter = storedCounter;
+            }
+
+            const lastSeenVersion = localStorage.getItem(DEPLOY_BEACON_LAST_VERSION_KEY) || '';
+
+            if (jsVersion) {
+                if (!lastSeenVersion) {
+                    localStorage.setItem(DEPLOY_BEACON_COUNTER_KEY, String(counter));
+                    localStorage.setItem(DEPLOY_BEACON_LAST_VERSION_KEY, jsVersion);
+                } else if (lastSeenVersion !== jsVersion) {
+                    counter += 1;
+                    localStorage.setItem(DEPLOY_BEACON_COUNTER_KEY, String(counter));
+                    localStorage.setItem(DEPLOY_BEACON_LAST_VERSION_KEY, jsVersion);
+                }
+            }
+        } catch {
+            // Ignore storage errors and fall back to current in-memory value.
+        }
+
+        return counter;
+    }
+
+    function initDeployBeacon() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get(DEPLOY_BEACON_FLAG_PARAM) !== DEPLOY_BEACON_FLAG_VALUE) return;
+        if ($('#deployBeacon')) return;
+
+        const jsVersion = getMainScriptVersion() || 'no-version';
+        const deployBeaconId = getDeployBeaconId(jsVersion);
+        const beacon = document.createElement('aside');
+        beacon.id = 'deployBeacon';
+        beacon.className = 'deploy-beacon';
+        beacon.setAttribute('aria-hidden', 'true');
+        beacon.innerHTML = `
+            <span class="deploy-beacon__label">Deploy Beacon</span>
+            <span class="deploy-beacon__value">id:${deployBeaconId}</span>
+            <span class="deploy-beacon__meta">js:${jsVersion}</span>
+        `;
+        document.body.appendChild(beacon);
+    }
+
     initTheme();
     maybeShowThemePulse();
+    initDeployBeacon();
     window.addEventListener('resize', maybeShowThemePulse, { passive: true });
 
     // ===========================

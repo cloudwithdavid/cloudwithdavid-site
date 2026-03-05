@@ -2870,6 +2870,57 @@ p {
 }
 
 /* =========================
+   Private Deploy Beacon
+   ========================= */
+.deploy-beacon {
+    position: fixed;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: var(--r-md);
+    border: 1px solid rgba(78, 160, 255, 0.48);
+    background: rgba(7, 16, 31, 0.88);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.38);
+    color: var(--text-1);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1.22;
+    letter-spacing: 0.01em;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+}
+
+.deploy-beacon__label {
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.deploy-beacon__value {
+    font-weight: 600;
+}
+
+.deploy-beacon__meta {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .deploy-beacon {
+    background: rgba(233, 241, 248, 0.92);
+    border-color: rgba(47, 121, 217, 0.38);
+    color: #1f2f46;
+    box-shadow: 0 8px 18px rgba(21, 58, 111, 0.13);
+}
+
+[data-theme="light"] .deploy-beacon__meta {
+    color: #5f728f;
+}
+
+/* =========================
    Notifications
    ========================= */
 .notification-container {
@@ -3639,6 +3690,13 @@ p {
         max-width: min(21rem, 88vw);
         padding: 0.68rem 1.9rem 0.68rem 0.82rem;
         font-size: 0.84375rem;
+    }
+
+    .deploy-beacon {
+        left: 0.5rem;
+        bottom: 0.5rem;
+        font-size: 0.56rem;
+        padding: 0.35rem 0.45rem;
     }
 }
 
