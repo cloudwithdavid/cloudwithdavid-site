@@ -895,14 +895,49 @@
         const triggers = $$('[data-repo-soon]');
         if (!triggers.length) return;
 
+        const getSafeGithubProfileUrl = (rawValue) => {
+            const fallback = 'https://github.com/cloudwithdavid';
+            const candidate = String(rawValue || fallback).trim();
+
+            try {
+                const url = new URL(candidate, window.location.href);
+                const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
+                const isGithub = /^(www\.)?github\.com$/i.test(url.hostname);
+                if (!isHttp || !isGithub) return fallback;
+                return url.toString();
+            } catch {
+                return fallback;
+            }
+        };
+
+        const buildRepoSoonMessage = (profileUrl) => {
+            const wrapper = document.createElement('span');
+            wrapper.append('Repo coming soon. ');
+
+            const mobileBreak = document.createElement('span');
+            mobileBreak.className = 'notification-mobile-break';
+            mobileBreak.append('Check out my ');
+
+            const profileLink = document.createElement('a');
+            profileLink.href = profileUrl;
+            profileLink.target = '_blank';
+            profileLink.rel = 'noopener noreferrer';
+            profileLink.className = 'notification-link';
+            profileLink.textContent = 'GitHub profile';
+
+            mobileBreak.append(profileLink, '.');
+            wrapper.appendChild(mobileBreak);
+            return wrapper;
+        };
+
         triggers.forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const profileUrl = trigger.dataset.profileUrl || 'https://github.com/cloudwithdavid';
+                const profileUrl = getSafeGithubProfileUrl(trigger.dataset.profileUrl || '');
                 showNotification(
-                    `Repo coming soon. <span class="notification-mobile-break">Check out my <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="notification-link">GitHub profile</a>.</span>`,
+                    'Repo coming soon.',
                     'success',
-                    { allowHTML: true }
+                    { contentNode: buildRepoSoonMessage(profileUrl) }
                 );
             });
         });
@@ -1379,15 +1414,16 @@
         nextToastAllowedAt = now + TOAST_TRIGGER_COOLDOWN_MS;
 
         if (!notificationContainer) return;
-        const { allowHTML = false, duration = 4000 } = options;
+        const { duration = 4000, contentNode = null } = options;
 
         const notif = document.createElement('div');
         notif.className = `notification notification--${type}`;
 
         const notifMessage = document.createElement('span');
         notifMessage.className = 'notification-message';
-        if (allowHTML) {
-            notifMessage.innerHTML = message;
+        if (contentNode instanceof Node) {
+            notifMessage.textContent = '';
+            notifMessage.appendChild(contentNode);
         } else {
             notifMessage.textContent = message;
         }

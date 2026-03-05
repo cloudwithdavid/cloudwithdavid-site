@@ -12,46 +12,36 @@ function hasValue(value) {
     return typeof value === 'string' && value.trim().length > 0;
 }
 
-function looksLikeEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(value || '').trim());
+function isAuthorizedRequest(request, env) {
+    const expected = String(env.CONTACT_HEALTH_TOKEN || '').trim();
+    if (!expected) return false;
+
+    const authHeader = String(request.headers.get('authorization') || '').trim();
+    const bearerMatch = authHeader.match(/^Bearer\s+(.+)$/i);
+    const bearer = bearerMatch ? bearerMatch[1].trim() : '';
+    const headerToken = String(request.headers.get('x-health-token') || '').trim();
+
+    return bearer === expected || headerToken === expected;
 }
 
-function safeEmailHint(value) {
-    const raw = String(value || '').trim();
-    if (!looksLikeEmail(raw)) return null;
-    const parts = raw.split('@');
-    const local = parts[0];
-    const domain = parts[1];
-    if (!local || !domain) return null;
-    const localHint = local.length <= 2 ? `${local[0] || '*'}*` : `${local.slice(0, 2)}***`;
-    return `${localHint}@${domain}`;
-}
+export function onRequestGet({ request, env }) {
+    const exposeHealth = String(env.EXPOSE_CONTACT_HEALTH || '').trim().toLowerCase() === 'true';
+    if (!exposeHealth) {
+        return new Response('Not found', { status: 404 });
+    }
 
-export function onRequestGet({ env }) {
-    const checks = {
-        TURNSTILE_SECRET_KEY: hasValue(env.TURNSTILE_SECRET_KEY),
-        RESEND_API_KEY: hasValue(env.RESEND_API_KEY),
-        RESEND_FROM: hasValue(env.RESEND_FROM),
-        CONTACT_TO: hasValue(env.CONTACT_TO)
-    };
+    if (!isAuthorizedRequest(request, env)) {
+        return new Response('Not found', { status: 404 });
+    }
 
-    const requiredReady = checks.TURNSTILE_SECRET_KEY && checks.RESEND_API_KEY;
-    const recommendedReady = checks.RESEND_FROM && checks.CONTACT_TO;
-    const isHealthy = requiredReady;
+    const hasRequiredConfig = hasValue(env.TURNSTILE_SECRET_KEY) && hasValue(env.RESEND_API_KEY);
+    const isHealthy = hasRequiredConfig;
 
     const response = {
         ok: isHealthy,
         endpoint: '/api/contact',
-        checks,
-        requiredReady,
-        recommendedReady,
-        hints: {
-            resendFrom: safeEmailHint(env.RESEND_FROM),
-            contactTo: safeEmailHint(env.CONTACT_TO)
-        },
         timestamp: new Date().toISOString()
     };
 
     return json(response, isHealthy ? 200 : 503);
 }
-
