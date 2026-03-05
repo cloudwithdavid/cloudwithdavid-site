@@ -605,6 +605,7 @@
         const closeModal = () => {
             if (!modal.classList.contains('is-open')) return;
             modal.classList.remove('is-open');
+            modal.classList.remove('cert-modal--image');
             modal.setAttribute('aria-hidden', 'true');
             clearModalContent();
             document.body.style.overflow = previousBodyOverflow;
@@ -625,6 +626,7 @@
             // TEMP DEBUG: remove after modal sources are verified in production.
             console.log('modal src:', src);
             let mediaEl;
+            modal.classList.toggle('cert-modal--image', modalType === 'image');
 
             if (modalType === 'image') {
                 const img = document.createElement('img');
@@ -662,7 +664,14 @@
         modalClose.addEventListener('click', closeModal);
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
+            if (e.target === modal) {
+                closeModal();
+                return;
+            }
+
+            if (modal.classList.contains('cert-modal--image')) {
+                closeModal();
+            }
         });
 
         document.addEventListener('keydown', (e) => {
@@ -1110,6 +1119,7 @@
         const CONTACT_COOLDOWN_STORAGE_KEY = 'cwd-contact-next-submit-at';
         const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
         const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email contact@cloudwithdavid.com.';
+        const MESSAGE_MAX_HEIGHT_PX = 360;
         let nextContactSubmitAt = 0;
         let turnstileWidgetId = null;
         let pendingTurnstileRequest = null;
@@ -1120,6 +1130,14 @@
             subject: $('#subject', contactForm),
             message: $('#message', contactForm)
         };
+
+        function autoResizeTextarea(textarea) {
+            if (!textarea) return;
+            textarea.style.height = 'auto';
+            const nextHeight = Math.min(textarea.scrollHeight, MESSAGE_MAX_HEIGHT_PX);
+            textarea.style.height = `${nextHeight}px`;
+            textarea.style.overflowY = textarea.scrollHeight > MESSAGE_MAX_HEIGHT_PX ? 'auto' : 'hidden';
+        }
 
         function setFormStatus(message = '', type = 'info') {
             if (!formStatus) return;
@@ -1194,6 +1212,12 @@
             }
 
             return true;
+        }
+
+        if (fields.message) {
+            fields.message.addEventListener('input', () => autoResizeTextarea(fields.message));
+            // Covers form-value restore/autofill on reload.
+            autoResizeTextarea(fields.message);
         }
 
         function waitForTurnstile(timeoutMs = 8000) {
@@ -1354,6 +1378,7 @@
                 submitBtn.innerHTML = '<span>Message sent</span><i class="fas fa-check"></i>';
                 submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                 contactForm.reset();
+                autoResizeTextarea(fields.message);
                 clearFieldErrors();
                 setFormStatus('Message sent successfully! I will get back to you soon.', 'success');
             } catch (err) {
