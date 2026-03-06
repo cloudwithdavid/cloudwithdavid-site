@@ -1130,6 +1130,31 @@
             subject: $('#subject', contactForm),
             message: $('#message', contactForm)
         };
+        const messageGroup = fields.message ? fields.message.closest('.form-group--message') : null;
+        const messageScrollIndicator = messageGroup ? $('.textarea-scroll-indicator', messageGroup) : null;
+        const messageScrollThumb = messageGroup ? $('.textarea-scroll-thumb', messageGroup) : null;
+
+        function syncMessageScrollIndicator(textarea) {
+            if (!textarea || !messageGroup || !messageScrollIndicator || !messageScrollThumb) return;
+
+            const maxScroll = textarea.scrollHeight - textarea.clientHeight;
+            const hasOverflow = maxScroll > 1;
+            messageGroup.classList.toggle('is-scrollable', hasOverflow);
+
+            if (!hasOverflow) {
+                messageScrollThumb.style.height = '';
+                messageScrollThumb.style.transform = 'translateY(0)';
+                return;
+            }
+
+            const trackHeight = Math.max(messageScrollIndicator.clientHeight, 1);
+            const thumbHeight = Math.max(28, Math.round((textarea.clientHeight / textarea.scrollHeight) * trackHeight));
+            const maxThumbOffset = Math.max(trackHeight - thumbHeight, 0);
+            const thumbOffset = Math.round((textarea.scrollTop / maxScroll) * maxThumbOffset);
+
+            messageScrollThumb.style.height = `${thumbHeight}px`;
+            messageScrollThumb.style.transform = `translateY(${thumbOffset}px)`;
+        }
 
         function autoResizeTextarea(textarea) {
             if (!textarea) return;
@@ -1137,6 +1162,7 @@
             const nextHeight = Math.min(textarea.scrollHeight, MESSAGE_MAX_HEIGHT_PX);
             textarea.style.height = `${nextHeight}px`;
             textarea.style.overflowY = textarea.scrollHeight > MESSAGE_MAX_HEIGHT_PX ? 'auto' : 'hidden';
+            syncMessageScrollIndicator(textarea);
         }
 
         function setFormStatus(message = '', type = 'info') {
@@ -1216,6 +1242,8 @@
 
         if (fields.message) {
             fields.message.addEventListener('input', () => autoResizeTextarea(fields.message));
+            fields.message.addEventListener('scroll', () => syncMessageScrollIndicator(fields.message), { passive: true });
+            window.addEventListener('resize', () => syncMessageScrollIndicator(fields.message));
             // Covers form-value restore/autofill on reload.
             autoResizeTextarea(fields.message);
         }

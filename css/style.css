@@ -2683,18 +2683,52 @@ p {
     box-shadow: 0 0 0 3px rgba(239,68,68,0.20);
 }
 
+.form-group--message .textarea-shell {
+    position: relative;
+}
+
+.form-group--message .textarea-shell textarea {
+    position: relative;
+    z-index: 1;
+}
+
+.form-group--message .textarea-scroll-indicator {
+    display: none;
+}
+
 .form-group textarea {
     resize: none;
     overflow-y: hidden;
     min-height: 120px;
     max-height: 360px;
+    padding-right: calc(var(--sp-sm) + 0.25rem);
     scrollbar-gutter: stable;
+    scrollbar-width: thin;
     scrollbar-color: var(--border-medium) transparent;
+}
+
+.form-group textarea::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: transparent;
 }
 
 .form-group textarea::-webkit-scrollbar-track {
     background: transparent;
-    margin-block: 0px;
+    margin-block: 8px;
+}
+
+.form-group textarea::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: var(--r-full);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.form-group textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .form-honeypot {
@@ -3543,6 +3577,7 @@ p {
     }
 
     .form-group textarea {
+        padding-right: calc(var(--sp-sm) + 0.5rem);
         scrollbar-gutter: auto;
         scrollbar-width: thin;
         scrollbar-color: var(--border-medium) transparent;
@@ -3550,19 +3585,62 @@ p {
     }
 
     .form-group textarea::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background: transparent;
     }
 
     .form-group textarea::-webkit-scrollbar-track {
         background: transparent;
-        margin-block: 6px;
+        margin-block: 12px;
     }
 
     .form-group textarea::-webkit-scrollbar-thumb {
         background: var(--border-medium);
         border-radius: var(--r-full);
+        border: 1.5px solid transparent;
+        background-clip: padding-box;
+        min-height: 28px;
+    }
+
+    .form-group--message .textarea-scroll-indicator {
+        display: block;
+        position: absolute;
+        top:7px;
+        right: 2px;
+        bottom: 14px;
+        width: 5px;
+        border-radius: var(--r-full);
+        background: rgba(255,255,255,0.08);
+        pointer-events: none;
+        z-index: 2;
+        opacity: 9;
+        transition: opacity var(--t-fast);
+    }
+
+    .form-group--message.is-scrollable .textarea-scroll-indicator {
+        opacity: 1;
+    }
+
+    .form-group--message .textarea-scroll-thumb {
+        display: block;
+        width: 100%;
+        min-height: 28px;
+        border-radius: var(--r-full);
+        background: var(--border-medium);
+        transform: translateY(0);
+        transition: transform var(--t-fast);
+    }
+
+    .form-group--message textarea {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .form-group--message textarea::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        background: transparent;
     }
 
     .about-highlights {
