@@ -364,50 +364,7 @@
     }, { passive: true });
 
     // ===========================
-    // 3c. Credly Scroll Range Glow (Mobile + Tablet)
-    // ===========================
-    function initCredlyScrollRangeGlow() {
-        const credlyLink = $('.proof-link-secondary');
-        if (!credlyLink) return;
-        const MOBILE_TABLET_MAX_WIDTH = 1024;
-        const MOBILE_GLOW_BAND_TOP = 0.18;
-        const MOBILE_GLOW_BAND_BOTTOM = 0.60;
-
-        function update() {
-            const isMobileTabletViewport = window.innerWidth <= MOBILE_TABLET_MAX_WIDTH;
-            if (!isMobileTabletViewport) {
-                credlyLink.classList.remove('proof-link-secondary--scroll-glow');
-                return;
-            }
-
-            // Mobile: glow when the Credly link itself is within a comfortable viewport band.
-            const rect = credlyLink.getBoundingClientRect();
-            const vh = window.innerHeight || document.documentElement.clientHeight || 0;
-            const shouldGlow =
-                rect.bottom > vh * MOBILE_GLOW_BAND_TOP &&
-                rect.top < vh * MOBILE_GLOW_BAND_BOTTOM;
-            credlyLink.classList.toggle('proof-link-secondary--scroll-glow', shouldGlow);
-        }
-
-        let rangeTicking = false;
-        const onRangeScroll = () => {
-            if (rangeTicking) return;
-            rangeTicking = true;
-            requestAnimationFrame(() => {
-                update();
-                rangeTicking = false;
-            });
-        };
-
-        window.addEventListener('scroll', onRangeScroll, { passive: true });
-        window.addEventListener('resize', onRangeScroll);
-        update();
-    }
-
-    initCredlyScrollRangeGlow();
-
-    // ===========================
-    // 3d. Contact Link Scroll Activation (Mobile + Tablet)
+    // 3c. Contact Link Scroll Activation (Mobile + Tablet)
     // ===========================
     function initContactLinkScrollActivation() {
         const contactLinks = $$('.contact-link');
