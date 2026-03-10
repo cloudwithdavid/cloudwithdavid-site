@@ -378,6 +378,43 @@ p {
     transform: translateY(-2px);
 }
 
+.btn-secondary-filled {
+    background: var(--primary);
+    color: var(--text-inv);
+    border: 2px solid rgba(114, 196, 255, 0.28);
+    box-shadow:
+        0 10px 22px rgba(30, 64, 175, 0.18),
+        0 0 22px rgba(78, 160, 255, 0.18);
+}
+
+.btn-secondary-filled:hover {
+    background: var(--primary);
+    color: var(--text-inv);
+    border-color: rgba(114, 196, 255, 0.52);
+    box-shadow:
+        0 14px 28px rgba(30, 64, 175, 0.2),
+        0 0 28px rgba(78, 160, 255, 0.24);
+    transform: translateY(-2px);
+}
+
+.btn-secondary-filled:active {
+    transform: translateY(0);
+}
+
+.btn-secondary-cyan {
+    color: #5ecbff;
+    border-color: #5ecbff;
+    box-shadow: 0 0 0 1px rgba(94, 203, 255, 0.14), var(--shadow-sm);
+}
+
+.btn-secondary-cyan:hover {
+    background: var(--gradient-hero);
+    color: var(--text-inv);
+    border-color: rgba(114, 196, 255, 0.88);
+    box-shadow: var(--shadow-md), 0 0 24px rgba(78, 160, 255, 0.24);
+    transform: translateY(-2px);
+}
+
 /* =========================
    Navigation
    ========================= */
@@ -455,6 +492,22 @@ p {
     margin-right: 0.5rem;
 }
 
+.nav-links li {
+    position: relative;
+}
+
+.nav-links li:not(.nav-theme-item):not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -0.25rem;
+    top: 50%;
+    width: 2px;
+    height: 1rem;
+    transform: translateY(-50%);
+    background: rgba(140, 174, 214, 0.22);
+    border-radius: var(--r-full);
+}
+
 .nav-links a {
     display: block;
     padding: 0.5rem 0.875rem;
@@ -496,6 +549,10 @@ p {
 
 [data-theme="light"] .nav-links a.active::after {
     background: var(--gradient-hero);
+}
+
+[data-theme="light"] .nav-links li:not(.nav-theme-item):not(:last-child)::after {
+    background: rgba(100, 116, 139, 0.34);
 }
 
 .nav-theme-item {
@@ -1136,6 +1193,11 @@ p {
         will-change: transform;
         transform: translate3d(0, -8px, 0) scale(1.05);
     }
+
+    .floating-card--upcoming:hover .floating-card-inner {
+        will-change: auto;
+        transform: none;
+    }
 }
 
 .floating-card i {
@@ -1149,6 +1211,7 @@ p {
 .card-1 i { font-size: 2rem; }
 .card-2 i { font-size: 1.625rem; }
 .card-3 i { font-size: 2.2rem;}
+.card-6 i { font-size: 1.85rem; }
 
 .floating-card span {
     font-size: 0.75rem;
@@ -1156,11 +1219,50 @@ p {
     color: var(--text-1);
 }
 
+.floating-card--upcoming {
+    border-style: dashed;
+    border-color: rgba(245,158,11,0.38);
+    background: linear-gradient(180deg, rgba(15,25,49,0.96) 0%, rgba(12,20,42,0.98) 100%);
+    box-shadow: 0 14px 34px rgba(0,0,0,0.38), 0 0 0 1px rgba(245,158,11,0.08);
+    opacity: 0.74;
+}
+
+.floating-card--upcoming i {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.72) 0%, rgba(78, 160, 255, 0.72) 72%, rgba(251, 191, 36, 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .floating-card--upcoming {
+    background: var(--bg-card);
+    border-color: rgba(245, 158, 11, 0.44);
+    box-shadow: var(--shadow-lg);
+    opacity: 0.72;
+}
+
+[data-theme="light"] .floating-card--upcoming span {
+    color: var(--text-1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .floating-card--upcoming:hover {
+        opacity: 0.86;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="light"] .floating-card--upcoming:hover {
+        opacity: 0.82;
+    }
+}
+
 .card-1 { top: 5%; left: 5%; --float-delay: 0s; }
 .card-2 { top: 15%; right: 2%; --float-delay: 0.9s; }
 .card-3 { bottom: 25%; left: 0%; --float-delay: 1.8s; }
 .card-4 { top: 55%; right: 0%; --float-delay: 2.7s; }
 .card-5 { bottom: 5%; right: 20%; --float-delay: 3.6s; }
+.card-6 { top: 1%; left: 40%; --float-delay: 4.5s; }
 
 @media (min-width: 1025px) {
     .hero-clouds-wrapper {
@@ -1172,6 +1274,7 @@ p {
     .card-3 { bottom: 22%; left: 0%; }
     .card-4 { top: 58%; right: 0%; }
     .card-5 { bottom: 2%; right: 20%; }
+    .card-6 { top: 4%; left: 41%; }
 }
 
 @keyframes floatingCardDrift {
@@ -1595,12 +1698,12 @@ p {
 @media (min-width: 769px) {
     .foundation-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: clamp(0.6rem, 1vw, 1rem);
+        gap: 0.8rem;
     }
 
     .foundation-grid .foundation-card {
         min-width: 0;
-        padding: clamp(0.9rem, 1.2vw, 1.15rem);
+        padding: 1rem 1rem 0.78rem;
     }
 
     .foundation-grid .fcard-header {
@@ -1609,23 +1712,23 @@ p {
     }
 
     .foundation-grid .fcard-icon {
-        width: clamp(38px, 2.2vw, 44px);
-        height: clamp(38px, 2.2vw, 44px);
-        font-size: var(--fcard-icon-size, clamp(1.1rem, 1.1vw, 1.28rem));
+        width: 42px;
+        height: 42px;
+        font-size: var(--fcard-icon-size, 1.2rem);
     }
 
     .foundation-grid .fcard-header h3 {
-        font-size: clamp(0.9rem, 1vw, 1.15rem);
+        font-size: 1rem;
         line-height: 1.2;
     }
 
     .foundation-grid .foundation-card > p {
-        font-size: clamp(0.82rem, 0.95vw, 0.9375rem);
+        font-size: 0.875rem;
         margin-bottom: 0.6rem;
     }
 
     .foundation-grid .fcard-list li {
-        font-size: clamp(0.78rem, 0.88vw, 0.875rem);
+        font-size: 0.84rem;
         margin-bottom: 0.3rem;
     }
 }
@@ -1636,20 +1739,15 @@ p {
     }
 }
 
-@media (min-width: 1820px) {
-    .foundation-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-}
-
 .foundation-card {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--r-xl);
-    padding: var(--sp-lg);
+    padding: var(--sp-lg) var(--sp-lg) calc(var(--sp-lg) * 0.78);
     transition: all var(--t-base) var(--ease-out);
     position: relative;
     overflow: hidden;
+    scroll-margin-top: calc(var(--nav-h) + var(--sp-lg));
 }
 
 .foundation-card::before {
@@ -1672,6 +1770,61 @@ p {
 
 .foundation-card:hover::before {
     opacity: 1;
+}
+
+.foundation-card--upcoming {
+    border-style: dashed;
+    border-color: rgba(245,158,11,0.34);
+    background: linear-gradient(180deg, rgba(20,26,47,0.96) 0%, rgba(13,21,40,0.99) 100%);
+    opacity: 0.6;
+}
+
+.foundation-card--upcoming::before {
+    background: linear-gradient(180deg, rgba(245,158,11,0.95) 0%, rgba(250,204,21,0.82) 100%);
+    opacity: 0.68;
+}
+
+.foundation-card--upcoming:hover {
+    border-color: rgba(251,191,36,0.56);
+    box-shadow: var(--shadow-md), 0 0 26px rgba(245,158,11,0.12);
+    opacity: 0.6;
+}
+
+.foundation-card--upcoming.animated {
+    opacity: 0.6;
+}
+
+.foundation-card--upcoming.animated:hover {
+    opacity: 0.6;
+}
+
+.foundation-card.foundation-card--upcoming[data-animate].animated {
+    opacity: 0.6 !important;
+}
+
+.foundation-card.foundation-card--upcoming[data-animate].animated:hover {
+    opacity: 0.6 !important;
+}
+
+[data-theme="light"] .foundation-card--upcoming {
+    background: var(--bg-card);
+    border-color: rgba(245, 158, 11, 0.42);
+    box-shadow: none;
+    opacity: 0.72;
+}
+
+[data-theme="light"] .foundation-card--upcoming:hover,
+[data-theme="light"] .foundation-card--upcoming.animated,
+[data-theme="light"] .foundation-card--upcoming.animated:hover,
+[data-theme="light"] .foundation-card.foundation-card--upcoming[data-animate].animated,
+[data-theme="light"] .foundation-card.foundation-card--upcoming[data-animate].animated:hover {
+    opacity: 0.72 !important;
+}
+
+[data-theme="light"] .foundation-card--upcoming h3,
+[data-theme="light"] .foundation-card--upcoming p,
+[data-theme="light"] .foundation-card--upcoming .fcard-list li {
+    color: inherit;
 }
 
 .fcard-header {
@@ -1700,6 +1853,10 @@ p {
 .fcard-icon--git { --fcard-icon-size: 1.7rem; }
 .fcard-icon--aws { --fcard-icon-size: 1.3rem; }
 .fcard-icon--itil { --fcard-icon-size: 1.3rem; }
+.fcard-icon--python {
+    --fcard-icon-size: 1.55rem;
+    background: var(--gradient-hero);
+}
 
 .fcard-header h3 {
     font-size: 1.15rem;
@@ -1715,6 +1872,10 @@ p {
     font-size: 0.9375rem;
     margin-bottom: var(--sp-sm);
     color: var(--text-2);
+}
+
+.foundation-card--upcoming .fcard-list li::before {
+    color: #FBBF24;
 }
 
 .fcard-list {
@@ -3189,6 +3350,7 @@ p {
     .card-3 { bottom: 22%; left: 8%; }
     .card-4 { top: 56%; right: 10%; }
     .card-5 { bottom: 6%; right: 26%; }
+    .card-6 { top: 2%; left: 42%; }
 
     .hero {
         min-height: auto;
@@ -3475,6 +3637,7 @@ p {
     .card-3 { bottom: 20%; left: 6%; }
     .card-4 { top: 56%; right: 8%; }
     .card-5 { bottom: 4%; right: 23%; }
+    .card-6 { top: 3%; left: 39%; }
 
     .hero-cta {
         flex-direction: column;

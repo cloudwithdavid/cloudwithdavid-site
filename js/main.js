@@ -485,6 +485,13 @@
         content.classList.remove('is-collapsed');
     }
 
+    function scrollToAnchorTarget(target) {
+        const navHeight = navbar ? navbar.offsetHeight : 72;
+        const gap = 20;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight - gap;
+        window.scrollTo({ top, behavior: 'smooth' });
+    }
+
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
@@ -493,15 +500,13 @@
             if (!target) return;
             e.preventDefault();
 
-            if (href === '#foundation' && this.classList.contains('floating-card')) {
+            if (this.classList.contains('floating-card') && href.startsWith('#foundation')) {
                 expandFoundationDropdown();
+                requestAnimationFrame(() => scrollToAnchorTarget(target));
+                return;
             }
 
-            const navHeight = navbar ? navbar.offsetHeight : 72;
-            const gap = 20;
-            const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight - gap;
-
-            window.scrollTo({ top, behavior: 'smooth' });
+            scrollToAnchorTarget(target);
         });
     });
 

@@ -46,7 +46,7 @@
     <link rel="manifest" href="/assets/favicon/site.webmanifest">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=20260310-014436025">
+    <link rel="stylesheet" href="css/style.css?v=20260310-024514986">
 
     <!-- JSON-LD Entity Schema -->
     <script type="application/ld+json">
@@ -178,11 +178,11 @@
                         Documenting cloud projects and foundational insights on my path to Cloud / AI Architecture.
                     </p>
                     <div class="hero-cta" data-animate="fade-up" data-delay="300">
-                        <a href="#projects" class="btn btn-primary">
+                        <a href="#projects" class="btn btn-secondary btn-secondary-cyan">
                             <span>View Projects</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
-                        <a href="#contact" class="btn btn-secondary">
+                        <a href="#contact" class="btn btn-secondary btn-secondary-filled">
                             <i class="fas fa-envelope"></i>
                             <span>Contact Me</span>
                         </a>
@@ -222,34 +222,40 @@
                         </svg>
                     </div>
                     <div class="hero-cards-layer">
-                        <a href="#foundation" class="floating-card card-1" aria-label="Go to Linux foundation">
+                        <a href="#foundation-linux" class="floating-card card-1" aria-label="Go to Linux foundation">
                             <span class="floating-card-inner">
                                 <i class="fab fa-linux"></i>
                                 <span>Linux</span>
                             </span>
                         </a>
-                        <a href="#foundation" class="floating-card card-2" aria-label="Go to Networking foundation">
+                        <a href="#foundation-networking" class="floating-card card-2" aria-label="Go to Networking foundation">
                             <span class="floating-card-inner">
                                 <i class="fas fa-network-wired"></i>
                                 <span>Networking</span>
                             </span>
                         </a>
-                        <a href="#foundation" class="floating-card card-3" aria-label="Go to Git / GitHub foundation">
+                        <a href="#foundation-git" class="floating-card card-3" aria-label="Go to Git / GitHub foundation">
                             <span class="floating-card-inner">
                                 <i class="fab fa-git-alt"></i>
                                 <span>Git / GitHub</span>
                             </span>
                         </a>
-                        <a href="#foundation" class="floating-card card-4" aria-label="Go to AWS foundation">
+                        <a href="#foundation-aws" class="floating-card card-4" aria-label="Go to AWS foundation">
                             <span class="floating-card-inner">
                                 <i class="fab fa-aws"></i>
                                 <span>AWS</span>
                             </span>
                         </a>
-                        <a href="#foundation" class="floating-card card-5" aria-label="Go to ITIL foundation">
+                        <a href="#foundation-itil" class="floating-card card-5" aria-label="Go to ITIL foundation">
                             <span class="floating-card-inner">
                                 <i class="fas fa-gear"></i>
                                 <span>ITIL</span>
+                            </span>
+                        </a>
+                        <a href="#foundation-python" class="floating-card floating-card--upcoming card-6" aria-label="Go to Python foundation">
+                            <span class="floating-card-inner">
+                                <i class="fab fa-python"></i>
+                                <span>Python</span>
                             </span>
                         </a>
                     </div>
@@ -320,7 +326,7 @@
                 <h2 class="section-title">Core <span class="gradient-text">Building Blocks</span></h2>
                 <p class="section-subtitle">A living snapshot of the skills I&rsquo;m building and using across projects</p>
             <div class="foundation-grid">
-                <article class="foundation-card" data-animate="fade-up" data-delay="0">
+                <article id="foundation-linux" class="foundation-card" data-animate="fade-up" data-delay="0">
                     <div class="fcard-header">
                         <div class="fcard-icon fcard-icon--linux"><i class="fab fa-linux"></i></div>
                         <h3>Linux CLI <span class="fcard-title-tail">&amp; Bash</span></h3>
@@ -328,11 +334,11 @@
                     <p>Command-line for troubleshooting and system navigation.</p>
                     <ul class="fcard-list">
                         <li>Shell navigation &amp; file permissions</li>
-                        <li>Service/process checks &amp; log inspection</li>
-                        <li>Basic scripting/automation (early stage)</li>
+                        <li>Service / process checks &amp; log inspection</li>
+                        <li>Basic scripting / automation (early stage)</li>
                     </ul>
                 </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="100">
+                <article id="foundation-networking" class="foundation-card" data-animate="fade-up" data-delay="100">
                     <div class="fcard-header">
                         <div class="fcard-icon fcard-icon--networking"><i class="fas fa-network-wired"></i></div>
                         <h3>Networking</h3>
@@ -340,11 +346,11 @@
                     <p>Core networking intuition for cloud.</p>
                     <ul class="fcard-list">
                         <li>IP, DNS, and routing basics</li>
-                        <li>Ports/protocols &amp; security group concepts</li>
+                        <li>Ports / protocols &amp; security group concepts</li>
                         <li>Connectivity troubleshooting paths</li>
                     </ul>
                 </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="200">
+                <article id="foundation-git" class="foundation-card" data-animate="fade-up" data-delay="200">
                     <div class="fcard-header">
                         <div class="fcard-icon fcard-icon--git"><i class="fab fa-git-alt"></i></div>
                         <h3>Git / GitHub</h3>
@@ -356,7 +362,7 @@
                         <li>Consistent change tracking</li>
                     </ul>
                 </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="300">
+                <article id="foundation-aws" class="foundation-card" data-animate="fade-up" data-delay="300">
                     <div class="fcard-header">
                         <div class="fcard-icon fcard-icon--aws"><i class="fab fa-aws"></i></div>
                         <h3>AWS Cloud</h3>
@@ -368,7 +374,7 @@
                         <li>Reliability &amp; scale concepts</li>
                     </ul>
                 </article>
-                <article class="foundation-card" data-animate="fade-up" data-delay="400">
+                <article id="foundation-itil" class="foundation-card" data-animate="fade-up" data-delay="400">
                     <div class="fcard-header">
                         <div class="fcard-icon fcard-icon--itil"><i class="fas fa-gear"></i></div>
                         <h3>ITIL &amp; Operations </h3>
@@ -378,6 +384,18 @@
                         <li>Value-driven service thinking</li>
                         <li>Incident / problem / change awareness</li>
                         <li>Continuous improvement mindset</li>
+                    </ul>
+                </article>
+                <article id="foundation-python" class="foundation-card foundation-card--upcoming" data-animate="fade-up" data-delay="500">
+                    <div class="fcard-header">
+                        <div class="fcard-icon fcard-icon--python"><i class="fab fa-python"></i></div>
+                        <h3>Python </h3>
+                    </div>
+                    <p>Planned next layer in the stack for scripting, tooling, and cloud automation.</p>
+                    <ul class="fcard-list">
+                        <li>Core syntax and scripting fundamentals</li>
+                        <li>CLI and API automation patterns</li>
+                        <li>Automation for cloud ops tasks</li>
                     </ul>
                 </article>
             </div>
@@ -729,7 +747,7 @@
             </div>
             <div class="footer-bottom">
                 <p class="footer-copyright">
-                    &copy; 2026 Cloud With David.
+                    &copy; 2026 Cloud With David. All rights reserved.
                 </p>
                 <p class="footer-note"></p>
             </div>
@@ -755,6 +773,6 @@
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script src="js/main.js?v=20260310-014436025"></script>
+    <script src="js/main.js?v=20260310-024514986"></script>
 </body>
 </html>
