@@ -479,21 +479,35 @@
     function expandFoundationDropdown() {
         const content = $('#foundationDropdownContent');
         if (!content) return;
+
         $$('[data-foundation-toggle]').forEach(toggle => {
             toggle.setAttribute('aria-expanded', 'true');
         });
+
         content.classList.remove('is-collapsed');
     }
 
-    function scrollToAnchorTarget(target) {
+    function getElementDocumentTop(element) {
+        let top = 0;
+        let current = element;
+
+        while (current) {
+            top += current.offsetTop;
+            current = current.offsetParent;
+        }
+
+        return top;
+    }
+
+    function scrollToAnchorTarget(target, extraOffset = 0) {
         const navHeight = navbar ? navbar.offsetHeight : 72;
-        const gap = 20;
-        const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight - gap;
+        const gap = 30;
+        const top = getElementDocumentTop(target) - navHeight - gap + extraOffset;
         window.scrollTo({ top, behavior: 'smooth' });
     }
 
     $$('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+        anchor.addEventListener('click', async function (e) {
             const href = this.getAttribute('href');
             if (href === '#') return;
             const target = $(href);
@@ -501,8 +515,11 @@
             e.preventDefault();
 
             if (this.classList.contains('floating-card') && href.startsWith('#foundation')) {
+                const floatingCardOffset = 10;
                 expandFoundationDropdown();
-                requestAnimationFrame(() => scrollToAnchorTarget(target));
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => scrollToAnchorTarget(target, floatingCardOffset));
+                });
                 return;
             }
 
@@ -1025,28 +1042,55 @@
     // 13. Hero Visual Parallax
     // ===========================
     function initHeroVisualParallax() {
+        const hero = $('#hero');
+        const about = $('#about');
+        const aboutHeader = about ? $('.section-header', about) : null;
+        const heroVisual = $('.hero-visual');
         const cloudWrapper = $('.hero-clouds-wrapper');
         const cardsLayer = $('.hero-cards-layer');
-        if (!cloudWrapper || !cardsLayer) return;
+        if (!hero || !heroVisual || !cloudWrapper || !cardsLayer) return;
 
         let ticking = false;
-        const getParallaxFactor = () => {
+        const getParallaxFactors = () => {
             const viewportWidth = window.innerWidth;
-            if (viewportWidth <= 768) return 0.08;
-            if (viewportWidth <= 1024) return 0.1;
-            return 0.21;
+            if (viewportWidth <= 768) {
+                return { cloud: 0.1, cards: 0.12 };
+            }
+            if (viewportWidth <= 1024) {
+                return { cloud: 0.16, cards: 0.18 };
+            }
+            return { cloud: 0.2, cards: 0.2 };
+        };
+
+        const getCardClampOffset = () => {
+            const viewportWidth = window.innerWidth;
+            if (viewportWidth <= 768) return 96;
+            if (viewportWidth <= 1024) return 84;
+            return 0;
         };
 
         const updateParallax = () => {
             const scrolled = window.pageYOffset;
-            const parallaxFactor = getParallaxFactor();
-            const clampedScroll = Math.min(scrolled, window.innerHeight);
-            const offsetY = clampedScroll * parallaxFactor;
-            const offsetValue = `${offsetY.toFixed(2)}px`;
+            const { cloud, cards } = getParallaxFactors();
+            const heroBottom = hero.offsetTop + hero.offsetHeight;
+            const visualBottom = heroVisual.offsetTop + heroVisual.offsetHeight;
+            const headerLimit = aboutHeader
+                ? (about.offsetTop + aboutHeader.offsetTop)
+                : (heroBottom + 140);
+            const overlapBuffer = window.innerWidth <= 768 ? 72 : 96;
+            const maxVisibleOffset = Math.max(0, headerLimit - overlapBuffer - visualBottom);
+            const cardClampOffset = getCardClampOffset();
+            const sharedMobileClampOffset = window.innerWidth <= 1024 ? cardClampOffset : 0;
+            const cloudMaxVisibleOffset = Math.max(0, maxVisibleOffset - sharedMobileClampOffset);
+            const cardMaxVisibleOffset = Math.max(0, maxVisibleOffset - cardClampOffset);
+            const cloudOffset = Math.min(scrolled * cloud, cloudMaxVisibleOffset);
+            const cardsOffset = Math.min(scrolled * cards, cardMaxVisibleOffset);
+            const cloudOffsetValue = `${cloudOffset.toFixed(2)}px`;
+            const cardsOffsetValue = `${cardsOffset.toFixed(2)}px`;
 
             cloudWrapper.style.transform =
-                `translate3d(-50%, -50%, 0) translate3d(0, ${offsetValue}, 0)`;
-            cardsLayer.style.transform = `translate3d(0, ${offsetValue}, 0)`;
+                `translate3d(-50%, -50%, 0) translate3d(0, ${cloudOffsetValue}, 0)`;
+            cardsLayer.style.transform = `translate3d(0, ${cardsOffsetValue}, 0)`;
         };
 
         window.addEventListener('scroll', () => {
@@ -1058,6 +1102,7 @@
                 ticking = false;
             });
         }, { passive: true });
+        window.addEventListener('resize', updateParallax, { passive: true });
 
         updateParallax();
     }
@@ -1505,41 +1550,7 @@
     });
 
     // ===========================
-    // 18. Typing Effect (Hero badge area)
-    // ===========================
-    // Adds a subtle typewriter indicator to the "loading" badge
-    function initLoadingBadge() {
-        const loader = $('.hero-badge--loading');
-        if (!loader) return;
-
-        const text = loader.querySelector('span:last-child');
-        if (!text) return;
-
-        const original = text.textContent.replace(/\.+$/, '').trim();
-        const dots = ['', '.', '..', '...'];
-        const dotsEl = document.createElement('span');
-        dotsEl.className = 'hero-loading-dots';
-        dotsEl.setAttribute('aria-hidden', 'true');
-
-        text.textContent = original;
-        text.appendChild(dotsEl);
-
-        let i = 0;
-
-        setInterval(() => {
-            // Only animate when in viewport
-            const rect = loader.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-                dotsEl.textContent = dots[i % dots.length];
-                i++;
-            }
-        }, 600);
-    }
-
-    initLoadingBadge();
-
-    // ===========================
-    // 19. Completed Badge Sheen Loop
+    // 18. Completed Badge Sheen Loop
     // ===========================
     function initCompletedBadgeSheenLoop() {
         const badges = $$('.status-complete');
