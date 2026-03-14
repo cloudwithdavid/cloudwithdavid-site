@@ -1382,7 +1382,14 @@ p {
 }
 
 .about-proof-strip {
-    margin-bottom: var(--sp-lg);
+    width: min(100%, 1080px);
+    margin: 0 auto var(--sp-lg);
+    padding-left: 2.25rem;
+}
+
+.about-proof-strip .proof-links {
+    margin-left: -0.75rem;
+    padding-left: 0.75rem;
 }
 
 .proof-item {
