@@ -479,12 +479,16 @@
     function expandFoundationDropdown() {
         const content = $('#foundationDropdownContent');
         if (!content) return;
+        const dropdown = content.closest('.timeline-dropdown');
 
         $$('[data-foundation-toggle]').forEach(toggle => {
             toggle.setAttribute('aria-expanded', 'true');
         });
 
         content.classList.remove('is-collapsed');
+        if (dropdown) {
+            dropdown.classList.add('is-expanded');
+        }
     }
 
     function getElementDocumentTop(element) {
@@ -668,6 +672,7 @@
     function initSectionDropdown(toggleSelector, contentSelector) {
         const toggles = $$(toggleSelector);
         const content = $(contentSelector);
+        const dropdown = content ? content.closest('.timeline-dropdown') : null;
         if (!toggles.length || !content) return;
 
         const setExpanded = (expanded) => {
@@ -675,6 +680,9 @@
                 toggle.setAttribute('aria-expanded', String(expanded));
             });
             content.classList.toggle('is-collapsed', !expanded);
+            if (dropdown) {
+                dropdown.classList.toggle('is-expanded', expanded);
+            }
         };
 
         const initiallyExpanded = !content.classList.contains('is-collapsed');
