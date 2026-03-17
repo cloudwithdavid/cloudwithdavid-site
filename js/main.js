@@ -24,6 +24,7 @@
     const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
     const notificationContainer = $('#notificationContainer');
+    const sectionDropdownControllers = new Map();
     const TOAST_TRIGGER_COOLDOWN_MS = 2000;
     const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
     const DEPLOY_BEACON_FLAG_VALUE = 'key';
@@ -477,18 +478,20 @@
     // 5. Smooth Scroll
     // ===========================
     function expandFoundationDropdown() {
+        const foundationDropdown = sectionDropdownControllers.get('#foundationDropdownContent');
+        if (foundationDropdown) {
+            foundationDropdown.expand();
+            return;
+        }
+
         const content = $('#foundationDropdownContent');
         if (!content) return;
-        const dropdown = content.closest('.timeline-dropdown');
 
         $$('[data-foundation-toggle]').forEach(toggle => {
             toggle.setAttribute('aria-expanded', 'true');
         });
-
         content.classList.remove('is-collapsed');
-        if (dropdown) {
-            dropdown.classList.add('is-expanded');
-        }
+        content.closest('.timeline-dropdown')?.classList.add('is-expanded');
     }
 
     function getElementDocumentTop(element) {
@@ -503,11 +506,22 @@
         return top;
     }
 
+    const ANCHOR_SCROLL_GAP = -20;
+
     function scrollToAnchorTarget(target, extraOffset = 0) {
         const navHeight = navbar ? navbar.offsetHeight : 72;
-        const gap = 30;
-        const top = getElementDocumentTop(target) - navHeight - gap + extraOffset;
+        const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
         window.scrollTo({ top, behavior: 'smooth' });
+    }
+
+    function scrollToHashTarget(hash, { behavior = 'smooth', extraOffset = 0 } = {}) {
+        if (!hash || hash === '#') return;
+        const target = $(hash);
+        if (!target) return;
+
+        const navHeight = navbar ? navbar.offsetHeight : 72;
+        const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
+        window.scrollTo({ top, behavior });
     }
 
     $$('a[href^="#"]').forEach(anchor => {
@@ -519,16 +533,35 @@
             e.preventDefault();
 
             if (this.classList.contains('floating-card') && href.startsWith('#foundation')) {
-                const floatingCardOffset = 10;
+                const floatingCardOffset = -40;
                 expandFoundationDropdown();
                 requestAnimationFrame(() => {
-                    requestAnimationFrame(() => scrollToAnchorTarget(target, floatingCardOffset));
+                    requestAnimationFrame(() => {
+                        if (window.location.hash !== href) {
+                            history.pushState(null, '', href);
+                        }
+                        scrollToAnchorTarget(target, floatingCardOffset);
+                    });
                 });
                 return;
             }
 
+            if (window.location.hash !== href) {
+                history.pushState(null, '', href);
+            }
             scrollToAnchorTarget(target);
         });
+    });
+
+    window.addEventListener('load', () => {
+        if (!window.location.hash) return;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => scrollToHashTarget(window.location.hash, { behavior: 'auto' }));
+        });
+    });
+
+    window.addEventListener('hashchange', () => {
+        scrollToHashTarget(window.location.hash);
     });
 
     // ===========================
@@ -688,6 +721,12 @@
         };
 
         const setExpanded = (expanded) => {
+            const isCurrentlyExpanded = toggles[0].getAttribute('aria-expanded') === 'true';
+            if (expanded === isCurrentlyExpanded) {
+                syncToggleMetrics();
+                return;
+            }
+
             toggles.forEach(toggle => {
                 toggle.setAttribute('aria-expanded', String(expanded));
             });
@@ -708,6 +747,10 @@
                 const nextExpanded = !isExpanded;
                 setExpanded(nextExpanded);
             });
+        });
+
+        sectionDropdownControllers.set(contentSelector, {
+            expand: () => setExpanded(true)
         });
 
         window.addEventListener('resize', syncToggleMetrics);
