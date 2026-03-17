@@ -673,7 +673,19 @@
         const toggles = $$(toggleSelector);
         const content = $(contentSelector);
         const dropdown = content ? content.closest('.timeline-dropdown') : null;
+        const mainToggle = toggles.find(toggle => toggle.classList.contains('timeline-toggle-main'));
+        const sectionTitle = content ? $('.section-title', content) : null;
         if (!toggles.length || !content) return;
+
+        const syncToggleMetrics = () => {
+            if (!dropdown || !mainToggle) return;
+            const mainToggleWidth = mainToggle.getBoundingClientRect().width;
+            const mainToggleHeight = mainToggle.getBoundingClientRect().height;
+            const sectionTitleWidth = sectionTitle ? sectionTitle.getBoundingClientRect().width : 0;
+            dropdown.style.setProperty('--timeline-toggle-main-half-width', `${mainToggleWidth / 2}px`);
+            dropdown.style.setProperty('--timeline-toggle-main-half-height', `${mainToggleHeight / 2}px`);
+            dropdown.style.setProperty('--timeline-toggle-title-half-width', `${sectionTitleWidth / 2}px`);
+        };
 
         const setExpanded = (expanded) => {
             toggles.forEach(toggle => {
@@ -683,10 +695,12 @@
             if (dropdown) {
                 dropdown.classList.toggle('is-expanded', expanded);
             }
+            syncToggleMetrics();
         };
 
         const initiallyExpanded = !content.classList.contains('is-collapsed');
         setExpanded(initiallyExpanded);
+        syncToggleMetrics();
 
         toggles.forEach(toggle => {
             toggle.addEventListener('click', () => {
@@ -695,6 +709,11 @@
                 setExpanded(nextExpanded);
             });
         });
+
+        window.addEventListener('resize', syncToggleMetrics);
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(syncToggleMetrics);
+        }
     }
 
     initSectionDropdown('[data-foundation-toggle]', '#foundationDropdownContent');

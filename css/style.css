@@ -2465,6 +2465,8 @@ p {
 }
 
 .timeline-dropdown-content .section-title {
+    display: inline-block;
+    max-width: 100%;
     margin-bottom: 0.625rem;
 }
 
@@ -3529,7 +3531,10 @@ p {
 
 @media (min-width: 1025px) {
     .timeline-dropdown {
-        --timeline-toggle-inline-offset: 4rem;
+        --timeline-toggle-gap: 0.6rem;
+        --timeline-toggle-main-half-width: 0px;
+        --timeline-toggle-main-half-height: 0px;
+        --timeline-toggle-title-half-width: 0px;
     }
 
     .timeline-dropdown {
@@ -3539,19 +3544,48 @@ p {
     }
 
     .timeline-toggle-row {
+        display: block;
         position: absolute;
         top: 0;
         left: 50%;
-        width: max-content;
+        width: 100%;
+        max-width: 1080px;
+        min-height: calc(var(--timeline-toggle-main-half-height) * 2);
+        transform: translateX(-50%);
+    }
+
+    .timeline-toggle-main {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        grid-column: auto;
+        justify-self: auto;
         transform: translateX(-50%);
         transition:
             left 0.6s cubic-bezier(0.25, 0.9, 0.3, 1),
             transform 0.6s cubic-bezier(0.25, 0.9, 0.3, 1);
     }
 
-    .timeline-dropdown.is-expanded .timeline-toggle-row {
+    .timeline-toggle-icon {
+        position: absolute;
+        top: var(--timeline-toggle-main-half-height);
+        left: calc(50% + var(--timeline-toggle-main-half-width) + var(--timeline-toggle-gap));
+        grid-column: auto;
+        justify-self: auto;
+        transform: translate(0, -50%);
+        transition:
+            left 0.6s cubic-bezier(0.25, 0.9, 0.3, 1),
+            transform 0.6s cubic-bezier(0.25, 0.9, 0.3, 1);
+    }
+
+    .timeline-dropdown.is-expanded .timeline-toggle-main {
         left: 0;
-        transform: translateX(calc(-1 * var(--timeline-toggle-inline-offset)));
+        transform: translateX(0);
+    }
+
+    .timeline-dropdown.is-expanded .timeline-toggle-icon {
+        left: calc(50% + var(--timeline-toggle-title-half-width) + var(--timeline-toggle-gap));
+        transform: translate(0, -50%);
     }
 
     .timeline-dropdown-content {
