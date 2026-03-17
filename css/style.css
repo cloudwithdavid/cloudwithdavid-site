@@ -1543,6 +1543,7 @@ p {
     --section-pill-font-size: 1.3rem;
     --section-pill-icon-size: 1.2rem;
     --section-pill-line-height: 1.6;
+    --section-pill-radius: 0.5rem;
 }
 
 .section-tag {
@@ -1552,7 +1553,7 @@ p {
     padding: var(--section-pill-pad-y) var(--section-pill-pad-x);
     background: linear-gradient(135deg, rgba(14, 36, 64, 0.98), rgba(10, 28, 51, 0.98));
     border: 1px solid rgba(110, 190, 255, 0.46);
-    border-radius: var(--r-full);
+    border-radius: var(--section-pill-radius);
     font-size: var(--section-pill-font-size);
     font-weight: 600;
     color: #7fc8ff;
@@ -1607,6 +1608,7 @@ p {
     padding: 0.34rem 0;
     justify-content: center;
     justify-self: start;
+    border-radius: var(--r-full);
 }
 
 .timeline-toggle-chevron {
