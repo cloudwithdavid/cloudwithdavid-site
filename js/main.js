@@ -477,17 +477,17 @@
     // ===========================
     // 5. Smooth Scroll
     // ===========================
-    function expandFoundationDropdown() {
-        const foundationDropdown = sectionDropdownControllers.get('#foundationDropdownContent');
-        if (foundationDropdown) {
-            foundationDropdown.expand();
+    function expandSkillsDropdown() {
+        const skillsDropdown = sectionDropdownControllers.get('#skillsDropdownContent');
+        if (skillsDropdown) {
+            skillsDropdown.expand();
             return;
         }
 
-        const content = $('#foundationDropdownContent');
+        const content = $('#skillsDropdownContent');
         if (!content) return;
 
-        $$('[data-foundation-toggle]').forEach(toggle => {
+        $$('[data-skills-toggle]').forEach(toggle => {
             toggle.setAttribute('aria-expanded', 'true');
         });
         content.classList.remove('is-collapsed');
@@ -532,9 +532,9 @@
             if (!target) return;
             e.preventDefault();
 
-            if (this.classList.contains('floating-card') && href.startsWith('#foundation')) {
+            if (this.classList.contains('floating-card') && href.startsWith('#skills')) {
                 const floatingCardOffset = -40;
-                expandFoundationDropdown();
+                expandSkillsDropdown();
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
                         if (window.location.hash !== href) {
@@ -759,7 +759,7 @@
         }
     }
 
-    initSectionDropdown('[data-foundation-toggle]', '#foundationDropdownContent');
+    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent');
     initSectionDropdown('[data-timeline-toggle]', '#timelineDropdownContent');
 
     // ===========================
