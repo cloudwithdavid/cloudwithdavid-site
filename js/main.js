@@ -706,7 +706,7 @@
     // ===========================
     // 7. Section Dropdown Toggles
     // ===========================
-    function initSectionDropdown(toggleSelector, contentSelector) {
+    function initSectionDropdown(toggleSelector, contentSelector, options = {}) {
         const toggles = $$(toggleSelector);
         const content = $(contentSelector);
         const dropdown = content ? content.closest('.timeline-dropdown') : null;
@@ -724,9 +724,9 @@
             dropdown.style.setProperty('--timeline-toggle-title-half-width', `${sectionTitleWidth / 2}px`);
         };
 
-        const setExpanded = (expanded) => {
+        const setExpanded = (expanded, { force = false } = {}) => {
             const isCurrentlyExpanded = toggles[0].getAttribute('aria-expanded') === 'true';
-            if (expanded === isCurrentlyExpanded) {
+            if (!force && expanded === isCurrentlyExpanded) {
                 syncToggleMetrics();
                 return;
             }
@@ -741,8 +741,10 @@
             syncToggleMetrics();
         };
 
-        const initiallyExpanded = !content.classList.contains('is-collapsed');
-        setExpanded(initiallyExpanded);
+        const initiallyExpanded = typeof options.getInitialExpanded === 'function'
+            ? options.getInitialExpanded({ content, dropdown, toggles })
+            : !content.classList.contains('is-collapsed');
+        setExpanded(initiallyExpanded, { force: true });
         syncToggleMetrics();
 
         toggles.forEach(toggle => {
@@ -763,7 +765,17 @@
         }
     }
 
-    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent');
+    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent', {
+        getInitialExpanded: ({ content }) => {
+            const skillsCards = $$('.skills-card', content);
+            if (skillsCards.length >= 2) {
+                const [firstCard, secondCard] = skillsCards;
+                return Math.abs(firstCard.offsetTop - secondCard.offsetTop) < 8;
+            }
+
+            return !content.classList.contains('is-collapsed');
+        }
+    });
     initSectionDropdown('[data-timeline-toggle]', '#timelineDropdownContent');
 
     // ===========================
@@ -1029,8 +1041,8 @@
                 x: Math.random() * w,
                 y: Math.random() * h,
                 size: Math.random() * 2 + 0.5,
-                speedX: (Math.random() - 0.5) * 0.3,
-                speedY: (Math.random() - 0.5) * 0.3,
+                speedX: (Math.random() - 0.5) * 0.16,
+                speedY: (Math.random() - 0.5) * 0.16,
                 opacity: Math.random() * 0.5 + 0.1,
                 pulse: Math.random() * Math.PI * 2
             };
