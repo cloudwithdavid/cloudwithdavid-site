@@ -473,6 +473,10 @@
     window.addEventListener('scroll', () => {
         requestAnimationFrame(updateActiveNav);
     }, { passive: true });
+    window.addEventListener('resize', () => {
+        requestAnimationFrame(updateActiveNav);
+    });
+    requestAnimationFrame(updateActiveNav);
 
     // ===========================
     // 5. Smooth Scroll
