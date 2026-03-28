@@ -20,12 +20,13 @@
     const themeToggles = $$('[data-theme-toggle]');
     const themeToggleIcons = $$('[data-theme-toggle-icon]');
     const scrollProgress = $('#scrollProgress');
-    const backToTop = $('#backToTop');
+    const heroScrollCue = $('.hero-scroll-cue');
     const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
     const notificationContainer = $('#notificationContainer');
     const sectionDropdownControllers = new Map();
     const TOAST_TRIGGER_COOLDOWN_MS = 2000;
+    const HERO_SCROLL_CUE_HOVER_NAV_DELAY_MS = 2500;
     const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
     const DEPLOY_BEACON_FLAG_VALUE = 'key';
     const DEPLOY_BEACON_START = 0;
@@ -331,7 +332,6 @@
     // ===========================
     let lastScrollY = 0;
     let ticking = false;
-    let footerInView = false;
 
     function onScroll() {
         const scrollY = window.pageYOffset;
@@ -346,11 +346,6 @@
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
             scrollProgress.style.width = progress + '%';
-        }
-
-        // Back to top button
-        if (backToTop) {
-            backToTop.classList.toggle('visible', footerInView);
         }
 
         lastScrollY = scrollY;
@@ -421,31 +416,6 @@
 
     initContactLinkScrollActivation();
 
-    // Back to top click
-    if (backToTop) {
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-
-    function initBackToTopFooterClearance() {
-        if (!backToTop) return;
-        const footer = $('.footer');
-        if (!footer) return;
-
-        const observer = new IntersectionObserver(([entry]) => {
-            footerInView = entry.isIntersecting;
-            backToTop.classList.toggle('back-to-top--footer-clear', footerInView);
-            backToTop.classList.toggle('visible', footerInView);
-        }, {
-            threshold: 0.01
-        });
-
-        observer.observe(footer);
-    }
-
-    initBackToTopFooterClearance();
-
     // ===========================
     // 4. Active Nav Link Tracking
     // ===========================
@@ -496,6 +466,10 @@
         });
         content.classList.remove('is-collapsed');
         content.closest('.timeline-dropdown')?.classList.add('is-expanded');
+    }
+
+    function hashTargetsSkillsDropdown(hash) {
+        return hash === '#skills' || hash.startsWith('#skills-');
     }
 
     function getElementDocumentTop(element) {
@@ -550,23 +524,78 @@
                 return;
             }
 
+            if (hashTargetsSkillsDropdown(href)) {
+                expandSkillsDropdown();
+            }
+
             if (window.location.hash !== href) {
                 history.pushState(null, '', href);
             }
+
+            if (hashTargetsSkillsDropdown(href)) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => scrollToAnchorTarget(target));
+                });
+                return;
+            }
+
             scrollToAnchorTarget(target);
         });
     });
 
     window.addEventListener('load', () => {
         if (!window.location.hash) return;
+        if (hashTargetsSkillsDropdown(window.location.hash)) {
+            expandSkillsDropdown();
+        }
         requestAnimationFrame(() => {
             requestAnimationFrame(() => scrollToHashTarget(window.location.hash, { behavior: 'auto' }));
         });
     });
 
     window.addEventListener('hashchange', () => {
+        if (hashTargetsSkillsDropdown(window.location.hash)) {
+            expandSkillsDropdown();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => scrollToHashTarget(window.location.hash));
+            });
+            return;
+        }
+
         scrollToHashTarget(window.location.hash);
     });
+
+    function initHeroScrollCueHoverNavigation() {
+        if (!heroScrollCue) return;
+
+        const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+        let hoverTimerId = 0;
+
+        const clearHoverTimer = () => {
+            if (!hoverTimerId) return;
+            window.clearTimeout(hoverTimerId);
+            hoverTimerId = 0;
+        };
+
+        heroScrollCue.addEventListener('mouseenter', () => {
+            if (!supportsHover.matches || hoverTimerId) return;
+
+            hoverTimerId = window.setTimeout(() => {
+                hoverTimerId = 0;
+                heroScrollCue.dispatchEvent(new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                }));
+            }, HERO_SCROLL_CUE_HOVER_NAV_DELAY_MS);
+        });
+
+        heroScrollCue.addEventListener('mouseleave', clearHoverTimer);
+        heroScrollCue.addEventListener('click', clearHoverTimer);
+        window.addEventListener('blur', clearHoverTimer);
+    }
+
+    initHeroScrollCueHoverNavigation();
 
     // ===========================
     // 6. Credential Modal
@@ -765,17 +794,7 @@
         }
     }
 
-    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent', {
-        getInitialExpanded: ({ content }) => {
-            const skillsCards = $$('.skills-card', content);
-            if (skillsCards.length >= 2) {
-                const [firstCard, secondCard] = skillsCards;
-                return Math.abs(firstCard.offsetTop - secondCard.offsetTop) < 8;
-            }
-
-            return !content.classList.contains('is-collapsed');
-        }
-    });
+    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent');
     initSectionDropdown('[data-timeline-toggle]', '#timelineDropdownContent');
 
     // ===========================
