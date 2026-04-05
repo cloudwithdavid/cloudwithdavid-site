@@ -1045,6 +1045,8 @@
         if (!heroCanvas) return;
 
         const ctx = heroCanvas.getContext('2d');
+        const maxParticleDrift = 0.08;
+        const particlePulseSpeed = 0.01;
         let particles = [];
         let animId;
         let w, h;
@@ -1060,8 +1062,8 @@
                 x: Math.random() * w,
                 y: Math.random() * h,
                 size: Math.random() * 2 + 0.5,
-                speedX: (Math.random() - 0.5) * 0.16,
-                speedY: (Math.random() - 0.5) * 0.16,
+                speedX: (Math.random() - 0.5) * maxParticleDrift,
+                speedY: (Math.random() - 0.5) * maxParticleDrift,
                 opacity: Math.random() * 0.5 + 0.1,
                 pulse: Math.random() * Math.PI * 2
             };
@@ -1082,7 +1084,7 @@
             particles.forEach(p => {
                 p.x += p.speedX;
                 p.y += p.speedY;
-                p.pulse += 0.02;
+                p.pulse += particlePulseSpeed;
 
                 // Wrap around
                 if (p.x < 0) p.x = w;
