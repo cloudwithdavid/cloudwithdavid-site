@@ -1,6 +1,5 @@
 /* ================================================================
    CloudWithDavid — Main JavaScript
-   Feature-rich, production-ready, vanilla JS
    ================================================================ */
 
 (function () {
