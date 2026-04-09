@@ -232,8 +232,9 @@ body::before {
         linear-gradient(135deg, rgba(11,18,32,0.16) 0%, rgba(11,18,32,0.08) 38%, rgba(78,160,255,0.08) 100%),
         radial-gradient(ellipse 80% 50% at 46% 0%, rgba(78,160,255,0.06), transparent),
         radial-gradient(ellipse 60% 42% at 20% 80%, rgba(0,229,255,0.05), transparent 72%),
-        radial-gradient(ellipse 72% 56% at 88% 82%, rgba(0,229,255,0.09), transparent 68%),
-        radial-gradient(ellipse 60% 54% at 78% 70%, rgba(123,97,255,0.06), transparent 70%);
+        radial-gradient(ellipse 80% 62% at 95% 82%, rgba(0,229,255,0.085) 0%, rgba(20,211,247,0.055) 34%, transparent 70%),
+        radial-gradient(ellipse 42% 34% at 85% 44%, rgba(0,229,255,0.03) 0%, transparent 72%),
+        radial-gradient(ellipse 58% 52% at 78% 70%, rgba(123,97,255,0.045), transparent 70%);
     transition: opacity var(--t-slow);
 }
 

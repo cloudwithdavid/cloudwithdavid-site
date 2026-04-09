@@ -35,32 +35,32 @@ The site functions as my public technical home for projects, writing, and visibl
 
 ### Core frontend
 
-- `index.html` — main site markup
-- `css/style.css` — main site styling
-- `js/main.js` — frontend interactions and UI behavior
+- `index.html` - main site markup
+- `css/style.css` - main site styling
+- `js/main.js` - frontend interactions and UI behavior
 
 ### Serverless / edge logic
 
-- `functions/api/contact.js` — contact form submission handler
-- `functions/api/contact-health.js` — protected health endpoint for contact flow
-- `functions/_middleware.js` — redirects and security header handling
+- `functions/api/contact.js` - contact form submission handler
+- `functions/api/contact-health.js` - protected health endpoint for contact flow
+- `functions/_middleware.js` - redirects and security header handling
 
 ### Assets
 
-- `assets/certs/` — certification images
-- `assets/favicon/` — favicon and app icon assets
-- `assets/og/` — Open Graph and social preview assets
+- `assets/certs/` - certification images
+- `assets/favicon/` - favicon and app icon assets
+- `assets/og/` - Open Graph and social preview assets
 
 ### Site configuration
 
-- `_headers` — static response headers
-- `_redirects` — redirect rules
-- `robots.txt` — crawler directives
-- `sitemap.xml` — sitemap for search engines
-- `favicon.ico` — root favicon
+- `_headers` - static response headers; keep at the publish root for Cloudflare Pages
+- `_redirects` - redirect rules; keep at the publish root for Cloudflare Pages
+- `robots.txt` - crawler directives; keep at `/robots.txt`
+- `sitemap.xml` - sitemap for search engines; keep at `/sitemap.xml`
+- `favicon.ico` - root favicon; keep at `/favicon.ico`
 
 ### Local tooling
 
-- `.githooks/pre-commit` — local Git hook
-- `.vscode/settings.json` — workspace settings
-- `scripts/` — helper scripts for local serving and asset/version workflows
+- `.githooks/pre-commit` - local Git hook
+- `.vscode/settings.json` - workspace settings
+- `scripts/` - helper scripts for local serving and asset/version workflows, including `scripts/main.ps1`
