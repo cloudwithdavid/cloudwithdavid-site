@@ -1,4 +1,6 @@
-# [CloudWithDavid.com](https://cloudwithdavid.com)
+# CloudWithDavid.com
+
+This repository contains the source code for my personal website, [cloudwithdavid.com](https://cloudwithdavid.com).
 
 ## Purpose
 

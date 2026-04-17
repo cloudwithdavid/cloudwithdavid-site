@@ -1,5 +1,5 @@
-/* ================================================================
-   CloudWithDavid — Main JavaScript
+﻿/* ================================================================
+   CloudWithDavid â Main JavaScript
    ================================================================ */
 
 (function () {
@@ -22,9 +22,6 @@
     const heroScrollCue = $('.hero-scroll-cue');
     const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
-    const notificationContainer = $('#notificationContainer');
-    const sectionDropdownControllers = new Map();
-    const TOAST_TRIGGER_COOLDOWN_MS = 2000;
     const HERO_SCROLL_CUE_HOVER_NAV_DELAY_MS = 2500;
     const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
     const DEPLOY_BEACON_FLAG_VALUE = 'key';
@@ -35,7 +32,6 @@
     const THEME_PULSE_SEEN_KEY = 'cwd-theme-pulse-seen';
     const THEME_PULSE_CLASS = 'theme-segmented--pulse';
     const THEME_PULSE_VARIANTS = ['desktop', 'mobile-inline'];
-    let nextToastAllowedAt = 0;
 
     // ===========================
     // 1. Theme Toggle (Dark/Light)
@@ -451,20 +447,7 @@
     // 5. Smooth Scroll
     // ===========================
     function expandSkillsDropdown() {
-        const skillsDropdown = sectionDropdownControllers.get('#skillsDropdownContent');
-        if (skillsDropdown) {
-            skillsDropdown.expand();
-            return;
-        }
-
-        const content = $('#skillsDropdownContent');
-        if (!content) return;
-
-        $$('[data-skills-toggle]').forEach(toggle => {
-            toggle.setAttribute('aria-expanded', 'true');
-        });
-        content.classList.remove('is-collapsed');
-        content.closest('.timeline-dropdown')?.classList.add('is-expanded');
+        // Dropdown removed; nothing to expand.
     }
 
     function hashTargetsSkillsDropdown(hash) {
@@ -734,68 +717,6 @@
     // ===========================
     // 7. Section Dropdown Toggles
     // ===========================
-    function initSectionDropdown(toggleSelector, contentSelector, options = {}) {
-        const toggles = $$(toggleSelector);
-        const content = $(contentSelector);
-        const dropdown = content ? content.closest('.timeline-dropdown') : null;
-        const mainToggle = toggles.find(toggle => toggle.classList.contains('timeline-toggle-main'));
-        const sectionTitle = content ? $('.section-title', content) : null;
-        if (!toggles.length || !content) return;
-
-        const syncToggleMetrics = () => {
-            if (!dropdown || !mainToggle) return;
-            const mainToggleWidth = mainToggle.getBoundingClientRect().width;
-            const mainToggleHeight = mainToggle.getBoundingClientRect().height;
-            const sectionTitleWidth = sectionTitle ? sectionTitle.getBoundingClientRect().width : 0;
-            dropdown.style.setProperty('--timeline-toggle-main-half-width', `${mainToggleWidth / 2}px`);
-            dropdown.style.setProperty('--timeline-toggle-main-half-height', `${mainToggleHeight / 2}px`);
-            dropdown.style.setProperty('--timeline-toggle-title-half-width', `${sectionTitleWidth / 2}px`);
-        };
-
-        const setExpanded = (expanded, { force = false } = {}) => {
-            const isCurrentlyExpanded = toggles[0].getAttribute('aria-expanded') === 'true';
-            if (!force && expanded === isCurrentlyExpanded) {
-                syncToggleMetrics();
-                return;
-            }
-
-            toggles.forEach(toggle => {
-                toggle.setAttribute('aria-expanded', String(expanded));
-            });
-            content.classList.toggle('is-collapsed', !expanded);
-            if (dropdown) {
-                dropdown.classList.toggle('is-expanded', expanded);
-            }
-            syncToggleMetrics();
-        };
-
-        const initiallyExpanded = typeof options.getInitialExpanded === 'function'
-            ? options.getInitialExpanded({ content, dropdown, toggles })
-            : !content.classList.contains('is-collapsed');
-        setExpanded(initiallyExpanded, { force: true });
-        syncToggleMetrics();
-
-        toggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const isExpanded = toggles[0].getAttribute('aria-expanded') === 'true';
-                const nextExpanded = !isExpanded;
-                setExpanded(nextExpanded);
-            });
-        });
-
-        sectionDropdownControllers.set(contentSelector, {
-            expand: () => setExpanded(true)
-        });
-
-        window.addEventListener('resize', syncToggleMetrics);
-        if (document.fonts?.ready) {
-            document.fonts.ready.then(syncToggleMetrics);
-        }
-    }
-
-    initSectionDropdown('[data-skills-toggle]', '#skillsDropdownContent');
-    initSectionDropdown('[data-timeline-toggle]', '#timelineDropdownContent');
-
     // ===========================
     // 7. Scroll Animations (IntersectionObserver)
     // ===========================
@@ -897,53 +818,6 @@
     initCounters();
 
     // ===========================
-    // 10. Project Filtering
-    // ===========================
-    function initProjectFilters() {
-        const filters = $$('.filter-btn');
-        const cards = $$('.project-card[data-status]');
-        const groups = $$('.project-group');
-        if (!filters.length || !cards.length) return;
-
-        const syncGroupVisibility = () => {
-            groups.forEach(group => {
-                const visibleCards = $$('.project-card[data-status]:not(.hidden)', group).length;
-                group.classList.toggle('hidden', visibleCards === 0);
-            });
-        };
-
-        filters.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const filter = btn.dataset.filter;
-
-                // Update active
-                filters.forEach(f => f.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Filter cards
-                cards.forEach(card => {
-                    const status = card.dataset.status;
-                    const match = filter === 'all' || status === filter;
-                    card.classList.toggle('hidden', !match);
-
-                    // Re-trigger animation
-                    if (match) {
-                        card.style.animation = 'none';
-                        card.offsetHeight; // force reflow
-                        card.style.animation = '';
-                    }
-                });
-
-                syncGroupVisibility();
-            });
-        });
-
-        syncGroupVisibility();
-    }
-
-    initProjectFilters();
-
-    // ===========================
     // 11. Writing Card CTA Guard
     // ===========================
     function initWritingCardCtas() {
@@ -979,63 +853,6 @@
     }
 
     initWritingCardCtas();
-
-    // ===========================
-    // 12. Repo Coming Soon Trigger
-    // ===========================
-    function initRepoComingSoonTriggers() {
-        const triggers = $$('[data-repo-soon]');
-        if (!triggers.length) return;
-
-        const getSafeGithubProfileUrl = (rawValue) => {
-            const fallback = 'https://github.com/cloudwithdavid';
-            const candidate = String(rawValue || fallback).trim();
-
-            try {
-                const url = new URL(candidate, window.location.href);
-                const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
-                const isGithub = /^(www\.)?github\.com$/i.test(url.hostname);
-                if (!isHttp || !isGithub) return fallback;
-                return url.toString();
-            } catch {
-                return fallback;
-            }
-        };
-
-        const buildRepoSoonMessage = (profileUrl) => {
-            const wrapper = document.createElement('span');
-            wrapper.append('Repo coming soon. ');
-
-            const mobileBreak = document.createElement('span');
-            mobileBreak.className = 'notification-mobile-break';
-            mobileBreak.append('Check out my ');
-
-            const profileLink = document.createElement('a');
-            profileLink.href = profileUrl;
-            profileLink.target = '_blank';
-            profileLink.rel = 'noopener noreferrer';
-            profileLink.className = 'notification-link';
-            profileLink.textContent = 'GitHub profile';
-
-            mobileBreak.append(profileLink, '.');
-            wrapper.appendChild(mobileBreak);
-            return wrapper;
-        };
-
-        triggers.forEach(trigger => {
-            trigger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const profileUrl = getSafeGithubProfileUrl(trigger.dataset.profileUrl || '');
-                showNotification(
-                    'Repo coming soon.',
-                    'success',
-                    { contentNode: buildRepoSoonMessage(profileUrl) }
-                );
-            });
-        });
-    }
-
-    initRepoComingSoonTriggers();
 
     // ===========================
     // 12. Hero Particle Canvas
@@ -1562,86 +1379,6 @@
     initContactForm();
 
     // ===========================
-    // 15. Notification System
-    // ===========================
-    function dismissNotification(notif) {
-        if (!notif || notif.classList.contains('closing')) return;
-
-        const timerId = Number(notif.dataset.timerId || 0);
-        if (timerId) clearTimeout(timerId);
-
-        notif.classList.add('closing');
-        notif.addEventListener('animationend', () => notif.remove(), { once: true });
-    }
-
-    function showNotification(message, type = 'success', options = {}) {
-        const now = Date.now();
-        if (now < nextToastAllowedAt) return;
-        nextToastAllowedAt = now + TOAST_TRIGGER_COOLDOWN_MS;
-
-        if (!notificationContainer) return;
-        const { duration = 4000, contentNode = null } = options;
-
-        const notif = document.createElement('div');
-        notif.className = `notification notification--${type}`;
-
-        const notifMessage = document.createElement('span');
-        notifMessage.className = 'notification-message';
-        if (contentNode instanceof Node) {
-            notifMessage.textContent = '';
-            notifMessage.appendChild(contentNode);
-        } else {
-            notifMessage.textContent = message;
-        }
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'notification-close';
-        closeBtn.setAttribute('aria-label', 'Dismiss notification');
-        closeBtn.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i>';
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dismissNotification(notif);
-        });
-
-        notif.append(notifMessage, closeBtn);
-        notificationContainer.appendChild(notif);
-
-        let remaining = duration;
-        let startedAt = 0;
-
-        const startAutoHideTimer = () => {
-            if (remaining <= 0 || notif.classList.contains('closing')) return;
-            startedAt = Date.now();
-            const timerId = setTimeout(() => dismissNotification(notif), remaining);
-            notif.dataset.timerId = String(timerId);
-        };
-
-        const pauseAutoHideTimer = () => {
-            const timerId = Number(notif.dataset.timerId || 0);
-            if (!timerId) return;
-            clearTimeout(timerId);
-            notif.dataset.timerId = '';
-            remaining -= Date.now() - startedAt;
-            remaining = Math.max(0, remaining);
-        };
-
-        notif.addEventListener('mouseenter', pauseAutoHideTimer);
-        notif.addEventListener('mouseleave', startAutoHideTimer);
-        startAutoHideTimer();
-
-        return notif;
-    }
-
-    document.addEventListener('click', (e) => {
-        if (!notificationContainer || !notificationContainer.children.length) return;
-        if (notificationContainer.contains(e.target)) return;
-        if (e.target.closest('[data-toast-trigger]')) return;
-
-        $$('.notification', notificationContainer).forEach(dismissNotification);
-    });
-
-    // ===========================
     // 16. Keyboard Navigation
     // ===========================
     document.addEventListener('keydown', (e) => {
@@ -1720,7 +1457,7 @@
     // 20. Easter Egg Console
     // ===========================
     console.log(
-        '%c☁️ Cloud With David',
+        '%câï¸ Cloud With David',
         'font-size: 2rem; font-weight: bold; color: #4EA0FF; text-shadow: 0 2px 10px rgba(78,160,255,0.3);'
     );
     console.log(
@@ -1728,7 +1465,7 @@
         'font-size: 1rem; color: #00E5FF;'
     );
     console.log(
-        '%c🔗 https://linkedin.com/in/cloudwithdavid',
+        '%cð https://linkedin.com/in/cloudwithdavid',
         'font-size: 0.9rem; color: #8FA6CC;'
     );
 

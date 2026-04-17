@@ -1,0 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="6" width="48" height="52" rx="13" fill="#F58536"/>
+  <rect x="18" y="18" width="11" height="8" rx="2" stroke="white" stroke-width="2.5"/>
+  <rect x="35" y="18" width="11" height="8" rx="2" stroke="white" stroke-width="2.5"/>
+  <rect x="26.5" y="29" width="11" height="8" rx="2" stroke="white" stroke-width="2.5"/>
+  <path d="M23.5 26V30H32" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40.5 26V30H32" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="32" y="53.5" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="700" fill="white">ECS</text>
+</svg>
