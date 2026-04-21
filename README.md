@@ -1,10 +1,8 @@
-# CloudWithDavid.com
-
-This repository contains the source code for my personal website, [cloudwithdavid.com](https://cloudwithdavid.com).
+# [CloudWithDavid.com](https://cloudwithdavid.com)
 
 ## Purpose
 
-The site functions as my public technical home for projects, writing, and visible proof of progress. It is a custom-built static frontend with Cloudflare-based serverless handling for contact submissions, security hardening, and deployment.
+The site functions as my portfolio for projects, blog, and visible proof of progress. It is a custom-built static frontend with Cloudflare-based serverless handling for contact submissions, security hardening, and deployment.
 
 ## Stack
 <!-- markdownlint-disable MD033 -->
