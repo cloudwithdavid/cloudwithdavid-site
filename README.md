@@ -2,7 +2,9 @@
 
 ## Purpose
 
-The site functions as my portfolio for projects, blog, and visible proof of progress. It is a custom-built static frontend with Cloudflare-based serverless handling for contact submissions, security hardening, and deployment.
+The site functions as my portfolio for projects, blog, and visible proof of progress.
+
+It is a custom-built static frontend with Cloudflare-based serverless handling for contact submissions, security hardening, and deployment.
 
 ## Stack
 <!-- markdownlint-disable MD033 -->
