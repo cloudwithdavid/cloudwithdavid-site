@@ -19,10 +19,8 @@
     const themeToggles = $$('[data-theme-toggle]');
     const themeToggleIcons = $$('[data-theme-toggle-icon]');
     const scrollProgress = $('#scrollProgress');
-    const heroScrollCue = $('.hero-scroll-cue');
     const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
-    const HERO_SCROLL_CUE_HOVER_NAV_DELAY_MS = 2500;
     const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
     const DEPLOY_BEACON_FLAG_VALUE = 'key';
     const DEPLOY_BEACON_START = 0;
@@ -32,11 +30,19 @@
     const THEME_PULSE_SEEN_KEY = 'cwd-theme-pulse-seen';
     const THEME_PULSE_CLASS = 'theme-segmented--pulse';
     const THEME_PULSE_VARIANTS = ['desktop', 'mobile-inline'];
+    const SKILLS_SPOTLIGHT_CLASS = 'skills-card--spotlight';
+    const SKILLS_SPOTLIGHT_DURATION = 2800;
+    const skillsSpotlightTimers = new WeakMap();
 
     // ===========================
     // 1. Theme Toggle (Dark/Light)
     // ===========================
     const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function getThemePreviewOverride() {
+        const theme = new URLSearchParams(window.location.search).get('theme');
+        return theme === 'dark' || theme === 'light' ? theme : '';
+    }
 
     function getStoredTheme() {
         const stored = localStorage.getItem(THEME_STORAGE_KEY);
@@ -126,7 +132,7 @@
     }
 
     function maybeShowThemePulse() {
-        if (getStoredTheme()) return;
+        if (getStoredTheme() || getThemePreviewOverride()) return;
 
         const seenVariants = readPulseSeenVariants();
         let didUpdate = false;
@@ -146,6 +152,12 @@
     }
 
     function initTheme() {
+        const previewTheme = getThemePreviewOverride();
+        if (previewTheme) {
+            applyTheme(previewTheme, { persist: false });
+            return;
+        }
+
         const stored = getStoredTheme();
         if (stored) {
             applyTheme(stored, { persist: false });
@@ -203,6 +215,7 @@
     }
 
     const syncWithSystemTheme = (event) => {
+        if (getThemePreviewOverride()) return;
         if (getStoredTheme()) return;
         applyTheme(event.matches ? 'dark' : 'light', { persist: false });
     };
@@ -414,17 +427,18 @@
     // ===========================
     // 4. Active Nav Link Tracking
     // ===========================
+    const ACTIVE_NAV_SCROLL_OFFSET = 24;
+
     function updateActiveNav() {
-        const sections = $$('section[id]');
+        const sections = $$('body > section[id], body > .section-bg-wash > section[id]');
         const navHeight = navbar ? navbar.offsetHeight : 72;
-        const scrollY = window.pageYOffset + navHeight + 100;
+        const scrollY = window.pageYOffset + navHeight + ACTIVE_NAV_SCROLL_OFFSET;
 
         let currentId = '';
 
         sections.forEach(section => {
-            const top = section.offsetTop;
-            const bottom = top + section.offsetHeight;
-            if (scrollY >= top && scrollY < bottom) {
+            const top = section.getBoundingClientRect().top + window.pageYOffset;
+            if (scrollY >= top) {
                 currentId = section.id;
             }
         });
@@ -484,6 +498,53 @@
         window.scrollTo({ top, behavior });
     }
 
+    function runSkillsCardSpotlight(target) {
+        if (!target || !target.classList.contains('skills-card')) return;
+
+        const activeTimer = skillsSpotlightTimers.get(target);
+        if (activeTimer) {
+            clearTimeout(activeTimer);
+        }
+
+        target.classList.remove(SKILLS_SPOTLIGHT_CLASS);
+        void target.offsetWidth;
+        target.classList.add(SKILLS_SPOTLIGHT_CLASS);
+
+        const cleanupTimer = setTimeout(() => {
+            target.classList.remove(SKILLS_SPOTLIGHT_CLASS);
+            skillsSpotlightTimers.delete(target);
+        }, SKILLS_SPOTLIGHT_DURATION);
+        skillsSpotlightTimers.set(target, cleanupTimer);
+    }
+
+    function spotlightSkillsCardWhenVisible(target) {
+        if (!target || !target.classList.contains('skills-card')) return;
+
+        if (!('IntersectionObserver' in window)) {
+            setTimeout(() => runSkillsCardSpotlight(target), 650);
+            return;
+        }
+
+        let didSpotlight = false;
+        const observer = new IntersectionObserver((entries) => {
+            const isVisible = entries.some(entry => entry.isIntersecting);
+            if (!isVisible || didSpotlight) return;
+
+            didSpotlight = true;
+            observer.disconnect();
+            runSkillsCardSpotlight(target);
+        }, { threshold: 0.45 });
+
+        observer.observe(target);
+
+        setTimeout(() => {
+            if (didSpotlight) return;
+            didSpotlight = true;
+            observer.disconnect();
+            runSkillsCardSpotlight(target);
+        }, 1400);
+    }
+
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', async function (e) {
             const href = this.getAttribute('href');
@@ -501,6 +562,7 @@
                             history.pushState(null, '', href);
                         }
                         scrollToAnchorTarget(target, floatingCardOffset);
+                        spotlightSkillsCardWhenVisible(target);
                     });
                 });
                 return;
@@ -547,38 +609,6 @@
         scrollToHashTarget(window.location.hash);
     });
 
-    function initHeroScrollCueHoverNavigation() {
-        if (!heroScrollCue) return;
-
-        const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
-        let hoverTimerId = 0;
-
-        const clearHoverTimer = () => {
-            if (!hoverTimerId) return;
-            window.clearTimeout(hoverTimerId);
-            hoverTimerId = 0;
-        };
-
-        heroScrollCue.addEventListener('mouseenter', () => {
-            if (!supportsHover.matches || hoverTimerId) return;
-
-            hoverTimerId = window.setTimeout(() => {
-                hoverTimerId = 0;
-                heroScrollCue.dispatchEvent(new MouseEvent('click', {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
-                }));
-            }, HERO_SCROLL_CUE_HOVER_NAV_DELAY_MS);
-        });
-
-        heroScrollCue.addEventListener('mouseleave', clearHoverTimer);
-        heroScrollCue.addEventListener('click', clearHoverTimer);
-        window.addEventListener('blur', clearHoverTimer);
-    }
-
-    initHeroScrollCueHoverNavigation();
-
     // ===========================
     // 6. Credential Modal
     // ===========================
@@ -586,7 +616,7 @@
         const modal = $('#certModal');
         const modalClose = $('#certModalClose');
         const modalContent = $('#certModalContent');
-        const pills = $$('.cert-pill');
+        const pills = $$('.about-cert-item[role="button"][data-modal-type][data-modal-src]');
         if (!modal || !modalClose || !modalContent || !pills.length) return;
 
         let previousBodyOverflow = '';
@@ -654,8 +684,6 @@
 
             clearModalContent();
 
-            // TEMP DEBUG: remove after modal sources are verified in production.
-            console.log('modal src:', src);
             let mediaEl;
             modal.classList.toggle('cert-modal--image', modalType === 'image');
 
