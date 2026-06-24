@@ -26,12 +26,41 @@
     const DEPLOY_BEACON_COUNTER_KEY = 'cwd-deploy-beacon-counter';
     const DEPLOY_BEACON_LAST_VERSION_KEY = 'cwd-deploy-beacon-last-version';
     const THEME_STORAGE_KEY = 'cwd-theme';
-    const THEME_PULSE_SEEN_KEY = 'cwd-theme-pulse-seen';
-    const THEME_PULSE_CLASS = 'theme-segmented--pulse';
-    const THEME_PULSE_VARIANTS = ['desktop', 'mobile-inline'];
     const SKILLS_SPOTLIGHT_CLASS = 'skills-card--spotlight';
     const SKILLS_SPOTLIGHT_DURATION = 2800;
     const skillsSpotlightTimers = new WeakMap();
+    const scrollFrameHandlers = [];
+    const resizeFrameHandlers = [];
+    let scrollFrameQueued = false;
+    let resizeFrameQueued = false;
+
+    function runFrameHandlers(handlers) {
+        handlers.forEach(handler => handler());
+    }
+
+    function registerViewportHandler(handler, { scroll = false, resize = false, run = false } = {}) {
+        if (scroll) scrollFrameHandlers.push(handler);
+        if (resize) resizeFrameHandlers.push(handler);
+        if (run) handler();
+    }
+
+    window.addEventListener('scroll', () => {
+        if (scrollFrameQueued) return;
+        scrollFrameQueued = true;
+        requestAnimationFrame(() => {
+            scrollFrameQueued = false;
+            runFrameHandlers(scrollFrameHandlers);
+        });
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+        if (resizeFrameQueued) return;
+        resizeFrameQueued = true;
+        requestAnimationFrame(() => {
+            resizeFrameQueued = false;
+            runFrameHandlers(resizeFrameHandlers);
+        });
+    }, { passive: true });
 
     // ===========================
     // 1. Theme Toggle (Dark/Light)
@@ -84,69 +113,6 @@
         updateThemeControlState(nextTheme);
         if (persist) {
             localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-        }
-    }
-
-    function readPulseSeenVariants() {
-        const raw = localStorage.getItem(THEME_PULSE_SEEN_KEY);
-        if (!raw) return new Set();
-        // Backward compatibility with previous single-flag format.
-        if (raw === '1') return new Set(THEME_PULSE_VARIANTS);
-        return new Set(
-            raw
-                .split(',')
-                .map(v => v.trim())
-                .filter(Boolean)
-        );
-    }
-
-    function writePulseSeenVariants(seenSet) {
-        if (!seenSet || !seenSet.size) return;
-        const serialized = [...seenSet]
-            .filter(v => THEME_PULSE_VARIANTS.includes(v))
-            .join(',');
-        if (serialized) {
-            localStorage.setItem(THEME_PULSE_SEEN_KEY, serialized);
-        }
-    }
-
-    function isElementVisible(element) {
-        if (!element) return false;
-        const styles = window.getComputedStyle(element);
-        return styles.display !== 'none' && styles.visibility !== 'hidden' && element.getClientRects().length > 0;
-    }
-
-    function triggerThemePulse(control) {
-        if (!control) return;
-        control.classList.remove(THEME_PULSE_CLASS);
-        // Force reflow to restart finite pulse animation when needed.
-        void control.offsetWidth;
-        const cleanupPulse = () => control.classList.remove(THEME_PULSE_CLASS);
-        control.addEventListener('animationend', (event) => {
-            if (event.animationName !== 'themeSegmentedPulse') return;
-            cleanupPulse();
-        }, { once: true });
-        control.classList.add(THEME_PULSE_CLASS);
-        setTimeout(cleanupPulse, 6000);
-    }
-
-    function maybeShowThemePulse() {
-        if (getStoredTheme() || getThemePreviewOverride()) return;
-
-        const seenVariants = readPulseSeenVariants();
-        let didUpdate = false;
-
-        THEME_PULSE_VARIANTS.forEach(variant => {
-            if (seenVariants.has(variant)) return;
-            const control = $(`[data-theme-segmented][data-theme-variant="${variant}"]`);
-            if (!isElementVisible(control)) return;
-            triggerThemePulse(control);
-            seenVariants.add(variant);
-            didUpdate = true;
-        });
-
-        if (didUpdate) {
-            writePulseSeenVariants(seenVariants);
         }
     }
 
@@ -285,9 +251,7 @@
     }
 
     initTheme();
-    maybeShowThemePulse();
     initDeployBeacon();
-    window.addEventListener('resize', maybeShowThemePulse, { passive: true });
 
     // ===========================
     // 2. Mobile Navigation
@@ -309,9 +273,6 @@
             navToggle.setAttribute('aria-expanded', String(isOpen));
             if (navbar) {
                 navbar.classList.toggle('nav-menu-open', isOpen);
-            }
-            if (isOpen) {
-                maybeShowThemePulse();
             }
         });
     }
@@ -337,9 +298,7 @@
     // ===========================
     // 3. Navbar Scroll Effects
     // ===========================
-    let ticking = false;
-
-    function onScroll() {
+    function updateScrollState() {
         const scrollY = window.pageYOffset;
 
         // Navbar shadow
@@ -354,15 +313,9 @@
             scrollProgress.style.width = progress + '%';
         }
 
-        ticking = false;
     }
 
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(onScroll);
-            ticking = true;
-        }
-    }, { passive: true });
+    registerViewportHandler(updateScrollState, { scroll: true, resize: true, run: true });
 
     // ===========================
     // 3c. Contact Link Scroll Activation (Mobile + Tablet)
@@ -404,19 +357,7 @@
             });
         }
 
-        let rangeTicking = false;
-        const onRangeScroll = () => {
-            if (rangeTicking) return;
-            rangeTicking = true;
-            requestAnimationFrame(() => {
-                update();
-                rangeTicking = false;
-            });
-        };
-
-        window.addEventListener('scroll', onRangeScroll, { passive: true });
-        window.addEventListener('resize', onRangeScroll);
-        update();
+        registerViewportHandler(update, { scroll: true, resize: true, run: true });
     }
 
     initContactLinkScrollActivation();
@@ -427,7 +368,7 @@
     const ACTIVE_NAV_SCROLL_OFFSET = 24;
 
     function updateActiveNav() {
-        const sections = $$('body > section[id], body > .section-bg-wash > section[id]');
+        const sections = $$('.page-section[id]');
         const navHeight = navbar ? navbar.offsetHeight : 72;
         const scrollY = window.pageYOffset + navHeight + ACTIVE_NAV_SCROLL_OFFSET;
 
@@ -446,13 +387,7 @@
         });
     }
 
-    window.addEventListener('scroll', () => {
-        requestAnimationFrame(updateActiveNav);
-    }, { passive: true });
-    window.addEventListener('resize', () => {
-        requestAnimationFrame(updateActiveNav);
-    });
-    requestAnimationFrame(updateActiveNav);
+    registerViewportHandler(updateActiveNav, { scroll: true, resize: true, run: true });
 
     // ===========================
     // 5. Smooth Scroll
@@ -758,7 +693,6 @@
         const cardsLayer = $('.hero-cards-layer');
         if (!hero || !heroVisual || !cloudWrapper || !cardsLayer) return;
 
-        let ticking = false;
         const getParallaxFactors = () => {
             const viewportWidth = window.innerWidth;
             if (viewportWidth <= 768) {
@@ -801,18 +735,7 @@
             cardsLayer.style.transform = `translate3d(0, ${cardsOffsetValue}, 0)`;
         };
 
-        window.addEventListener('scroll', () => {
-            if (ticking) return;
-            ticking = true;
-
-            requestAnimationFrame(() => {
-                updateParallax();
-                ticking = false;
-            });
-        }, { passive: true });
-        window.addEventListener('resize', updateParallax, { passive: true });
-
-        updateParallax();
+        registerViewportHandler(updateParallax, { scroll: true, resize: true, run: true });
     }
 
     initHeroVisualParallax();
@@ -958,7 +881,7 @@
         if (fields.message) {
             fields.message.addEventListener('input', () => autoResizeTextarea(fields.message));
             fields.message.addEventListener('scroll', () => syncMessageScrollIndicator(fields.message), { passive: true });
-            window.addEventListener('resize', () => syncMessageScrollIndicator(fields.message));
+            registerViewportHandler(() => syncMessageScrollIndicator(fields.message), { resize: true });
             // Covers form-value restore/autofill on reload.
             autoResizeTextarea(fields.message);
         }

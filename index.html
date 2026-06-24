@@ -139,26 +139,26 @@
     <!-- ============================
          Navigation
          ============================ -->
-    <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <nav class="navbar" id="navbar" aria-label="Main navigation">
         <div class="container">
             <a href="#" class="nav-brand" aria-label="CloudWithDavid home">
                 <img class="brand-mark" src="assets/favicon/android-chrome-192x192.png" alt="" width="40" height="40">
                 <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
             </a>
-            <ul class="nav-links" id="navLinks" role="menubar">
-                <li role="none" class="nav-theme-item">
+            <ul class="nav-links" id="navLinks">
+                <li class="nav-theme-item">
                     <div class="theme-segmented theme-segmented--mobile theme-segmented--single" data-theme-segmented data-theme-variant="mobile" role="group" aria-label="Choose theme mode">
                         <button type="button" class="theme-segment theme-segment--toggle" data-theme-toggle aria-label="Toggle theme">
                             <span class="theme-segment-icon" aria-hidden="true"><i class="fas fa-moon" data-theme-toggle-icon></i></span>
                         </button>
                     </div>
                 </li>
-                <li role="none"><a href="#hero" role="menuitem">Home</a></li>
-                <li role="none"><a href="#about" role="menuitem">About</a></li>
-                <li role="none"><a href="#skills" role="menuitem">Skills</a></li>
-                <li role="none"><a href="#projects" role="menuitem">Projects</a></li>
-                <li role="none"><a href="#blog" role="menuitem">Blog</a></li>
-                <li role="none"><a href="#contact" role="menuitem">Contact</a></li>
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="nav-actions">
                 <div class="theme-segmented theme-segmented--desktop theme-segmented--single" data-theme-segmented data-theme-variant="desktop" role="group" aria-label="Choose theme mode">
@@ -183,7 +183,7 @@
     <!-- ============================
          Hero Section
          ============================ -->
-    <section class="hero hero--ai" id="hero">
+    <section class="page-section hero hero--ai" id="hero">
         <div class="hero-gradient-line" aria-hidden="true"></div>
         <div class="container">
             <div class="hero-grid">
@@ -223,18 +223,7 @@
                                 <path class="social-linkedin-lettering" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
                             </svg>
                         </a>
-                        <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link social-link--medium">
-                            <svg class="social-svg social-svg--medium" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
-                                <defs>
-                                    <mask id="medium-idle-mask-hero" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
-                                        <rect width="512" height="512" fill="#ffffff"></rect>
-                                        <path fill="#000000" d="M512 352.368v46.5c-2.92.282-5.92.426-9 .426-54.97 0-85.917-45.786-87.252-103.078-.039-2.215-.024-4.416.025-6.602.03-1.363.084-2.722.153-4.076.034-.724.068-1.404.123-2.161.054-.759.108-1.517.173-2.275 1.979-25.296 10.122-47.805 23.562-64.46 8.349-10.339 18.383-18.216 29.761-23.484 9.994-5.031 24.04-7.809 35.49-7.809h.495a97.2 97.2 0 016.47.216v12.793c-2.275-.623-4.71-.958-7.3-1.001-23.157.478-36.957 28.216-38.676 66.647H512v10.831h-47.014l-.015.01c-2.12 37.445 18.375 69.09 47.029 77.523zm-93.943-230.055l.404-.089v-3.126h-82.454l-76.562 179.944-76.561-179.944H94.03v3.126l.398.089c15.05 3.397 22.692 8.463 22.692 26.733v213.89c0 18.27-7.671 23.336-22.721 26.733l-.399.089v3.136h60.285v-3.126l-.399-.089c-15.05-3.397-22.691-8.463-22.691-26.733V161.453l98.351 231.441h5.579l101.216-237.896v213.23c-1.289 14.431-8.861 18.886-22.489 21.963l-.404.094v3.101h105.013v-3.101l-.404-.094c-13.642-3.077-21.396-7.532-22.686-21.963l-.069-219.182h.069c0-18.27 7.641-23.336 22.686-26.733z"></path>
-                                    </mask>
-                                </defs>
-                                <path class="social-medium-badge" mask="url(#medium-idle-mask-hero)" d="M89.825 0h332.35C471.776 0 512 40.224 512 89.825v332.35c0 49.6-40.224 89.825-89.825 89.825H89.825C40.225 512 0 471.775 0 422.175V89.825C0 40.224 40.225 0 89.825 0z"></path>
-                                <path class="social-medium-lettering" d="M512 352.368v46.5c-2.92.282-5.92.426-9 .426-54.97 0-85.917-45.786-87.252-103.078-.039-2.215-.024-4.416.025-6.602.03-1.363.084-2.722.153-4.076.034-.724.068-1.404.123-2.161.054-.759.108-1.517.173-2.275 1.979-25.296 10.122-47.805 23.562-64.46 8.349-10.339 18.383-18.216 29.761-23.484 9.994-5.031 24.04-7.809 35.49-7.809h.495a97.2 97.2 0 016.47.216v12.793c-2.275-.623-4.71-.958-7.3-1.001-23.157.478-36.957 28.216-38.676 66.647H512v10.831h-47.014l-.015.01c-2.12 37.445 18.375 69.09 47.029 77.523zm-93.943-230.055l.404-.089v-3.126h-82.454l-76.562 179.944-76.561-179.944H94.03v3.126l.398.089c15.05 3.397 22.692 8.463 22.692 26.733v213.89c0 18.27-7.671 23.336-22.721 26.733l-.399.089v3.136h60.285v-3.126l-.399-.089c-15.05-3.397-22.691-8.463-22.691-26.733V161.453l98.351 231.441h5.579l101.216-237.896v213.23c-1.289 14.431-8.861 18.886-22.489 21.963l-.404.094v3.101h105.013v-3.101l-.404-.094c-13.642-3.077-21.396-7.532-22.686-21.963l-.069-219.182h.069c0-18.27 7.641-23.336 22.686-26.733z"></path>
-                            </svg>
-                        </a>
+                        <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link social-link--medium"><i class="fab fa-medium"></i></a>
                         <a href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link social-link--youtube">
                             <svg class="social-svg social-svg--youtube" viewBox="0 0 28.57 20" aria-hidden="true" focusable="false">
                                 <defs>
@@ -317,7 +306,7 @@
     <!-- ============================
          About Section
          ============================ -->
-    <section id="about" class="section about section-bg-wash">
+    <section id="about" class="page-section section about section-bg-wash">
         <div class="container">
             <div class="section-header section-header--side-label" data-animate="fade-up">
                 <span class="section-tag">ABOUT</span>
@@ -388,7 +377,7 @@
     <!-- ============================
          Skills Section
          ============================ -->
-    <section id="skills" class="section skills">
+    <section id="skills" class="page-section section skills">
         <div class="container">
             <div class="section-header section-header--side-label" data-animate="fade-up">
                 <span class="section-tag">SKILLS</span>
@@ -474,7 +463,7 @@
          Projects Section
          ============================ -->
     <div class="section-bg-wash section-bg-wash--shared">
-    <section id="projects" class="section projects">
+    <section id="projects" class="page-section section projects">
         <div class="container">
             <div class="section-header section-header--side-label" data-animate="fade-up">
                 <span class="section-tag">PROJECTS</span>
@@ -567,7 +556,7 @@
     <!-- ============================
          Blog Section
          ============================ -->
-    <section id="blog" class="section blog-preview">
+    <section id="blog" class="page-section section blog-preview">
         <div class="container">
             <div class="section-header section-header--side-label" data-animate="fade-up">
                 <span class="section-tag">BLOG</span>
@@ -635,7 +624,7 @@
     <!-- ============================
          Contact Section
          ============================ -->
-    <section id="contact" class="section contact">
+    <section id="contact" class="page-section section contact">
         <div class="container">
             <div class="contact-grid">
                 <div class="contact-info" data-animate="fade-right">
@@ -739,18 +728,7 @@
                                     <path class="social-linkedin-lettering" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
                                 </svg>
                             </a>
-                            <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link social-link--medium">
-                                <svg class="social-svg social-svg--medium" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
-                                    <defs>
-                                        <mask id="medium-idle-mask-footer" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
-                                            <rect width="512" height="512" fill="#ffffff"></rect>
-                                            <path fill="#000000" d="M512 352.368v46.5c-2.92.282-5.92.426-9 .426-54.97 0-85.917-45.786-87.252-103.078-.039-2.215-.024-4.416.025-6.602.03-1.363.084-2.722.153-4.076.034-.724.068-1.404.123-2.161.054-.759.108-1.517.173-2.275 1.979-25.296 10.122-47.805 23.562-64.46 8.349-10.339 18.383-18.216 29.761-23.484 9.994-5.031 24.04-7.809 35.49-7.809h.495a97.2 97.2 0 016.47.216v12.793c-2.275-.623-4.71-.958-7.3-1.001-23.157.478-36.957 28.216-38.676 66.647H512v10.831h-47.014l-.015.01c-2.12 37.445 18.375 69.09 47.029 77.523zm-93.943-230.055l.404-.089v-3.126h-82.454l-76.562 179.944-76.561-179.944H94.03v3.126l.398.089c15.05 3.397 22.692 8.463 22.692 26.733v213.89c0 18.27-7.671 23.336-22.721 26.733l-.399.089v3.136h60.285v-3.126l-.399-.089c-15.05-3.397-22.691-8.463-22.691-26.733V161.453l98.351 231.441h5.579l101.216-237.896v213.23c-1.289 14.431-8.861 18.886-22.489 21.963l-.404.094v3.101h105.013v-3.101l-.404-.094c-13.642-3.077-21.396-7.532-22.686-21.963l-.069-219.182h.069c0-18.27 7.641-23.336 22.686-26.733z"></path>
-                                        </mask>
-                                    </defs>
-                                    <path class="social-medium-badge" mask="url(#medium-idle-mask-footer)" d="M89.825 0h332.35C471.776 0 512 40.224 512 89.825v332.35c0 49.6-40.224 89.825-89.825 89.825H89.825C40.225 512 0 471.775 0 422.175V89.825C0 40.224 40.225 0 89.825 0z"></path>
-                                    <path class="social-medium-lettering" d="M512 352.368v46.5c-2.92.282-5.92.426-9 .426-54.97 0-85.917-45.786-87.252-103.078-.039-2.215-.024-4.416.025-6.602.03-1.363.084-2.722.153-4.076.034-.724.068-1.404.123-2.161.054-.759.108-1.517.173-2.275 1.979-25.296 10.122-47.805 23.562-64.46 8.349-10.339 18.383-18.216 29.761-23.484 9.994-5.031 24.04-7.809 35.49-7.809h.495a97.2 97.2 0 016.47.216v12.793c-2.275-.623-4.71-.958-7.3-1.001-23.157.478-36.957 28.216-38.676 66.647H512v10.831h-47.014l-.015.01c-2.12 37.445 18.375 69.09 47.029 77.523zm-93.943-230.055l.404-.089v-3.126h-82.454l-76.562 179.944-76.561-179.944H94.03v3.126l.398.089c15.05 3.397 22.692 8.463 22.692 26.733v213.89c0 18.27-7.671 23.336-22.721 26.733l-.399.089v3.136h60.285v-3.126l-.399-.089c-15.05-3.397-22.691-8.463-22.691-26.733V161.453l98.351 231.441h5.579l101.216-237.896v213.23c-1.289 14.431-8.861 18.886-22.489 21.963l-.404.094v3.101h105.013v-3.101l-.404-.094c-13.642-3.077-21.396-7.532-22.686-21.963l-.069-219.182h.069c0-18.27 7.641-23.336 22.686-26.733z"></path>
-                                </svg>
-                            </a>
+                            <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link social-link--medium"><i class="fab fa-medium"></i></a>
                             <a href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link social-link--youtube">
                                 <svg class="social-svg social-svg--youtube" viewBox="0 0 28.57 20" aria-hidden="true" focusable="false">
                                     <defs>
