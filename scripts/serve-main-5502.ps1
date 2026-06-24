@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$mainRoot = [string](Resolve-Path (Join-Path $PSScriptRoot '..\..\CWD Site'))
+$mainRoot = [string](Resolve-Path (Join-Path $PSScriptRoot '..'))
 $port = 5502
 $hostName = '127.0.0.1'
 $url = "http://${hostName}:$port/"

@@ -1,6 +1,6 @@
-﻿/* ================================================================
-   CloudWithDavid â Main JavaScript
-   ================================================================ */
+﻿/* ======================================================
+   CloudWithDavid — JavaScript
+   ====================================================== */
 
 (function () {
     'use strict';
@@ -19,7 +19,6 @@
     const themeToggles = $$('[data-theme-toggle]');
     const themeToggleIcons = $$('[data-theme-toggle-icon]');
     const scrollProgress = $('#scrollProgress');
-    const heroCanvas = $('#heroParticles');
     const contactForm = $('#contactForm');
     const DEPLOY_BEACON_FLAG_PARAM = 'deploy';
     const DEPLOY_BEACON_FLAG_VALUE = 'key';
@@ -338,7 +337,6 @@
     // ===========================
     // 3. Navbar Scroll Effects
     // ===========================
-    let lastScrollY = 0;
     let ticking = false;
 
     function onScroll() {
@@ -356,7 +354,6 @@
             scrollProgress.style.width = progress + '%';
         }
 
-        lastScrollY = scrollY;
         ticking = false;
     }
 
@@ -460,14 +457,6 @@
     // ===========================
     // 5. Smooth Scroll
     // ===========================
-    function expandSkillsDropdown() {
-        // Dropdown removed; nothing to expand.
-    }
-
-    function hashTargetsSkillsDropdown(hash) {
-        return hash === '#skills' || hash.startsWith('#skills-');
-    }
-
     function getElementDocumentTop(element) {
         let top = 0;
         let current = element;
@@ -555,7 +544,6 @@
 
             if (this.classList.contains('floating-card') && href.startsWith('#skills')) {
                 const floatingCardOffset = -40;
-                expandSkillsDropdown();
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
                         if (window.location.hash !== href) {
@@ -568,19 +556,8 @@
                 return;
             }
 
-            if (hashTargetsSkillsDropdown(href)) {
-                expandSkillsDropdown();
-            }
-
             if (window.location.hash !== href) {
                 history.pushState(null, '', href);
-            }
-
-            if (hashTargetsSkillsDropdown(href)) {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => scrollToAnchorTarget(target));
-                });
-                return;
             }
 
             scrollToAnchorTarget(target);
@@ -589,23 +566,12 @@
 
     window.addEventListener('load', () => {
         if (!window.location.hash) return;
-        if (hashTargetsSkillsDropdown(window.location.hash)) {
-            expandSkillsDropdown();
-        }
         requestAnimationFrame(() => {
             requestAnimationFrame(() => scrollToHashTarget(window.location.hash, { behavior: 'auto' }));
         });
     });
 
     window.addEventListener('hashchange', () => {
-        if (hashTargetsSkillsDropdown(window.location.hash)) {
-            expandSkillsDropdown();
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => scrollToHashTarget(window.location.hash));
-            });
-            return;
-        }
-
         scrollToHashTarget(window.location.hash);
     });
 
@@ -621,42 +587,15 @@
 
         let previousBodyOverflow = '';
 
-        function normalizeModalSrc(raw, modalType) {
+        function normalizeModalSrc(raw) {
             if (!raw) return '';
 
             let value = String(raw).trim();
             if (!value) return '';
 
-            // Handle HTML-encoded quotes from copied embed snippets.
-            value = value
-                .replace(/&quot;|&#34;/gi, '"')
-                .replace(/&apos;|&#39;/gi, "'");
-
-            if (/<iframe/i.test(value) || /<img/i.test(value)) {
-                const srcMatch = value.match(/src\s*=\s*["']([^"']+)["']/i);
-                value = srcMatch ? srcMatch[1].trim() : '';
-            } else {
-                value = value.replace(/^['"]+|['"]+$/g, '').trim();
-            }
-
+            value = value.replace(/^['"]+|['"]+$/g, '').trim();
             if (!value || /^javascript:/i.test(value)) return '';
-
-            if (modalType !== 'iframe') return value;
-
-            try {
-                const url = new URL(value, window.location.href);
-                if (!/^https?:$/i.test(url.protocol)) return '';
-
-                if (/drive\.google\.com$/i.test(url.hostname)) {
-                    const idFromPath = url.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                    const fileId = idFromPath ? idFromPath[1] : (url.searchParams.get('id') || '');
-                    if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
-                }
-
-                return url.toString();
-            } catch {
-                return '';
-            }
+            return value;
         }
 
         const clearModalContent = () => {
@@ -675,8 +614,8 @@
         const openModal = (pill) => {
             const modalType = (pill.dataset.modalType || '').toLowerCase();
             const rawModalSrc = pill.dataset.modalSrc || '';
-            const src = normalizeModalSrc(rawModalSrc, modalType);
-            if (modalType !== 'iframe' && modalType !== 'image') return;
+            const src = normalizeModalSrc(rawModalSrc);
+            if (modalType !== 'image') return;
             if (!src) {
                 console.error('Invalid modal src:', rawModalSrc);
                 return;
@@ -687,21 +626,11 @@
             let mediaEl;
             modal.classList.toggle('cert-modal--image', modalType === 'image');
 
-            if (modalType === 'image') {
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = `${pill.textContent.trim()} credential`;
-                img.loading = 'lazy';
-                mediaEl = img;
-            } else {
-                const iframe = document.createElement('iframe');
-                iframe.src = src;
-                iframe.loading = 'lazy';
-                iframe.referrerPolicy = 'no-referrer';
-                iframe.allowFullscreen = true;
-                iframe.title = `${pill.textContent.trim()} preview`;
-                mediaEl = iframe;
-            }
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = `${pill.textContent.trim()} credential`;
+            img.loading = 'lazy';
+            mediaEl = img;
             modalContent.appendChild(mediaEl);
 
             previousBodyOverflow = document.body.style.overflow;
@@ -743,9 +672,6 @@
     initCredentialModal();
 
     // ===========================
-    // 7. Section Dropdown Toggles
-    // ===========================
-    // ===========================
     // 7. Scroll Animations (IntersectionObserver)
     // ===========================
     function initScrollAnimations() {
@@ -774,32 +700,7 @@
     initScrollAnimations();
 
     // ===========================
-    // 8. Progress Bars Animation
-    // ===========================
-    function initProgressBars() {
-        const bars = $$('.progress-bar[data-progress]');
-        if (!bars.length) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const bar = entry.target;
-                    const target = parseInt(bar.dataset.progress, 10);
-                    setTimeout(() => {
-                        bar.style.width = target + '%';
-                    }, 300);
-                    observer.unobserve(bar);
-                }
-            });
-        }, { threshold: 0.3 });
-
-        bars.forEach(bar => observer.observe(bar));
-    }
-
-    initProgressBars();
-
-    // ===========================
-    // 9. Stats Counter Animation
+    // 8. Stats Counter Animation
     // ===========================
     function animateCounter(el, target, suffix = '') {
         const duration = 2000;
@@ -846,151 +747,7 @@
     initCounters();
 
     // ===========================
-    // 11. Writing Card CTA Guard
-    // ===========================
-    function initWritingCardCtas() {
-        const cards = $$('.blog-card');
-        if (!cards.length) return;
-
-        const isValidExternalUrl = (href) => {
-            if (!href) return false;
-            try {
-                const url = new URL(href, window.location.href);
-                const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
-                return isHttp && url.origin !== window.location.origin;
-            } catch {
-                return false;
-            }
-        };
-
-        cards.forEach(card => {
-            const cta = $('.blog-link', card);
-            const status = (card.dataset.status || '').toLowerCase();
-            const isUpcoming = status === 'upcoming' || Boolean($('.blog-upcoming-badge', card));
-            const href = cta ? (cta.getAttribute('href') || '').trim() : '';
-            const hasValidCta = cta ? isValidExternalUrl(href) : false;
-
-            if (isUpcoming || !hasValidCta) {
-                if (cta) cta.remove();
-                card.classList.add('blog-card--no-cta');
-                return;
-            }
-
-            card.classList.remove('blog-card--no-cta');
-        });
-    }
-
-    initWritingCardCtas();
-
-    // ===========================
-    // 12. Hero Particle Canvas
-    // ===========================
-    function initParticles() {
-        if (!heroCanvas) return;
-
-        const ctx = heroCanvas.getContext('2d');
-        const maxParticleDrift = 0.08;
-        const particlePulseSpeed = 0.01;
-        let particles = [];
-        let animId;
-        let w, h;
-
-        function resize() {
-            const hero = heroCanvas.parentElement;
-            w = heroCanvas.width = hero.offsetWidth;
-            h = heroCanvas.height = hero.offsetHeight;
-        }
-
-        function createParticle() {
-            return {
-                x: Math.random() * w,
-                y: Math.random() * h,
-                size: Math.random() * 2 + 0.5,
-                speedX: (Math.random() - 0.5) * maxParticleDrift,
-                speedY: (Math.random() - 0.5) * maxParticleDrift,
-                opacity: Math.random() * 0.5 + 0.1,
-                pulse: Math.random() * Math.PI * 2
-            };
-        }
-
-        function init() {
-            resize();
-            const count = Math.min(Math.floor((w * h) / 12000), 80);
-            particles = Array.from({ length: count }, createParticle);
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, w, h);
-
-            const theme = document.documentElement.getAttribute('data-theme');
-            const color = theme === 'light' ? '78,160,255' : '180,210,255';
-
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-                p.pulse += particlePulseSpeed;
-
-                // Wrap around
-                if (p.x < 0) p.x = w;
-                if (p.x > w) p.x = 0;
-                if (p.y < 0) p.y = h;
-                if (p.y > h) p.y = 0;
-
-                const pulseOpacity = p.opacity * (0.6 + 0.4 * Math.sin(p.pulse));
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${color}, ${pulseOpacity})`;
-                ctx.fill();
-            });
-
-            // Draw connections
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 120) {
-                        const opacity = (1 - dist / 120) * 0.12;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            animId = requestAnimationFrame(draw);
-        }
-
-        init();
-        draw();
-
-        window.addEventListener('resize', () => {
-            cancelAnimationFrame(animId);
-            init();
-            draw();
-        });
-
-        // Pause when not visible
-        const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-                draw();
-            } else {
-                cancelAnimationFrame(animId);
-            }
-        }, { threshold: 0 });
-
-        observer.observe(heroCanvas);
-    }
-
-    initParticles();
-
-    // ===========================
-    // 13. Hero Visual Parallax
+    // 9. Hero Visual Parallax
     // ===========================
     function initHeroVisualParallax() {
         const hero = $('#hero');
@@ -1061,7 +818,7 @@
     initHeroVisualParallax();
 
     // ===========================
-    // 14. Contact Form
+    // 10. Contact Form
     // ===========================
     function initContactForm() {
         if (!contactForm) return;
@@ -1407,7 +1164,7 @@
     initContactForm();
 
     // ===========================
-    // 16. Keyboard Navigation
+    // 11. Keyboard Navigation
     // ===========================
     document.addEventListener('keydown', (e) => {
         // Tab focus ring
@@ -1421,68 +1178,7 @@
     });
 
     // ===========================
-    // 18. Completed Badge Sheen Loop
-    // ===========================
-    function initCompletedBadgeSheenLoop() {
-        const badges = $$('.status-complete');
-        if (!badges.length) return;
-
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (reducedMotion.matches) return;
-
-        const parseDurationMs = (rawValue, fallbackMs) => {
-            const value = String(rawValue || '').trim();
-            if (!value) return fallbackMs;
-
-            if (value.endsWith('ms')) {
-                const ms = Number.parseFloat(value.slice(0, -2));
-                return Number.isFinite(ms) ? ms : fallbackMs;
-            }
-
-            if (value.endsWith('s')) {
-                const sec = Number.parseFloat(value.slice(0, -1));
-                return Number.isFinite(sec) ? sec * 1000 : fallbackMs;
-            }
-
-            const numeric = Number.parseFloat(value);
-            return Number.isFinite(numeric) ? numeric * 1000 : fallbackMs;
-        };
-
-        const restartSweep = (badge) => {
-            badge.classList.remove('is-sweeping');
-            void badge.offsetWidth; // force reflow to retrigger CSS animation
-            badge.classList.add('is-sweeping');
-        };
-
-        const runLoop = (badge, initialDelayMs = 0) => {
-            const tick = () => {
-                if (!document.body.contains(badge)) return;
-
-                const styles = getComputedStyle(badge);
-                const sweepMs = parseDurationMs(styles.getPropertyValue('--complete-sheen-sweep'), 1100);
-                const gapMs = parseDurationMs(styles.getPropertyValue('--complete-sheen-gap'), 3200);
-                const nextMs = Math.max(150, sweepMs + gapMs);
-
-                restartSweep(badge);
-                const timerId = window.setTimeout(tick, nextMs);
-                badge.dataset.sheenTimerId = String(timerId);
-            };
-
-            const initialTimer = window.setTimeout(tick, initialDelayMs);
-            badge.dataset.sheenTimerId = String(initialTimer);
-        };
-
-        badges.forEach((badge, index) => {
-            const existing = Number(badge.dataset.sheenTimerId || 0);
-            if (existing) clearTimeout(existing);
-            runLoop(badge, 220 + (index * 120));
-        });
-    }
-
-    initCompletedBadgeSheenLoop();
-
-    // ===========================
-    // 20. Easter Egg Console
+    // 12. Easter Egg Console
     // ===========================
     console.log(
         '%câï¸ Cloud With David',
@@ -1496,28 +1192,5 @@
         '%cð https://linkedin.com/in/cloudwithdavid',
         'font-size: 0.9rem; color: #8FA6CC;'
     );
-
-    // ===========================
-    // 21. Performance: Lazy load images
-    // ===========================
-    function initLazyLoading() {
-        const images = $$('img[loading="lazy"]');
-        if ('IntersectionObserver' in window) {
-            const imgObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                        }
-                        imgObserver.unobserve(img);
-                    }
-                });
-            });
-            images.forEach(img => imgObserver.observe(img));
-        }
-    }
-
-    initLazyLoading();
 
 })();
