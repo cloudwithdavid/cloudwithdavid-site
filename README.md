@@ -61,6 +61,4 @@ It is a custom-built static frontend with Cloudflare-based serverless handling f
 
 ### Local tooling
 
-- `.githooks/pre-commit` - local Git hook
 - `.vscode/settings.json` - workspace settings
-- `scripts/` - helper scripts for local serving and asset/version workflows, including `scripts/main.ps1`

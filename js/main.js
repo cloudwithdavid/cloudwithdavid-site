@@ -122,9 +122,6 @@
         themeToggles.forEach(toggle => {
             toggle.addEventListener('click', () => {
                 toggleTheme();
-                if (toggle.closest('.nav-theme-item')) {
-                    closeMobileMenu();
-                }
             });
         });
     }
@@ -151,9 +148,6 @@
         navLinks.classList.remove('active');
         navToggle.classList.remove('active');
         navToggle.setAttribute('aria-expanded', 'false');
-        if (navbar) {
-            navbar.classList.remove('nav-menu-open');
-        }
     }
 
     if (navToggle) {
@@ -161,9 +155,6 @@
             const isOpen = navLinks.classList.toggle('active');
             navToggle.classList.toggle('active');
             navToggle.setAttribute('aria-expanded', String(isOpen));
-            if (navbar) {
-                navbar.classList.toggle('nav-menu-open', isOpen);
-            }
         });
     }
 
@@ -199,8 +190,10 @@
         // Scroll progress bar
         if (scrollProgress) {
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
-            scrollProgress.style.width = progress + '%';
+            const progress = docHeight > 0
+                ? Math.min(1, Math.max(0, scrollY / docHeight))
+                : 0;
+            scrollProgress.style.transform = `scaleX(${progress})`;
         }
 
     }
@@ -215,22 +208,24 @@
         if (!contactLinks.length) return;
 
         const MOBILE_TABLET_MAX_WIDTH = 1024;
-        const TABLET_MIN_WIDTH = 770;
-        const MID_MOBILE_MIN_WIDTH = 455;
+        const ACTIVE_BAND_CENTER_RATIO = 0.55;
+        const ACTIVE_BAND_HALF_HEIGHT_RATIO = 0.06;
+        const ACTIVE_BAND_MIN_HALF_HEIGHT = 32;
+        const ACTIVE_BAND_MAX_HALF_HEIGHT = 50;
 
-        function getActiveBandPx(viewportWidth) {
-            if (viewportWidth > MOBILE_TABLET_MAX_WIDTH) return null;
-            if (viewportWidth >= TABLET_MIN_WIDTH) {
-                return { topPx: 475, bottomPx: 525 };
-            }
-            if (viewportWidth >= MID_MOBILE_MIN_WIDTH) {
-                return { topPx: 450, bottomPx: 500 };
-            }
-            return { topPx: 425, bottomPx: 475 };
+        function getActiveBand() {
+            if (window.innerWidth > MOBILE_TABLET_MAX_WIDTH) return null;
+
+            const center = window.innerHeight * ACTIVE_BAND_CENTER_RATIO;
+            const halfHeight = Math.min(
+                ACTIVE_BAND_MAX_HALF_HEIGHT,
+                Math.max(ACTIVE_BAND_MIN_HALF_HEIGHT, window.innerHeight * ACTIVE_BAND_HALF_HEIGHT_RATIO)
+            );
+            return { topPx: center - halfHeight, bottomPx: center + halfHeight };
         }
 
         function update() {
-            const activeBand = getActiveBandPx(window.innerWidth);
+            const activeBand = getActiveBand();
 
             contactLinks.forEach((link) => {
                 if (!activeBand) {
@@ -360,7 +355,7 @@
     }
 
     $$('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', async function (e) {
+        anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href === '#') return;
             const target = $(href);
@@ -448,15 +443,13 @@
 
             clearModalContent();
 
-            let mediaEl;
             modal.classList.toggle('cert-modal--image', modalType === 'image');
 
             const img = document.createElement('img');
             img.src = src;
             img.alt = `${pill.textContent.trim()} credential`;
             img.loading = 'lazy';
-            mediaEl = img;
-            modalContent.appendChild(mediaEl);
+            modalContent.appendChild(img);
 
             previousBodyOverflow = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
@@ -502,7 +495,6 @@
     function animateCounter(el, target, suffix = '') {
         const duration = 2000;
         const startTime = performance.now();
-        const startVal = 0;
 
         function update(currentTime) {
             const elapsed = currentTime - startTime;
@@ -510,7 +502,7 @@
 
             // Ease out cubic
             const ease = 1 - Math.pow(1 - progress, 3);
-            const current = Math.round(startVal + (target - startVal) * ease);
+            const current = Math.round(target * ease);
 
             el.textContent = current + suffix;
 
@@ -623,6 +615,7 @@
         let nextContactSubmitAt = 0;
         let turnstileWidgetId = null;
         let pendingTurnstileRequest = null;
+        let successResetTimer = null;
 
         const fields = {
             name: $('#name', contactForm),
@@ -814,6 +807,18 @@
             });
         }
 
+        function resetTurnstileWidget() {
+            if (turnstileWidgetId === null || !window.turnstile || typeof window.turnstile.reset !== 'function') {
+                return;
+            }
+
+            try {
+                window.turnstile.reset(turnstileWidgetId);
+            } catch {
+                // Ignore Turnstile reset failures.
+            }
+        }
+
         contactForm.addEventListener('submit', async (e) => {
             if (!window.fetch) return;
             e.preventDefault();
@@ -838,6 +843,11 @@
             setPersistedCooldown(nextContactSubmitAt);
 
             // Loading state
+            if (successResetTimer) {
+                clearTimeout(successResetTimer);
+                successResetTimer = null;
+            }
+            submitBtn.classList.remove('btn-submit--success');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
             contactForm.setAttribute('aria-busy', 'true');
@@ -875,11 +885,20 @@
                 }
 
                 submitBtn.innerHTML = '<span>Message sent</span><i class="fas fa-check"></i>';
-                submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                submitBtn.classList.add('btn-submit--success');
                 contactForm.reset();
                 autoResizeTextarea(fields.message);
                 clearFieldErrors();
+                resetTurnstileWidget();
                 setFormStatus('Message sent successfully! I will get back to you soon.', 'success');
+
+                const cooldownRemaining = Math.max(0, nextContactSubmitAt - Date.now());
+                successResetTimer = setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
+                    submitBtn.classList.remove('btn-submit--success');
+                    successResetTimer = null;
+                }, cooldownRemaining);
             } catch (err) {
                 nextContactSubmitAt = 0;
                 setPersistedCooldown(0);
@@ -895,13 +914,7 @@
                     friendlyError = 'Message could not be delivered right now. Please try again shortly.';
                 }
 
-                if (turnstileWidgetId !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
-                    try {
-                        window.turnstile.reset(turnstileWidgetId);
-                    } catch {
-                        // Ignore Turnstile reset failures.
-                    }
-                }
+                resetTurnstileWidget();
 
                 if (rawErrorMessage) {
                     console.error('Contact form submit error:', rawErrorMessage);
@@ -910,7 +923,7 @@
                 setFormStatus(friendlyError, 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
-                submitBtn.style.background = '';
+                submitBtn.classList.remove('btn-submit--success');
             } finally {
                 contactForm.removeAttribute('aria-busy');
             }
@@ -918,35 +931,5 @@
     }
 
     initContactForm();
-
-    // ===========================
-    // 11. Keyboard Navigation
-    // ===========================
-    document.addEventListener('keydown', (e) => {
-        // Tab focus ring
-        if (e.key === 'Tab') {
-            document.body.classList.add('keyboard-user');
-        }
-    });
-
-    document.addEventListener('mousedown', () => {
-        document.body.classList.remove('keyboard-user');
-    });
-
-    // ===========================
-    // 12. Console
-    // ===========================
-    console.log(
-        '%câï¸ Cloud With David',
-        'font-size: 2rem; font-weight: bold; color: #4EA0FF; text-shadow: 0 2px 10px rgba(78,160,255,0.3);'
-    );
-    console.log(
-        '%cWhat\'s up! Thanks for checking out my site! If you have any questions or want to connect, feel free to reach out.',
-        'font-size: 1rem; color: #00E5FF;'
-    );
-    console.log(
-        '%cð https://linkedin.com/in/cloudwithdavid',
-        'font-size: 0.9rem; color: #8FA6CC;'
-    );
 
 })();

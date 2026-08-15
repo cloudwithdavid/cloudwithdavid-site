@@ -3,7 +3,6 @@ const NAME_MAX_LENGTH = 80;
 const EMAIL_MAX_LENGTH = 254;
 const SUBJECT_MAX_LENGTH = 160;
 const MESSAGE_MAX_LENGTH = 5000;
-const HONEYPOT_MAX_LENGTH = 120;
 const DEFAULT_TURNSTILE_HOSTNAMES = ['cloudwithdavid.com', 'www.cloudwithdavid.com'];
 const DEFAULT_SECURITY_HEADERS = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -74,8 +73,7 @@ export async function onRequestPost({ request, env }) {
         name.length > NAME_MAX_LENGTH ||
         email.length > EMAIL_MAX_LENGTH ||
         subject.length > SUBJECT_MAX_LENGTH ||
-        message.length > MESSAGE_MAX_LENGTH ||
-        honeypot.length > HONEYPOT_MAX_LENGTH
+        message.length > MESSAGE_MAX_LENGTH
     ) {
         return json({ ok: false, error: 'invalid_length' }, 400);
     }
