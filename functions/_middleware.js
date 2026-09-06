@@ -11,7 +11,7 @@ const CONTENT_SECURITY_POLICY = [
     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-    "connect-src 'self' https://challenges.cloudflare.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://free.freeipapi.com",
     "frame-src https://challenges.cloudflare.com",
     "manifest-src 'self'",
     'upgrade-insecure-requests'

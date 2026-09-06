@@ -115,7 +115,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     const from = env.RESEND_FROM || 'onboarding@resend.dev';
-    const to = env.CONTACT_TO || 'cloudwithdavid@gmail.com';
+    const to = env.CONTACT_TO || 'david@cloudwithdavid.com';
     const resendBody = {
         from,
         to: [to],

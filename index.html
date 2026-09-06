@@ -34,7 +34,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Syne:wght@600;700&amp;display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -174,7 +174,7 @@
                         <span>Cloud<span class="brand-accent"> With</span> David</span>
                     </h1>
                     <h2 class="hero-subtitle">
-                        <span>Cloud &middot; Operations &middot; Applied AI</span>
+                        <span>Cloud <span class="hero-subtitle-dot">&middot;</span> Operations <span class="hero-subtitle-dot">&middot;</span> Applied AI</span>
                     </h2>
                     <p class="hero-description">
                         Documenting cloud projects and foundational insights on my path to Cloud / AI architecture.
@@ -471,7 +471,7 @@
                     <div class="project-tags">
                         <span>UI/UX</span>
                         <span>Brand</span>
-                        <span>HTML/CSS</span>
+                        <span class="project-tag--technical">HTML/CSS</span>
                     </div>
                 </article>
 
@@ -493,10 +493,10 @@
                     </div>
                     <p>CLI evidence gathering, automation, and systems troubleshooting through incident-style investigation.</p>
                     <div class="project-tags">
-                        <span>Linux</span>
-                        <span>Networking</span>
-                        <span>APIs</span>
-                        <span>Automation</span>
+                        <span class="project-tag--technical">Linux</span>
+                        <span class="project-tag--technical">Networking</span>
+                        <span class="project-tag--technical">APIs</span>
+                        <span class="project-tag--technical">Automation</span>
                     </div>
                 </article>
 
@@ -524,10 +524,10 @@
                     </div>
                     <p> Backend development evolving toward AI integration, AWS deployment, automation, and security hardening.</p>
                     <div class="project-tags">
-                        <span>AWS</span>
-                        <span>FastAPI</span>
-                        <span>DevOps</span>
-                        <span>AI</span>
+                        <span class="project-tag--technical">AWS</span>
+                        <span class="project-tag--technical">FastAPI</span>
+                        <span class="project-tag--technical">DevOps</span>
+                        <span class="project-tag--technical">AI</span>
                     </div>
                 </article>
             </div>
@@ -611,16 +611,15 @@
             <div class="contact-grid">
                 <div class="contact-info">
                     <div class="section-header contact-section-header">
-                        <span class="section-tag">CONTACT</span>
                         <h2 class="section-title">Let's Build <span class="gradient-text">Together</span></h2>
                         <p class="section-subtitle">Follow the journey, explore the work, or get in touch</p>
                     </div>
                     <div class="contact-methods">
-                        <a href="mailto:contact@cloudwithdavid.com" class="contact-link">
+                        <a href="mailto:david@cloudwithdavid.com" class="contact-link">
                             <div class="contact-link-icon"><i class="fas fa-envelope"></i></div>
                             <div class="contact-link-info">
                                 <strong>Email</strong>
-                                <span>contact@cloudwithdavid.com</span>
+                                <span>david@cloudwithdavid.com</span>
                             </div>
                             <i class="fas fa-arrow-right contact-link-arrow"></i>
                         </a>
@@ -637,6 +636,19 @@
                             <div class="contact-link-info">
                                 <strong>GitHub</strong>
                                 <span>View my projects</span>
+                            </div>
+                            <i class="fas fa-external-link-alt contact-link-arrow"></i>
+                        </a>
+                        <a href="https://www.credly.com/users/cloudwithdavid/badges#credly" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--credly">
+                            <div class="contact-link-icon">
+                                <svg class="credly-verification-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M12 2.75 19.25 5.8v5.05c0 4.77-2.88 8.98-7.25 10.4-4.37-1.42-7.25-5.63-7.25-10.4V5.8L12 2.75Z"></path>
+                                    <path d="m8.25 12.1 2.45 2.45 5.05-5.1"></path>
+                                </svg>
+                            </div>
+                            <div class="contact-link-info">
+                                <strong>Credly</strong>
+                                <span>View verified credentials</span>
                             </div>
                             <i class="fas fa-external-link-alt contact-link-arrow"></i>
                         </a>
@@ -661,11 +673,11 @@
                         </div>
                         <div class="form-group">
                             <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" required placeholder="What's this about?">
+                            <input type="text" id="subject" name="subject" required placeholder="What would you like to discuss?">
                         </div>
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required placeholder="Your message..."></textarea>
+                            <textarea id="message" name="message" rows="5" required placeholder="Tell me about the role, project, idea, or opportunity..."></textarea>
                         </div>
                         <p class="form-status" id="formStatus" role="status" aria-live="assertive" aria-atomic="true"></p>
                         <div class="cf-turnstile" data-sitekey="0x4AAAAAACjTDkHFPIUU0zlY" data-size="invisible"></div>
@@ -685,13 +697,25 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-panel">
-                <div class="footer-grid">
-                    <div class="footer-brand-col">
+                <div class="footer-top">
+                    <div class="footer-identity">
                         <a href="#" class="footer-brand">
                             <img class="brand-mark" src="assets/favicon/android-chrome-192x192.png" alt="" width="36" height="36">
                             <span class="brand-text">Cloud<span class="brand-accent"> With</span> David</span>
                         </a>
-                        <div class="footer-social footer-social--brand">
+                        <p class="footer-positioning">Cloud <span aria-hidden="true">&middot;</span> Operations <span aria-hidden="true">&middot;</span> Applied AI</p>
+                    </div>
+                    <div class="footer-telemetry" role="group" aria-label="Visitor session telemetry">
+                        <span class="footer-telemetry-dot" aria-hidden="true"></span>
+                        <span id="footerRegion">REGION --</span>
+                        <span class="footer-telemetry-separator" aria-hidden="true"></span>
+                        <span>Latency <span id="footerRtt">--</span></span>
+                        <span class="footer-telemetry-separator" aria-hidden="true"></span>
+                        <span>TTFB <span id="footerTtfb">--</span></span>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-social">
                             <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link--github"><i class="fab fa-github"></i></a>
                             <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link--linkedin">
                                 <svg class="social-svg social-svg--linkedin" viewBox="0 0 382 382" aria-hidden="true" focusable="false">
@@ -718,25 +742,7 @@
                                     <path class="social-youtube-play" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
                                 </svg>
                             </a>
-                        </div>
                     </div>
-                    <div class="footer-col footer-col--nav">
-                        <ul class="footer-links">
-                            <li><a href="#about">About</a></li>
-                            <li><a href="#skills">Skills</a></li>
-                            <li><a href="#projects">Projects</a></li>
-                            <li><a href="#blog">Blog</a></li>
-                            <li><a href="#contact">Contact</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col footer-col--verify">
-                        <a class="footer-verification-link" href="https://www.credly.com/users/cloudwithdavid/badges#credly" target="_blank" rel="noopener noreferrer">
-                            <span>Verify Credentials on Credly</span>
-                            <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="footer-bottom">
                     <p class="footer-copyright">
                         &copy; 2026 Cloud With David. All rights reserved.
                     </p>

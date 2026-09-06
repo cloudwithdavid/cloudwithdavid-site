@@ -595,6 +595,138 @@
     initHeroVisualParallax();
 
     // ===========================
+    // 9. Footer Visitor Telemetry
+    // ===========================
+    function initFooterTelemetry() {
+        const regionEl = $('#footerRegion');
+        const rttEl = $('#footerRtt');
+        const ttfbEl = $('#footerTtfb');
+        if (!regionEl || !rttEl || !ttfbEl) return;
+
+        const getBroadRegion = (location) => {
+            const country = String(location?.countryCode || '').toUpperCase();
+            const continent = String(location?.continentCode || '').toUpperCase();
+            const longitude = Number(location?.longitude);
+            const hasLongitude = Number.isFinite(longitude);
+
+            if (country === 'US') {
+                if (!hasLongitude) return 'US-EAST';
+                if (longitude < -112) return 'US-WEST';
+                if (longitude < -90) return 'US-CENTRAL';
+                return 'US-EAST';
+            }
+
+            if (country === 'CA') {
+                return hasLongitude && longitude < -100 ? 'CA-WEST' : 'CA-EAST';
+            }
+
+            const southAmerica = new Set([
+                'AR', 'BO', 'BR', 'CL', 'CO', 'EC', 'FK', 'GF', 'GY', 'PE', 'PY', 'SR', 'UY', 'VE'
+            ]);
+            if (southAmerica.has(country) || continent === 'SA') return 'SA-EAST';
+
+            const euCentral = new Set([
+                'AT', 'CH', 'CZ', 'DE', 'HR', 'HU', 'LI', 'PL', 'SI', 'SK'
+            ]);
+            if (euCentral.has(country)) return 'EU-CENTRAL';
+            if (continent === 'EU') return 'EU-WEST';
+
+            const apacEast = new Set(['CN', 'HK', 'JP', 'KP', 'KR', 'MO', 'MN', 'TW']);
+            if (apacEast.has(country)) return 'APAC-EAST';
+
+            const middleEast = new Set([
+                'AE', 'BH', 'IL', 'IQ', 'IR', 'JO', 'KW', 'LB', 'OM', 'PS', 'QA', 'SA', 'SY', 'TR', 'YE'
+            ]);
+            if (middleEast.has(country)) return 'ME-CENTRAL';
+
+            if (continent === 'AS' || continent === 'OC') return 'APAC-SOUTHEAST';
+            if (continent === 'AF') return 'AF-CENTRAL';
+            if (continent === 'AM') return 'AM-CENTRAL';
+            return '';
+        };
+
+        const fetchWithTimeout = async (url, options, timeoutMs = 4000) => {
+            const controller = new AbortController();
+            const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+                window.clearTimeout(timeoutId);
+            }
+        };
+
+        const updateTtfb = () => {
+            if (!window.performance || typeof performance.getEntriesByType !== 'function') return;
+
+            const [navigation] = performance.getEntriesByType('navigation');
+            if (!navigation) return;
+
+            const ttfb = navigation.responseStart - navigation.requestStart;
+            if (Number.isFinite(ttfb) && ttfb >= 0) {
+                ttfbEl.textContent = `${Math.round(ttfb)}ms`;
+            }
+        };
+
+        const updateRegion = async () => {
+            try {
+                const response = await fetchWithTimeout('https://free.freeipapi.com/api/json/', {
+                    cache: 'no-store',
+                    credentials: 'omit',
+                    headers: { Accept: 'application/json' },
+                    referrerPolicy: 'no-referrer'
+                });
+                if (!response.ok) return;
+
+                const location = await response.json();
+                const broadRegion = getBroadRegion(location);
+                if (broadRegion) regionEl.textContent = broadRegion;
+            } catch {
+                // Keep the neutral placeholder when location lookup is unavailable.
+            }
+        };
+
+        const updateRtt = async () => {
+            const samples = [];
+
+            try {
+                for (let sample = 0; sample < 3; sample += 1) {
+                    const assetUrl = new URL('/assets/favicon/favicon-16x16.png', window.location.href);
+                    assetUrl.searchParams.set('_rtt', `${Date.now()}-${sample}`);
+                    const startedAt = performance.now();
+                    const response = await fetchWithTimeout(assetUrl.href, {
+                        method: 'HEAD',
+                        cache: 'no-store',
+                        credentials: 'same-origin'
+                    });
+                    if (!response.ok) return;
+                    samples.push(performance.now() - startedAt);
+                }
+
+                samples.sort((a, b) => a - b);
+                rttEl.textContent = `${Math.round(samples[1])}ms`;
+            } catch {
+                // Keep the neutral placeholder when same-origin timing is unavailable.
+            }
+        };
+
+        const startNetworkTelemetry = () => {
+            if (!window.fetch || !window.performance) return;
+            void Promise.allSettled([updateRegion(), updateRtt()]);
+        };
+
+        updateTtfb();
+
+        if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(startNetworkTelemetry, { timeout: 1200 });
+        } else {
+            window.setTimeout(startNetworkTelemetry, 0);
+        }
+    }
+
+    initFooterTelemetry();
+
+    // ===========================
     // 10. Contact Form
     // ===========================
     function initContactForm() {
@@ -610,7 +742,7 @@
         const FORM_SUBMIT_COOLDOWN_MS = 15000;
         const CONTACT_COOLDOWN_STORAGE_KEY = 'cwd-contact-next-submit-at';
         const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-        const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email contact@cloudwithdavid.com.';
+        const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email david@cloudwithdavid.com.';
         const MESSAGE_MAX_HEIGHT_PX = 360;
         let nextContactSubmitAt = 0;
         let turnstileWidgetId = null;
@@ -909,7 +1041,7 @@
                 if (apiError === 'turnstile' || /turnstile/i.test(rawErrorMessage)) {
                     friendlyError = 'Security check failed. Please try again.';
                 } else if (apiError === 'server_config') {
-                    friendlyError = 'Contact form is temporarily unavailable. Please email contact@cloudwithdavid.com.';
+                    friendlyError = 'Contact form is temporarily unavailable. Please email david@cloudwithdavid.com.';
                 } else if (apiError === 'email') {
                     friendlyError = 'Message could not be delivered right now. Please try again shortly.';
                 }
