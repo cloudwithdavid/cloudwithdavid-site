@@ -140,6 +140,76 @@
 
     initTheme();
 
+    const HERO_POSITIONING_LINE_WIDTH_RATIO = 0.99;
+    const FOOTER_POSITIONING_LINE_WIDTH_RATIO = 0.99;
+
+    function fitSingleLineToReferenceWidth(reference, line, widthProperty, fontSizeProperty, widthRatio) {
+        const referenceWidth = reference.getBoundingClientRect().width * widthRatio;
+        if (!referenceWidth) return;
+
+        line.style.setProperty(widthProperty, `${referenceWidth}px`);
+        line.style.removeProperty(fontSizeProperty);
+
+        const textRange = document.createRange();
+        textRange.selectNodeContents(line);
+        const naturalLineWidth = textRange.getBoundingClientRect().width;
+        const baseFontSize = parseFloat(window.getComputedStyle(line).fontSize);
+        if (naturalLineWidth > referenceWidth && baseFontSize) {
+            line.style.setProperty(fontSizeProperty, `${baseFontSize * (referenceWidth / naturalLineWidth)}px`);
+        }
+    }
+
+    // ===========================
+    // 1b. Hero Subtitle Width
+    // ===========================
+    function initHeroSubtitleWidth() {
+        const heroTitleText = $('.hero-title > span');
+        const heroSubtitle = $('.hero-subtitle');
+        if (!heroTitleText || !heroSubtitle) return;
+
+        function syncWidth() {
+            fitSingleLineToReferenceWidth(
+                heroTitleText,
+                heroSubtitle,
+                '--hero-title-width',
+                '--hero-subtitle-font-size',
+                HERO_POSITIONING_LINE_WIDTH_RATIO
+            );
+        }
+
+        registerViewportHandler(syncWidth, { resize: true, run: true });
+        document.fonts?.ready.then(syncWidth);
+    }
+
+    initHeroSubtitleWidth();
+
+    // ===========================
+    // 1c. Footer Positioning Width
+    // ===========================
+    function initFooterPositioningWidth() {
+        const footerBrandText = $('.footer-brand .brand-text');
+        const footerPositioning = $('.footer-positioning');
+        const footerPositioningText = $('.footer-positioning-text');
+        if (!footerBrandText || !footerPositioning || !footerPositioningText) return;
+
+        function syncWidth() {
+            const width = footerBrandText.getBoundingClientRect().width * FOOTER_POSITIONING_LINE_WIDTH_RATIO;
+            if (!width) return;
+            footerPositioning.style.setProperty('--footer-brand-text-width', `${width}px`);
+            // Measure at the browser's actual font size, including any minimum-font setting.
+            footerPositioning.style.removeProperty('--footer-positioning-scale');
+            const textWidth = footerPositioningText.getBoundingClientRect().width;
+            if (textWidth) {
+                footerPositioning.style.setProperty('--footer-positioning-scale', Math.min(1, width / textWidth));
+            }
+        }
+
+        registerViewportHandler(syncWidth, { resize: true, run: true });
+        document.fonts?.ready.then(syncWidth);
+    }
+
+    initFooterPositioningWidth();
+
     // ===========================
     // 2. Mobile Navigation
     // ===========================
