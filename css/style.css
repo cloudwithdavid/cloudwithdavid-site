@@ -238,7 +238,8 @@ body::before {
         radial-gradient(ellipse 72% 46% at 84% 16%, rgba(78, 160, 255, 0.07), transparent 68%),
         radial-gradient(ellipse 56% 34% at 14% 78%, rgba(78, 160, 255, 0.035), transparent 74%),
         radial-gradient(ellipse 42% 28% at 76% 92%, rgba(99, 200, 171, 0.025), transparent 72%),
-        repeating-linear-gradient(90deg, rgba(118, 154, 196, 0.028) 0 1px, transparent 1px 132px);
+        repeating-linear-gradient(90deg, rgba(118, 154, 196, 0.028) 0 1px, transparent 1px 132px),
+        repeating-linear-gradient(0deg, rgba(118, 154, 196, 0.022) 0 1px, transparent 1px 132px);
     transition: opacity var(--t-slow);
 }
 
@@ -249,7 +250,8 @@ body::before {
         radial-gradient(ellipse 72% 46% at 84% 16%, rgba(78, 160, 255, 0.10), transparent 70%),
         radial-gradient(ellipse 52% 34% at 18% 76%, rgba(120, 240, 200, 0.06), transparent 74%),
         radial-gradient(ellipse 46% 32% at 76% 88%, rgba(123, 97, 255, 0.045), transparent 74%),
-        repeating-linear-gradient(90deg, rgba(118, 154, 196, 0.03) 0 1px, transparent 1px 132px);
+        repeating-linear-gradient(90deg, rgba(118, 154, 196, 0.03) 0 1px, transparent 1px 132px),
+        repeating-linear-gradient(0deg, rgba(118, 154, 196, 0.024) 0 1px, transparent 1px 132px);
 }
 
 body::after {
@@ -1527,8 +1529,8 @@ p {
 
 .section-tag {
     display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: baseline;
+    gap: 0.35em;
     position: relative;
     padding: 0;
     appearance: none;
@@ -1546,18 +1548,11 @@ p {
     box-shadow: none;
 }
 
-.section-tag::after {
-    content: '';
-    position: absolute;
-    left: calc(100% + 0.85rem);
-    top: 50%;
-    width: clamp(3rem, 8vw, 6rem);
-    height: 2px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, var(--signal), rgba(99, 200, 171, 0.28), transparent);
-    border-radius: 999px;
-    opacity: 0.9;
-    pointer-events: none;
+.section-tag-marker {
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: 0;
+    transform: translateY(-0.1em);
 }
 
 .section-title {
