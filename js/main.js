@@ -14,6 +14,8 @@
     const navbar = $('#navbar');
     const navToggle = $('#navToggle');
     const navLinks = $('#navLinks');
+    const navAnchors = $$('.nav-links a');
+    const sections = $$('.page-section[id]');
     const themeToggles = $$('[data-theme-toggle]');
     const themeToggleIcons = $$('[data-theme-toggle-icon]');
     const scrollProgress = $('#scrollProgress');
@@ -22,38 +24,25 @@
     const SKILLS_SPOTLIGHT_CLASS = 'skills-card--spotlight';
     const SKILLS_SPOTLIGHT_DURATION = 2800;
     const skillsSpotlightTimers = new WeakMap();
-    const scrollFrameHandlers = [];
-    const resizeFrameHandlers = [];
-    let scrollFrameQueued = false;
-    let resizeFrameQueued = false;
-
-    function runFrameHandlers(handlers) {
-        handlers.forEach(handler => handler());
-    }
+    const viewportHandlers = { scroll: [], resize: [] };
 
     function registerViewportHandler(handler, { scroll = false, resize = false, run = false } = {}) {
-        if (scroll) scrollFrameHandlers.push(handler);
-        if (resize) resizeFrameHandlers.push(handler);
+        if (scroll) viewportHandlers.scroll.push(handler);
+        if (resize) viewportHandlers.resize.push(handler);
         if (run) handler();
     }
 
-    window.addEventListener('scroll', () => {
-        if (scrollFrameQueued) return;
-        scrollFrameQueued = true;
-        requestAnimationFrame(() => {
-            scrollFrameQueued = false;
-            runFrameHandlers(scrollFrameHandlers);
-        });
-    }, { passive: true });
-
-    window.addEventListener('resize', () => {
-        if (resizeFrameQueued) return;
-        resizeFrameQueued = true;
-        requestAnimationFrame(() => {
-            resizeFrameQueued = false;
-            runFrameHandlers(resizeFrameHandlers);
-        });
-    }, { passive: true });
+    Object.entries(viewportHandlers).forEach(([event, handlers]) => {
+        let frameQueued = false;
+        window.addEventListener(event, () => {
+            if (frameQueued) return;
+            frameQueued = true;
+            requestAnimationFrame(() => {
+                frameQueued = false;
+                handlers.forEach(handler => handler());
+            });
+        }, { passive: true });
+    });
 
     // ===========================
     // 1. Theme Toggle (Dark/Light)
@@ -99,18 +88,7 @@
     }
 
     function initTheme() {
-        const previewTheme = getThemePreviewOverride();
-        if (previewTheme) {
-            applyTheme(previewTheme, { persist: false });
-            return;
-        }
-
-        const stored = getStoredTheme();
-        if (stored) {
-            applyTheme(stored, { persist: false });
-            return;
-        }
-        applyTheme(getSystemTheme(), { persist: false });
+        applyTheme(getThemePreviewOverride() || getStoredTheme() || getSystemTheme(), { persist: false });
     }
 
     function toggleTheme() {
@@ -118,13 +96,7 @@
         applyTheme(current === 'dark' ? 'light' : 'dark');
     }
 
-    if (themeToggles.length) {
-        themeToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                toggleTheme();
-            });
-        });
-    }
+    themeToggles.forEach(toggle => toggle.addEventListener('click', toggleTheme));
 
     const syncWithSystemTheme = (event) => {
         if (getThemePreviewOverride()) return;
@@ -140,8 +112,7 @@
 
     initTheme();
 
-    const HERO_POSITIONING_LINE_WIDTH_RATIO = 0.99;
-    const FOOTER_POSITIONING_LINE_WIDTH_RATIO = 0.99;
+    const POSITIONING_LINE_WIDTH_RATIO = 0.99;
 
     function fitSingleLineToReferenceWidth(reference, line, widthProperty, fontSizeProperty, widthRatio) {
         const referenceWidth = reference.getBoundingClientRect().width * widthRatio;
@@ -173,7 +144,7 @@
                 heroSubtitle,
                 '--hero-title-width',
                 '--hero-subtitle-font-size',
-                HERO_POSITIONING_LINE_WIDTH_RATIO
+                POSITIONING_LINE_WIDTH_RATIO
             );
         }
 
@@ -193,7 +164,7 @@
         if (!footerBrandText || !footerPositioning || !footerPositioningText) return;
 
         function syncWidth() {
-            const width = footerBrandText.getBoundingClientRect().width * FOOTER_POSITIONING_LINE_WIDTH_RATIO;
+            const width = footerBrandText.getBoundingClientRect().width * POSITIONING_LINE_WIDTH_RATIO;
             if (!width) return;
             footerPositioning.style.setProperty('--footer-brand-text-width', `${width}px`);
             // Measure at the browser's actual font size, including any minimum-font setting.
@@ -213,23 +184,25 @@
     // ===========================
     // 2. Mobile Navigation
     // ===========================
-    function closeMobileMenu() {
+    function setMobileMenuOpen(isOpen) {
         if (!navLinks || !navToggle) return;
-        navLinks.classList.remove('active');
-        navToggle.classList.remove('active');
-        navToggle.setAttribute('aria-expanded', 'false');
+        navLinks.classList.toggle('active', isOpen);
+        navToggle.classList.toggle('active', isOpen);
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    function closeMobileMenu() {
+        setMobileMenuOpen(false);
     }
 
     if (navToggle) {
         navToggle.addEventListener('click', () => {
-            const isOpen = navLinks.classList.toggle('active');
-            navToggle.classList.toggle('active');
-            navToggle.setAttribute('aria-expanded', String(isOpen));
+            setMobileMenuOpen(!navLinks.classList.contains('active'));
         });
     }
 
     // Close on link click
-    $$('.nav-links a').forEach(link => {
+    navAnchors.forEach(link => {
         link.addEventListener('click', closeMobileMenu);
     });
 
@@ -323,7 +296,6 @@
     const ACTIVE_NAV_SCROLL_OFFSET = 24;
 
     function updateActiveNav() {
-        const sections = $$('.page-section[id]');
         const navHeight = navbar ? navbar.offsetHeight : 72;
         const scrollY = window.pageYOffset + navHeight + ACTIVE_NAV_SCROLL_OFFSET;
 
@@ -336,7 +308,7 @@
             }
         });
 
-        $$('.nav-links a').forEach(link => {
+        navAnchors.forEach(link => {
             const href = link.getAttribute('href');
             link.classList.toggle('active', href === `#${currentId}`);
         });
@@ -361,20 +333,18 @@
 
     const ANCHOR_SCROLL_GAP = -20;
 
-    function scrollToAnchorTarget(target, extraOffset = 0) {
+    function scrollToAnchorTarget(target, { behavior = 'smooth', extraOffset = 0 } = {}) {
         const navHeight = navbar ? navbar.offsetHeight : 72;
         const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top, behavior });
     }
 
-    function scrollToHashTarget(hash, { behavior = 'smooth', extraOffset = 0 } = {}) {
+    function scrollToHashTarget(hash, options) {
         if (!hash || hash === '#') return;
         const target = $(hash);
         if (!target) return;
 
-        const navHeight = navbar ? navbar.offsetHeight : 72;
-        const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
-        window.scrollTo({ top, behavior });
+        scrollToAnchorTarget(target, options);
     }
 
     function runSkillsCardSpotlight(target) {
@@ -439,7 +409,7 @@
                         if (window.location.hash !== href) {
                             history.pushState(null, '', href);
                         }
-                        scrollToAnchorTarget(target, floatingCardOffset);
+                        scrollToAnchorTarget(target, { extraOffset: floatingCardOffset });
                         spotlightSkillsCardWhenVisible(target);
                     });
                 });
@@ -494,8 +464,7 @@
 
         const closeModal = () => {
             if (!modal.classList.contains('is-open')) return;
-            modal.classList.remove('is-open');
-            modal.classList.remove('cert-modal--image');
+            modal.classList.remove('is-open', 'cert-modal--image');
             modal.setAttribute('aria-hidden', 'true');
             clearModalContent();
             document.body.style.overflow = previousBodyOverflow;
@@ -513,7 +482,7 @@
 
             clearModalContent();
 
-            modal.classList.toggle('cert-modal--image', modalType === 'image');
+            modal.classList.add('cert-modal--image');
 
             const img = document.createElement('img');
             img.src = src;
@@ -540,12 +509,7 @@
         modalClose.addEventListener('click', closeModal);
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-                return;
-            }
-
-            if (modal.classList.contains('cert-modal--image')) {
+            if (e.target === modal || modal.classList.contains('cert-modal--image')) {
                 closeModal();
             }
         });
@@ -646,11 +610,9 @@
             const overlapBuffer = window.innerWidth <= 768 ? 72 : 96;
             const maxVisibleOffset = Math.max(0, headerLimit - overlapBuffer - visualBottom);
             const cardClampOffset = getCardClampOffset();
-            const sharedMobileClampOffset = window.innerWidth <= 1024 ? cardClampOffset : 0;
-            const cloudMaxVisibleOffset = Math.max(0, maxVisibleOffset - sharedMobileClampOffset);
-            const cardMaxVisibleOffset = Math.max(0, maxVisibleOffset - cardClampOffset);
-            const cloudOffset = Math.min(scrolled * cloud, cloudMaxVisibleOffset);
-            const cardsOffset = Math.min(scrolled * cards, cardMaxVisibleOffset);
+            const maxOffset = Math.max(0, maxVisibleOffset - cardClampOffset);
+            const cloudOffset = Math.min(scrolled * cloud, maxOffset);
+            const cardsOffset = Math.min(scrolled * cards, maxOffset);
             const cloudOffsetValue = `${cloudOffset.toFixed(2)}px`;
             const cardsOffsetValue = `${cardsOffset.toFixed(2)}px`;
 
@@ -825,6 +787,9 @@
             subject: $('#subject', contactForm),
             message: $('#message', contactForm)
         };
+        const fieldEntries = Object.entries(fields);
+        const getFieldValue = field => field ? field.value.trim() : '';
+
         function autoResizeTextarea(textarea) {
             if (!textarea) return;
             textarea.style.height = 'auto';
@@ -860,43 +825,21 @@
         }
 
         function clearFieldErrors() {
-            Object.values(fields).forEach(field => {
-                if (!field) return;
-                field.removeAttribute('aria-invalid');
-            });
-        }
-
-        function markFieldError(field) {
-            if (!field) return;
-            field.setAttribute('aria-invalid', 'true');
+            fieldEntries.forEach(([, field]) => field?.removeAttribute('aria-invalid'));
         }
 
         function validateContactForm() {
             clearFieldErrors();
             setFormStatus('', 'info');
 
-            const name = fields.name ? fields.name.value.trim() : '';
-            const email = fields.email ? fields.email.value.trim() : '';
-            const subject = fields.subject ? fields.subject.value.trim() : '';
-            const message = fields.message ? fields.message.value.trim() : '';
-
             let firstInvalid = null;
-
-            if (!name) {
-                markFieldError(fields.name);
-                firstInvalid = firstInvalid || fields.name;
-            }
-            if (!EMAIL_RE.test(email)) {
-                markFieldError(fields.email);
-                firstInvalid = firstInvalid || fields.email;
-            }
-            if (!subject) {
-                markFieldError(fields.subject);
-                firstInvalid = firstInvalid || fields.subject;
-            }
-            if (!message) {
-                markFieldError(fields.message);
-                firstInvalid = firstInvalid || fields.message;
+            for (const [name, field] of fieldEntries) {
+                const value = getFieldValue(field);
+                const isValid = name === 'email' ? EMAIL_RE.test(value) : Boolean(value);
+                if (!isValid) {
+                    field?.setAttribute('aria-invalid', 'true');
+                    firstInvalid = firstInvalid || field;
+                }
             }
 
             if (firstInvalid) {
@@ -951,32 +894,22 @@
             turnstileWidgetId = turnstile.render(turnstileElement, {
                 sitekey,
                 size: 'invisible',
-                callback: (token) => {
-                    if (!pendingTurnstileRequest) return;
-                    const { resolve, timeoutId } = pendingTurnstileRequest;
-                    clearTimeout(timeoutId);
-                    pendingTurnstileRequest = null;
-                    resolve(token);
-                },
-                'error-callback': (code) => {
-                    if (!pendingTurnstileRequest) return;
-                    const { reject, timeoutId } = pendingTurnstileRequest;
-                    clearTimeout(timeoutId);
-                    pendingTurnstileRequest = null;
-                    reject(new Error(`Turnstile challenge failed${code ? ` (${code})` : ''}`));
-                },
-                'expired-callback': () => {
-                    if (turnstileWidgetId !== null) {
-                        try {
-                            turnstile.reset(turnstileWidgetId);
-                        } catch {
-                            // Ignore Turnstile reset failures.
-                        }
-                    }
-                }
+                callback: token => settleTurnstileRequest('resolve', token),
+                'error-callback': code => settleTurnstileRequest(
+                    'reject', new Error(`Turnstile challenge failed${code ? ` (${code})` : ''}`)
+                ),
+                'expired-callback': resetTurnstileWidget
             });
 
             return turnstileWidgetId;
+        }
+
+        function settleTurnstileRequest(action, value) {
+            if (!pendingTurnstileRequest) return;
+            const pending = pendingTurnstileRequest;
+            clearTimeout(pending.timeoutId);
+            pendingTurnstileRequest = null;
+            pending[action](value);
         }
 
         async function getTurnstileToken() {
@@ -992,9 +925,7 @@
 
             return new Promise((resolve, reject) => {
                 const timeoutId = setTimeout(() => {
-                    if (!pendingTurnstileRequest) return;
-                    pendingTurnstileRequest = null;
-                    reject(new Error('Turnstile timed out'));
+                    settleTurnstileRequest('reject', new Error('Turnstile timed out'));
                 }, 10000);
 
                 pendingTurnstileRequest = { resolve, reject, timeoutId };
@@ -1002,9 +933,7 @@
                 try {
                     turnstile.execute(widgetId);
                 } catch (err) {
-                    clearTimeout(timeoutId);
-                    pendingTurnstileRequest = null;
-                    reject(err);
+                    settleTurnstileRequest('reject', err);
                 }
             });
         }
@@ -1019,6 +948,13 @@
             } catch {
                 // Ignore Turnstile reset failures.
             }
+        }
+
+        function resetSubmitButton() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+            submitBtn.classList.remove('btn-submit--success');
+            successResetTimer = null;
         }
 
         contactForm.addEventListener('submit', async (e) => {
@@ -1058,11 +994,8 @@
             try {
                 const turnstileToken = await getTurnstileToken();
                 const payload = {
-                    name: fields.name ? fields.name.value.trim() : '',
-                    email: fields.email ? fields.email.value.trim() : '',
-                    subject: fields.subject ? fields.subject.value.trim() : '',
-                    message: fields.message ? fields.message.value.trim() : '',
-                    honeypot: honeypotField ? honeypotField.value.trim() : '',
+                    ...Object.fromEntries(fieldEntries.map(([name, field]) => [name, getFieldValue(field)])),
+                    honeypot: getFieldValue(honeypotField),
                     turnstileToken
                 };
 
@@ -1095,12 +1028,7 @@
                 setFormStatus('Message sent successfully! I will get back to you soon.', 'success');
 
                 const cooldownRemaining = Math.max(0, nextContactSubmitAt - Date.now());
-                successResetTimer = setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHTML;
-                    submitBtn.classList.remove('btn-submit--success');
-                    successResetTimer = null;
-                }, cooldownRemaining);
+                successResetTimer = setTimeout(resetSubmitButton, cooldownRemaining);
             } catch (err) {
                 nextContactSubmitAt = 0;
                 setPersistedCooldown(0);
@@ -1123,9 +1051,7 @@
                 }
 
                 setFormStatus(friendlyError, 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-                submitBtn.classList.remove('btn-submit--success');
+                resetSubmitButton();
             } finally {
                 contactForm.removeAttribute('aria-busy');
             }

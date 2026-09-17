@@ -63,17 +63,13 @@
                 } catch {}
             }
 
-            if (theme !== 'light' && theme !== 'dark') {
-                theme = fallbackTheme;
-            }
-
             document.documentElement.setAttribute('data-theme', theme);
             document.documentElement.style.colorScheme = theme;
         })();
     </script>
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=hover-fix-2">
 
     <!-- JSON-LD Entity Schema -->
     <script type="application/ld+json">
@@ -195,27 +191,33 @@
                         <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link--github"><i class="fab fa-github"></i></a>
                         <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link--linkedin">
                             <svg class="social-svg social-svg--linkedin" viewBox="0 0 382 382" aria-hidden="true" focusable="false">
+                                <!-- Shared icon geometry for the hero and footer. -->
                                 <defs>
+                                    <path id="linkedin-badge" d="M347.445,0H34.555C15.471,0,0,15.471,0,34.555v312.889C0,366.529,15.471,382,34.555,382h312.889C366.529,382,382,366.529,382,347.444V34.555C382,15.471,366.529,0,347.445,0z"></path>
+                                    <path id="linkedin-detail" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
                                     <mask id="linkedin-idle-mask-hero">
                                         <rect x="0" y="0" width="382" height="382" fill="#ffffff"></rect>
-                                        <path fill="#000000" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
+                                        <use href="#linkedin-detail" fill="#000000"></use>
                                     </mask>
                                 </defs>
-                                <path class="social-linkedin-badge" mask="url(#linkedin-idle-mask-hero)" d="M347.445,0H34.555C15.471,0,0,15.471,0,34.555v312.889C0,366.529,15.471,382,34.555,382h312.889C366.529,382,382,366.529,382,347.444V34.555C382,15.471,366.529,0,347.445,0z"></path>
-                                <path class="social-linkedin-lettering" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
+                                <use class="social-linkedin-badge" href="#linkedin-badge" mask="url(#linkedin-idle-mask-hero)"></use>
+                                <use class="social-linkedin-lettering" href="#linkedin-detail"></use>
                             </svg>
                         </a>
                         <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link--medium"><i class="fab fa-medium"></i></a>
                         <a href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link--youtube">
                             <svg class="social-svg social-svg--youtube" viewBox="0 0 28.57 20" aria-hidden="true" focusable="false">
+                                <!-- Shared icon geometry for the hero and footer. -->
                                 <defs>
+                                    <path id="youtube-badge" d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 0 14.285 0 14.285 0C14.285 0 5.35042 0 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C0 5.35042 0 10 0 10C0 10 0 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"></path>
+                                    <path id="youtube-detail" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
                                     <mask id="youtube-idle-mask-hero">
                                         <rect x="0" y="0" width="28.57" height="20" fill="#ffffff"></rect>
-                                        <path fill="#000000" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
+                                        <use href="#youtube-detail" fill="#000000"></use>
                                     </mask>
                                 </defs>
-                                <path class="social-youtube-badge" mask="url(#youtube-idle-mask-hero)" d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 0 14.285 0 14.285 0C14.285 0 5.35042 0 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C0 5.35042 0 10 0 10C0 10 0 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"></path>
-                                <path class="social-youtube-play" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
+                                <use class="social-youtube-badge" href="#youtube-badge" mask="url(#youtube-idle-mask-hero)"></use>
+                                <use class="social-youtube-play" href="#youtube-detail"></use>
                             </svg>
                         </a>
                     </div>
@@ -340,7 +342,7 @@
                     <div class="about-signal-grid about-signal-grid--stats" aria-label="About metrics">
                         <article class="about-signal-card about-signal-card--stat">
                             <span class="about-meta-label">Portfolio Projects</span>
-                            <span class="about-stat-value stats-number" data-count="3">3</span>
+                            <span class="about-stat-value stats-number" data-count="4">4</span>
                             <span class="about-stat-caption">Total</span>
                             <p class="about-stat-note">Completed + Active <br>+ Planned</p>
                         </article>
@@ -476,6 +478,31 @@
                 </article>
 
                 <article class="project-card">
+                    <a class="project-cover-link" href="https://github.com/cloudwithdavid/aws-restart" target="_blank" rel="noopener noreferrer" aria-label="Open AWS re/Start Portfolio">
+                        <figure class="project-cover">
+                            <img src="assets/projects/aws-restart/cover.webp" alt="AWS re/Start Labs project preview, featuring AWS re/Start and Per Scholas artwork." loading="lazy" decoding="async">
+                        </figure>
+                    </a>
+                    <div class="project-card-header">
+                        <div class="project-card-heading">
+                            <div class="project-title-row">
+                                <h4><a href="https://github.com/cloudwithdavid/aws-restart" target="_blank" rel="noopener noreferrer">AWS re/Start Portfolio</a></h4>
+                                <a class="project-github-link" href="https://github.com/cloudwithdavid/aws-restart" target="_blank" rel="noopener noreferrer" aria-label="Open AWS re/Start Portfolio on GitHub">
+                                    <i class="fab fa-github" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Cloud infrastructure, systems operations, automation, serverless, databases, and applied AI.</p>
+                    <div class="project-tags">
+                        <span class="project-tag--technical">AWS</span>
+                        <span class="project-tag--technical">Infrastructure</span>
+                        <span class="project-tag--technical">Operations</span>
+                        <span class="project-tag--technical">Automation</span>
+                    </div>
+                </article>
+
+                <article class="project-card">
                     <a class="project-cover-link" href="https://github.com/cloudwithdavid/sysops-lab" target="_blank" rel="noopener noreferrer" aria-label="Open Systems Operations Lab">
                         <figure class="project-cover">
                             <img src="assets/projects/systems-operations-lab/cover.webp" alt="Systems Operations Lab project preview." loading="lazy" decoding="async">
@@ -501,22 +528,16 @@
                 </article>
 
                 <article class="project-card">
-                    <a class="project-cover-link" href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Open AWS Solutions Architect Track Labs">
-                        <figure class="project-cover">
-                            <div class="project-architecture project-architecture--labs" aria-hidden="true">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
+                    <a class="project-cover-link" href="https://github.com/cloudwithdavid/journal-starter" target="_blank" rel="noopener noreferrer" aria-label="Open Learn To Cloud Project">
+                        <figure class="project-cover project-cover--logo">
+                            <img src="assets/projects/learn-to-cloud/cover.svg" alt="Learn to Cloud logo." width="1000" height="1000" loading="lazy" decoding="async">
                         </figure>
                     </a>
                     <div class="project-card-header">
                         <div class="project-card-heading">
                             <div class="project-title-row">
-                                <h4><a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer">Learn To Cloud Project</a></h4>
-                                <a class="project-github-link" href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Open Learn To Cloud Project on GitHub">
+                                <h4><a href="https://github.com/cloudwithdavid/journal-starter" target="_blank" rel="noopener noreferrer">Learn To Cloud Project</a></h4>
+                                <a class="project-github-link" href="https://github.com/cloudwithdavid/journal-starter" target="_blank" rel="noopener noreferrer" aria-label="Open Learn To Cloud Project on GitHub">
                                     <i class="fab fa-github" aria-hidden="true"></i>
                                 </a>
                             </div>
@@ -719,27 +740,15 @@
                             <a href="https://github.com/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link--github"><i class="fab fa-github"></i></a>
                             <a href="https://linkedin.com/in/cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link--linkedin">
                                 <svg class="social-svg social-svg--linkedin" viewBox="0 0 382 382" aria-hidden="true" focusable="false">
-                                    <defs>
-                                        <mask id="linkedin-idle-mask-footer">
-                                            <rect x="0" y="0" width="382" height="382" fill="#ffffff"></rect>
-                                            <path fill="#000000" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
-                                        </mask>
-                                    </defs>
-                                    <path class="social-linkedin-badge" mask="url(#linkedin-idle-mask-footer)" d="M347.445,0H34.555C15.471,0,0,15.471,0,34.555v312.889C0,366.529,15.471,382,34.555,382h312.889C366.529,382,382,366.529,382,347.444V34.555C382,15.471,366.529,0,347.445,0z"></path>
-                                    <path class="social-linkedin-lettering" d="M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472L341.91,330.654L341.91,330.654z"></path>
+                                    <use class="social-linkedin-badge" href="#linkedin-badge" mask="url(#linkedin-idle-mask-hero)"></use>
+                                    <use class="social-linkedin-lettering" href="#linkedin-detail"></use>
                                 </svg>
                             </a>
                             <a href="https://medium.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="Medium" class="social-link--medium"><i class="fab fa-medium"></i></a>
                             <a href="https://www.youtube.com/@cloudwithdavid" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link--youtube">
                                 <svg class="social-svg social-svg--youtube" viewBox="0 0 28.57 20" aria-hidden="true" focusable="false">
-                                    <defs>
-                                        <mask id="youtube-idle-mask-footer">
-                                            <rect x="0" y="0" width="28.57" height="20" fill="#ffffff"></rect>
-                                            <path fill="#000000" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
-                                        </mask>
-                                    </defs>
-                                    <path class="social-youtube-badge" mask="url(#youtube-idle-mask-footer)" d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 0 14.285 0 14.285 0C14.285 0 5.35042 0 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C0 5.35042 0 10 0 10C0 10 0 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"></path>
-                                    <path class="social-youtube-play" d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"></path>
+                                    <use class="social-youtube-badge" href="#youtube-badge" mask="url(#youtube-idle-mask-hero)"></use>
+                                    <use class="social-youtube-play" href="#youtube-detail"></use>
                                 </svg>
                             </a>
                     </div>
