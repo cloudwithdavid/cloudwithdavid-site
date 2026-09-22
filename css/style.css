@@ -1447,7 +1447,7 @@ p {
 .section-header {
     text-align: center;
     margin-bottom: calc(var(--sp-section) * 0.46);
-    --section-tag-font-size: clamp(1.6rem, 2.55vw, 2.05rem);
+    --section-tag-font-size: clamp(2rem, 2.9vw, 2.4rem);
     --section-tag-text-line-height: 1.28;
     --section-tag-color: var(--section-label-color);
 }
