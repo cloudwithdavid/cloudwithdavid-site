@@ -351,7 +351,7 @@ p {
     left: 0;
     height: var(--scroll-progress-h);
     width: 100%;
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, #63c8ab 0%, #5AAEFF 49%, #555BFF 100%);
     z-index: 2147483647;
     transform: scaleX(0);
     transform-origin: left center;
@@ -756,6 +756,12 @@ p {
 
 .theme-segmented--nav .theme-segment-icon {
     font-size: 1rem;
+}
+
+@media (min-width: 1025px) {
+    .theme-segmented--nav {
+        transform: translateX(1.25rem);
+    }
 }
 
 /* Hamburger */
