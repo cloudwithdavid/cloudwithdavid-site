@@ -2148,7 +2148,7 @@ p {
    ========================= */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
     gap: var(--sp-lg);
 }
 
@@ -2158,6 +2158,20 @@ p {
     flex-direction: column;
     --scan-opacity: 0;
     --scan-position: -100%;
+}
+
+.project-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.project-card .project-title-row h4 {
+    min-width: 0;
+}
+
+.project-tags span {
+    max-width: 100%;
+    line-height: 1.3;
 }
 
 .project-card:hover,
@@ -2393,6 +2407,8 @@ p {
 }
 
 .project-cover .project-architecture {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     border: 0;
@@ -2439,40 +2455,32 @@ p {
 }
 
 .project-architecture--labs span:nth-child(1) {
-    top: 15px;
-    left: 16px;
-    width: 30px;
-    height: 18px;
+    display: none;
 }
 
 .project-architecture--labs span:nth-child(2) {
-    top: 15px;
-    left: 56px;
-    width: 30px;
-    height: 18px;
+    top: 18%;
+    left: 57%;
+    width: 12%;
+    height: 14%;
 }
 
 .project-architecture--labs span:nth-child(3) {
-    top: 15px;
-    right: 16px;
-    width: 30px;
-    height: 18px;
+    top: 47%;
+    left: 72%;
+    width: 10%;
+    height: 21%;
 }
 
 .project-architecture--labs span:nth-child(4) {
-    bottom: 17px;
-    left: 36px;
-    width: 92px;
-    height: 16px;
+    display: none;
 }
 
 .project-architecture--labs span:nth-child(5) {
-    top: 42px;
-    left: 110px;
-    width: 3px;
-    height: 18px;
-    border-radius: 999px;
-    background: rgba(120, 209, 251, 0.72);
+    top: 43%;
+    left: 46%;
+    width: 8%;
+    height: 13%;
 }
 
 .project-architecture span::after {
@@ -2484,6 +2492,7 @@ p {
     height: 2px;
     border-radius: 50%;
     background: var(--ai-violet);
+    transform: translateX(-50%);
 }
 
 .project-card:hover .project-architecture span::after {
@@ -2534,13 +2543,9 @@ p {
     background: rgba(82, 113, 255, 0.72);
 }
 
-[data-theme="light"] .project-cover .project-architecture--labs span:nth-child(5) {
-    background: rgba(78, 160, 255, 0.78);
-}
-
 @keyframes architectureDotPulse {
-    0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
-    50% { opacity: 0.8; transform: translateX(-50%) scale(1.8); }
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
 }
 
 .stats-number {
@@ -3598,7 +3603,7 @@ p {
     .skills-grid,
     .projects-grid,
     .blog-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .form-row {
