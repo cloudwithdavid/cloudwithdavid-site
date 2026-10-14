@@ -2842,8 +2842,14 @@ p {
 .form-group textarea {
     resize: vertical;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     min-height: 120px;
     max-height: 360px;
+}
+
+.form-group textarea::-webkit-scrollbar {
+    display: none;
 }
 
 .form-honeypot {
