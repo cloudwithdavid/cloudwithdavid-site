@@ -1,0 +1,12 @@
+{
+  "name": "cloud-with-david",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node --check js/main.js && node --check functions/_middleware.js && node --check functions/api/contact.js && node --check functions/api/contact-health.js",
+    "test": "node --test tests/*.test.js"
+  }
+}

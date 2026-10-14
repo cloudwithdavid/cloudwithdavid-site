@@ -48,6 +48,8 @@
     // 1. Theme Toggle (Dark/Light)
     // ===========================
     const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    const reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let themePreference = '';
 
     function getThemePreviewOverride() {
         const theme = new URLSearchParams(window.location.search).get('theme');
@@ -55,8 +57,13 @@
     }
 
     function getStoredTheme() {
-        const stored = localStorage.getItem(THEME_STORAGE_KEY);
-        return stored === 'dark' || stored === 'light' ? stored : '';
+        if (themePreference) return themePreference;
+        try {
+            const stored = localStorage.getItem(THEME_STORAGE_KEY);
+            return stored === 'dark' || stored === 'light' ? stored : '';
+        } catch {
+            return '';
+        }
     }
 
     function getSystemTheme() {
@@ -83,7 +90,12 @@
         document.documentElement.style.colorScheme = nextTheme;
         updateThemeControlState(nextTheme);
         if (persist) {
-            localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+            themePreference = nextTheme;
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+            } catch {
+                // Keep the preference for this visit when storage is unavailable.
+            }
         }
     }
 
@@ -195,7 +207,7 @@
         setMobileMenuOpen(false);
     }
 
-    if (navToggle) {
+    if (navToggle && navLinks) {
         navToggle.addEventListener('click', () => {
             setMobileMenuOpen(!navLinks.classList.contains('active'));
         });
@@ -216,7 +228,10 @@
 
     // Close on Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeMobileMenu();
+        if (e.key === 'Escape' && navLinks?.classList.contains('active')) {
+            closeMobileMenu();
+            navToggle?.focus({ preventScroll: true });
+        }
     });
 
     // ===========================
@@ -294,8 +309,29 @@
     // 4. Active Nav Link Tracking
     // ===========================
     const ACTIVE_NAV_SCROLL_OFFSET = 24;
+    const NAV_SCROLL_IDLE_MS = 150;
+    let navScrollEndTimer = null;
+
+    function setActiveNav(currentId) {
+        navAnchors.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
+        });
+    }
+
+    function holdActiveNavUntilScrollStops() {
+        clearTimeout(navScrollEndTimer);
+        navScrollEndTimer = setTimeout(() => {
+            navScrollEndTimer = null;
+            updateActiveNav();
+        }, NAV_SCROLL_IDLE_MS);
+    }
 
     function updateActiveNav() {
+        if (navScrollEndTimer !== null) {
+            holdActiveNavUntilScrollStops();
+            return;
+        }
+
         const navHeight = navbar ? navbar.offsetHeight : 72;
         const scrollY = window.pageYOffset + navHeight + ACTIVE_NAV_SCROLL_OFFSET;
 
@@ -308,10 +344,7 @@
             }
         });
 
-        navAnchors.forEach(link => {
-            const href = link.getAttribute('href');
-            link.classList.toggle('active', href === `#${currentId}`);
-        });
+        setActiveNav(currentId);
     }
 
     registerViewportHandler(updateActiveNav, { scroll: true, resize: true, run: true });
@@ -336,12 +369,20 @@
     function scrollToAnchorTarget(target, { behavior = 'smooth', extraOffset = 0 } = {}) {
         const navHeight = navbar ? navbar.offsetHeight : 72;
         const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
-        window.scrollTo({ top, behavior });
+        window.scrollTo({ top, behavior: reducedMotionMedia.matches ? 'auto' : behavior });
+    }
+
+    function getHashTarget(hash) {
+        if (!hash || hash === '#') return null;
+        try {
+            return document.getElementById(decodeURIComponent(hash.slice(1)));
+        } catch {
+            return null;
+        }
     }
 
     function scrollToHashTarget(hash, options) {
-        if (!hash || hash === '#') return;
-        const target = $(hash);
+        const target = getHashTarget(hash);
         if (!target) return;
 
         scrollToAnchorTarget(target, options);
@@ -396,11 +437,17 @@
 
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            if (e.button > 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
             const href = this.getAttribute('href');
             if (href === '#') return;
-            const target = $(href);
+            const target = getHashTarget(href);
             if (!target) return;
             e.preventDefault();
+
+            if (navAnchors.includes(this)) {
+                setActiveNav(target.id);
+                holdActiveNavUntilScrollStops();
+            }
 
             if (this.classList.contains('floating-card') && href.startsWith('#skills')) {
                 const floatingCardOffset = -40;
@@ -446,6 +493,7 @@
         if (!modal || !modalClose || !modalContent || !pills.length) return;
 
         let previousBodyOverflow = '';
+        let previousFocus = null;
 
         function normalizeModalSrc(raw) {
             if (!raw) return '';
@@ -468,6 +516,8 @@
             modal.setAttribute('aria-hidden', 'true');
             clearModalContent();
             document.body.style.overflow = previousBodyOverflow;
+            previousFocus?.focus({ preventScroll: true });
+            previousFocus = null;
         };
 
         const openModal = (pill) => {
@@ -490,7 +540,10 @@
             img.loading = 'lazy';
             modalContent.appendChild(img);
 
-            previousBodyOverflow = document.body.style.overflow;
+            if (!modal.classList.contains('is-open')) {
+                previousBodyOverflow = document.body.style.overflow;
+                previousFocus = pill;
+            }
             document.body.style.overflow = 'hidden';
             modal.classList.add('is-open');
             modal.setAttribute('aria-hidden', 'false');
@@ -515,8 +568,13 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            if (!modal.classList.contains('is-open')) return;
+            if (e.key === 'Escape') {
                 closeModal();
+            } else if (e.key === 'Tab') {
+                // The close button is the image preview's only interactive control.
+                e.preventDefault();
+                modalClose.focus({ preventScroll: true });
             }
         });
     }
@@ -531,6 +589,10 @@
         const startTime = performance.now();
 
         function update(currentTime) {
+            if (reducedMotionMedia.matches) {
+                el.textContent = target + suffix;
+                return;
+            }
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
 
@@ -551,6 +613,12 @@
     function initCounters() {
         const counters = $$('.stats-number[data-count]');
         if (!counters.length) return;
+        if (reducedMotionMedia.matches || !('IntersectionObserver' in window)) {
+            counters.forEach(el => {
+                el.textContent = parseInt(el.dataset.count, 10) + (el.dataset.suffix || '');
+            });
+            return;
+        }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -581,38 +649,23 @@
         const cardsLayer = $('.hero-cards-layer');
         if (!hero || !heroVisual || !cloudWrapper || !cardsLayer) return;
 
-        const getParallaxFactors = () => {
-            const viewportWidth = window.innerWidth;
-            if (viewportWidth <= 768) {
-                return { cloud: 0.1, cards: 0.12 };
-            }
-            if (viewportWidth <= 1024) {
-                return { cloud: 0.16, cards: 0.18 };
-            }
-            return { cloud: 0.2, cards: 0.2 };
-        };
-
-        const getCardClampOffset = () => {
-            const viewportWidth = window.innerWidth;
-            if (viewportWidth <= 768) return 96;
-            if (viewportWidth <= 1024) return 84;
-            return 0;
-        };
-
         const updateParallax = () => {
-            const scrolled = window.pageYOffset;
-            const { cloud, cards } = getParallaxFactors();
+            const scrolled = reducedMotionMedia.matches ? 0 : window.pageYOffset;
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth <= 1024;
+            const cloudFactor = isMobile ? 0.1 : isTablet ? 0.16 : 0.2;
+            const cardsFactor = isMobile ? 0.12 : isTablet ? 0.18 : 0.2;
+            const cardClampOffset = isMobile ? 96 : isTablet ? 84 : 0;
             const heroBottom = hero.offsetTop + hero.offsetHeight;
             const visualBottom = heroVisual.offsetTop + heroVisual.offsetHeight;
             const headerLimit = aboutHeader
                 ? (about.offsetTop + aboutHeader.offsetTop)
                 : (heroBottom + 140);
-            const overlapBuffer = window.innerWidth <= 768 ? 72 : 96;
+            const overlapBuffer = isMobile ? 72 : 96;
             const maxVisibleOffset = Math.max(0, headerLimit - overlapBuffer - visualBottom);
-            const cardClampOffset = getCardClampOffset();
             const maxOffset = Math.max(0, maxVisibleOffset - cardClampOffset);
-            const cloudOffset = Math.min(scrolled * cloud, maxOffset);
-            const cardsOffset = Math.min(scrolled * cards, maxOffset);
+            const cloudOffset = Math.min(scrolled * cloudFactor, maxOffset);
+            const cardsOffset = Math.min(scrolled * cardsFactor, maxOffset);
             const cloudOffsetValue = `${cloudOffset.toFixed(2)}px`;
             const cardsOffsetValue = `${cardsOffset.toFixed(2)}px`;
 
@@ -622,6 +675,11 @@
         };
 
         registerViewportHandler(updateParallax, { scroll: true, resize: true, run: true });
+        if (typeof reducedMotionMedia.addEventListener === 'function') {
+            reducedMotionMedia.addEventListener('change', updateParallax);
+        } else if (typeof reducedMotionMedia.addListener === 'function') {
+            reducedMotionMedia.addListener(updateParallax);
+        }
     }
 
     initHeroVisualParallax();
@@ -723,7 +781,7 @@
 
             try {
                 for (let sample = 0; sample < 3; sample += 1) {
-                    const assetUrl = new URL('/assets/favicon/favicon-16x16.png', window.location.href);
+                    const assetUrl = new URL('/assets/favicon/cloud-circuit.svg', window.location.href);
                     assetUrl.searchParams.set('_rtt', `${Date.now()}-${sample}`);
                     const startedAt = performance.now();
                     const response = await fetchWithTimeout(assetUrl.href, {
@@ -772,14 +830,17 @@
 
         const originalHTML = submitBtn.innerHTML;
         const FORM_SUBMIT_COOLDOWN_MS = 15000;
+        // Allow time for the body-read deadline and both server-side provider calls.
+        const CONTACT_REQUEST_TIMEOUT_MS = 40000;
         const CONTACT_COOLDOWN_STORAGE_KEY = 'cwd-contact-next-submit-at';
         const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-        const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email david@cloudwithdavid.com.';
+        const CONTACT_ERROR_MESSAGE = 'Message could not be sent right now. Please try again in a moment or email hello@cloudwithdavid.com.';
         const MESSAGE_MAX_HEIGHT_PX = 360;
         let nextContactSubmitAt = 0;
         let turnstileWidgetId = null;
         let pendingTurnstileRequest = null;
         let successResetTimer = null;
+        let isSubmitting = false;
 
         const fields = {
             name: $('#name', contactForm),
@@ -806,7 +867,8 @@
 
         function getPersistedCooldown() {
             try {
-                return Number(localStorage.getItem(CONTACT_COOLDOWN_STORAGE_KEY) || 0);
+                const value = Number(localStorage.getItem(CONTACT_COOLDOWN_STORAGE_KEY) || 0);
+                return Number.isFinite(value) && value > 0 ? value : 0;
             } catch {
                 return 0;
             }
@@ -835,7 +897,8 @@
             let firstInvalid = null;
             for (const [name, field] of fieldEntries) {
                 const value = getFieldValue(field);
-                const isValid = name === 'email' ? EMAIL_RE.test(value) : Boolean(value);
+                const isWithinLength = !field || field.maxLength < 0 || value.length <= field.maxLength;
+                const isValid = isWithinLength && (name === 'email' ? EMAIL_RE.test(value) : Boolean(value));
                 if (!isValid) {
                     field?.setAttribute('aria-invalid', 'true');
                     firstInvalid = firstInvalid || field;
@@ -893,23 +956,28 @@
 
             turnstileWidgetId = turnstile.render(turnstileElement, {
                 sitekey,
-                size: 'invisible',
-                callback: token => settleTurnstileRequest('resolve', token),
+                execution: 'execute',
+                callback: token => settleTurnstileRequest(null, token),
                 'error-callback': code => settleTurnstileRequest(
-                    'reject', new Error(`Turnstile challenge failed${code ? ` (${code})` : ''}`)
+                    new Error(`Turnstile challenge failed${code ? ` (${code})` : ''}`)
                 ),
-                'expired-callback': resetTurnstileWidget
+                'expired-callback': () => {
+                    settleTurnstileRequest(new Error('Turnstile token expired'));
+                    resetTurnstileWidget();
+                },
+                'timeout-callback': () => settleTurnstileRequest(new Error('Turnstile timed out'))
             });
 
             return turnstileWidgetId;
         }
 
-        function settleTurnstileRequest(action, value) {
+        function settleTurnstileRequest(error, token) {
             if (!pendingTurnstileRequest) return;
             const pending = pendingTurnstileRequest;
             clearTimeout(pending.timeoutId);
             pendingTurnstileRequest = null;
-            pending[action](value);
+            if (error) pending.reject(error);
+            else pending.resolve(token);
         }
 
         async function getTurnstileToken() {
@@ -925,7 +993,7 @@
 
             return new Promise((resolve, reject) => {
                 const timeoutId = setTimeout(() => {
-                    settleTurnstileRequest('reject', new Error('Turnstile timed out'));
+                    settleTurnstileRequest(new Error('Turnstile timed out'));
                 }, 10000);
 
                 pendingTurnstileRequest = { resolve, reject, timeoutId };
@@ -933,7 +1001,7 @@
                 try {
                     turnstile.execute(widgetId);
                 } catch (err) {
-                    settleTurnstileRequest('reject', err);
+                    settleTurnstileRequest(err || new Error('Turnstile execution failed'));
                 }
             });
         }
@@ -958,18 +1026,19 @@
         }
 
         contactForm.addEventListener('submit', async (e) => {
-            if (!window.fetch) return;
             e.preventDefault();
+            if (isSubmitting) return;
+            if (!window.fetch) {
+                setFormStatus(CONTACT_ERROR_MESSAGE, 'error');
+                return;
+            }
 
             if (!validateContactForm()) {
                 return;
             }
 
             const now = Date.now();
-            const persistedCooldown = getPersistedCooldown();
-            if (persistedCooldown > nextContactSubmitAt) {
-                nextContactSubmitAt = persistedCooldown;
-            }
+            nextContactSubmitAt = Math.max(nextContactSubmitAt, getPersistedCooldown());
 
             if (now < nextContactSubmitAt) {
                 const waitSeconds = Math.ceil((nextContactSubmitAt - now) / 1000);
@@ -979,6 +1048,12 @@
             }
             nextContactSubmitAt = now + FORM_SUBMIT_COOLDOWN_MS;
             setPersistedCooldown(nextContactSubmitAt);
+            isSubmitting = true;
+            // Send the same values that passed validation, even if edited during verification.
+            const payload = {
+                ...Object.fromEntries(fieldEntries.map(([name, field]) => [name, getFieldValue(field)])),
+                honeypot: getFieldValue(honeypotField)
+            };
 
             // Loading state
             if (successResetTimer) {
@@ -992,39 +1067,34 @@
             setFormStatus('Sending your message...', 'info');
 
             try {
-                const turnstileToken = await getTurnstileToken();
-                const payload = {
-                    ...Object.fromEntries(fieldEntries.map(([name, field]) => [name, getFieldValue(field)])),
-                    honeypot: getFieldValue(honeypotField),
-                    turnstileToken
-                };
-
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    let apiError = '';
-                    try {
-                        const errorBody = await response.json();
-                        apiError = String(errorBody?.error || '').trim();
-                    } catch {
-                        apiError = '';
+                payload.turnstileToken = await getTurnstileToken();
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), CONTACT_REQUEST_TIMEOUT_MS);
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+                    const result = await response.json();
+                    if (!response.ok || result?.ok !== true) {
+                        const error = new Error(`Contact API request failed (${response.status})`);
+                        error.apiError = String(result?.error || '').trim();
+                        throw error;
                     }
-
-                    const error = new Error(`Contact API request failed (${response.status})`);
-                    error.apiError = apiError;
-                    throw error;
+                } finally {
+                    clearTimeout(timeoutId);
                 }
 
                 submitBtn.innerHTML = '<span>Message sent</span><i class="fas fa-check"></i>';
                 submitBtn.classList.add('btn-submit--success');
-                contactForm.reset();
+                // Preserve a new draft entered while the previous message was sending.
+                if (fieldEntries.every(([name, field]) => getFieldValue(field) === payload[name])) {
+                    contactForm.reset();
+                }
                 autoResizeTextarea(fields.message);
                 clearFieldErrors();
-                resetTurnstileWidget();
                 setFormStatus('Message sent successfully! I will get back to you soon.', 'success');
 
                 const cooldownRemaining = Math.max(0, nextContactSubmitAt - Date.now());
@@ -1039,12 +1109,10 @@
                 if (apiError === 'turnstile' || /turnstile/i.test(rawErrorMessage)) {
                     friendlyError = 'Security check failed. Please try again.';
                 } else if (apiError === 'server_config') {
-                    friendlyError = 'Contact form is temporarily unavailable. Please email david@cloudwithdavid.com.';
+                    friendlyError = 'Contact form is temporarily unavailable. Please email hello@cloudwithdavid.com.';
                 } else if (apiError === 'email') {
                     friendlyError = 'Message could not be delivered right now. Please try again shortly.';
                 }
-
-                resetTurnstileWidget();
 
                 if (rawErrorMessage) {
                     console.error('Contact form submit error:', rawErrorMessage);
@@ -1053,6 +1121,8 @@
                 setFormStatus(friendlyError, 'error');
                 resetSubmitButton();
             } finally {
+                resetTurnstileWidget();
+                isSubmitting = false;
                 contactForm.removeAttribute('aria-busy');
             }
         });

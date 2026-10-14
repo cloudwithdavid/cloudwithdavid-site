@@ -1,6 +1,6 @@
 const CANONICAL_HOST = 'cloudwithdavid.com';
 const WWW_HOST = 'www.cloudwithdavid.com';
-const LOCALHOSTS = new Set(['localhost', '127.0.0.1']);
+const LOCALHOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 const CONTENT_SECURITY_POLICY = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -10,8 +10,10 @@ const CONTENT_SECURITY_POLICY = [
     "img-src 'self' data: https:",
     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
-    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-    "connect-src 'self' https://challenges.cloudflare.com https://free.freeipapi.com",
+    // Hashes cover the inline theme bootstrap and JSON-LD in index.html.
+    // Keep this policy and _headers in sync; npm test checks the hashes.
+    "script-src 'self' 'sha256-jW63N2sbMMHrCfafQcMA+XnRtdOVJJVrQdKnX7m+bhk=' 'sha256-FCwVCN6JzcXw4hW7BGIfIf/OlX8AFjaSqIWYGhxzeqc=' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://free.freeipapi.com https://cloudflareinsights.com",
     "frame-src https://challenges.cloudflare.com",
     "manifest-src 'self'",
     'upgrade-insecure-requests'
@@ -27,6 +29,8 @@ function withSecurityHeaders(response, { isHttps, isLocalhost }) {
 
     if (isHttps && !isLocalhost) {
         headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    } else {
+        headers.delete('Strict-Transport-Security');
     }
 
     return new Response(response.body, {
@@ -40,21 +44,16 @@ export async function onRequest(context) {
     const url = new URL(context.request.url);
     const hostname = url.hostname.toLowerCase();
     const isLocalhost = LOCALHOSTS.has(hostname);
+    const securityOptions = { isHttps: url.protocol === 'https:', isLocalhost };
 
-    if (hostname === WWW_HOST) {
+    if (hostname === WWW_HOST || (hostname === CANONICAL_HOST && url.protocol !== 'https:')) {
         url.hostname = CANONICAL_HOST;
         url.protocol = 'https:';
-        return Response.redirect(url.toString(), 301);
-    }
-
-    if (!isLocalhost && hostname === CANONICAL_HOST && url.protocol !== 'https:') {
-        url.protocol = 'https:';
-        return Response.redirect(url.toString(), 301);
+        // Preserve request bodies when redirecting contact submissions.
+        const status = ['GET', 'HEAD'].includes(context.request.method) ? 301 : 308;
+        return withSecurityHeaders(Response.redirect(url.toString(), status), securityOptions);
     }
 
     const response = await context.next();
-    return withSecurityHeaders(response, {
-        isHttps: url.protocol === 'https:',
-        isLocalhost
-    });
+    return withSecurityHeaders(response, securityOptions);
 }

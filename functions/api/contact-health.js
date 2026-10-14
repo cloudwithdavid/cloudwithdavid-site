@@ -12,6 +12,13 @@ function hasValue(value) {
     return typeof value === 'string' && value.trim().length > 0;
 }
 
+export function onRequest() {
+    return new Response('Not found', {
+        status: 404,
+        headers: { 'Cache-Control': 'no-store' }
+    });
+}
+
 function isAuthorizedRequest(request, env) {
     const expected = String(env.CONTACT_HEALTH_TOKEN || '').trim();
     if (!expected) return false;
@@ -26,16 +33,11 @@ function isAuthorizedRequest(request, env) {
 
 export function onRequestGet({ request, env }) {
     const exposeHealth = String(env.EXPOSE_CONTACT_HEALTH || '').trim().toLowerCase() === 'true';
-    if (!exposeHealth) {
-        return new Response('Not found', { status: 404 });
+    if (!exposeHealth || !isAuthorizedRequest(request, env)) {
+        return onRequest();
     }
 
-    if (!isAuthorizedRequest(request, env)) {
-        return new Response('Not found', { status: 404 });
-    }
-
-    const hasRequiredConfig = hasValue(env.TURNSTILE_SECRET_KEY) && hasValue(env.RESEND_API_KEY);
-    const isHealthy = hasRequiredConfig;
+    const isHealthy = hasValue(env.TURNSTILE_SECRET_KEY) && hasValue(env.RESEND_API_KEY);
 
     const response = {
         ok: isHealthy,

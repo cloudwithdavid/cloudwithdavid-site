@@ -604,13 +604,13 @@ p {
     height: 2px;
     background: var(--signal);
     border-radius: var(--r-full);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform var(--t-base) var(--ease-out);
+    opacity: 0;
+    transition: opacity var(--t-base) var(--ease-out);
 }
 
+.nav-links a:hover::after,
 .nav-links a.active::after {
-    transform: scaleX(1);
+    opacity: 1;
 }
 
 [data-theme="light"] .nav-links a {
@@ -1073,8 +1073,7 @@ p {
     transform: translate3d(var(--icon-shift-x, 0), var(--icon-shift-y, 0), 0) scale(var(--social-hover-scale, 1.1));
 }
 
-:is(.hero-social, .footer-social) .social-link--github:hover,
-:is(.hero-social, .footer-social) .social-link--medium:hover {
+:is(.hero-social, .footer-social) .social-link--github:hover {
     color: #FFFFFF;
 }
 
@@ -1147,9 +1146,14 @@ p {
     fill: #FF0000;
 }
 
-:is(.hero-social, .footer-social) .fa-medium {
+:is(.hero-social, .footer-social) .fa-hashnode {
     font-size: 1.1em;
     --icon-shift-y: 0;
+    transition: transform var(--t-base) var(--ease-out), color var(--t-base) var(--ease-out);
+}
+
+:is(.hero-social, .footer-social) .social-link--hashnode:is(:hover, :focus-visible, :active) .fa-hashnode {
+    color: #2962FF;
 }
 
 /* Hero Visual / Clouds */
@@ -2165,7 +2169,7 @@ p {
     overflow-wrap: anywhere;
 }
 
-.project-card .project-title-row h4 {
+.project-card .project-title-row h3 {
     min-width: 0;
 }
 
@@ -2223,7 +2227,7 @@ p {
     animation: inferenceScan 1.2s ease-out forwards;
 }
 
-.project-card h4 {
+.project-card h3 {
     font-family: var(--font-display);
     font-size: 1.0625rem;
     font-weight: 600;
@@ -2293,11 +2297,11 @@ p {
     padding-right: 2.45rem;
 }
 
-.project-title-row h4 {
+.project-title-row h3 {
     margin: 0;
 }
 
-.project-title-row h4 a {
+.project-title-row h3 a {
     color: inherit;
     text-decoration: none;
     transition: color var(--t-base) var(--ease-out);
@@ -2374,13 +2378,7 @@ p {
     object-fit: contain;
 }
 
-.project-cover--logo img {
-    object-fit: contain;
-    padding: 1.25rem;
-}
-
 .project-cover img,
-.project-cover .project-architecture,
 .blog-cover-link .blog-cover img {
     /* Keep the five cover layers on the compositor throughout their lifecycle.
        Promoting them only when hover begins can cause a one-frame position shift
@@ -2401,151 +2399,8 @@ p {
     overflow: hidden;
 }
 
-.project-cover-link:is(:hover, :focus-visible) .project-cover img,
-.project-cover-link:is(:hover, :focus-visible) .project-architecture {
+.project-cover-link:is(:hover, :focus-visible) .project-cover img {
     transform: translate3d(0, 0, 0) scale(1.06);
-}
-
-.project-cover .project-architecture {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-    background:
-        linear-gradient(180deg, rgba(7, 14, 26, 0.88), rgba(7, 14, 26, 0.96)),
-        radial-gradient(circle at 76% 20%, rgba(78, 160, 255, 0.16), transparent 32%);
-}
-
-.project-cover .project-architecture::before {
-    opacity: 0.62;
-}
-
-.project-architecture {
-    position: relative;
-    width: 100%;
-    height: 96px;
-    justify-self: end;
-    border-radius: 1rem;
-    border: 1px solid rgba(116, 153, 198, 0.2);
-    background:
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)),
-        radial-gradient(circle at 76% 20%, rgba(78, 160, 255, 0.14), transparent 32%);
-    overflow: hidden;
-}
-
-.project-architecture::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        repeating-linear-gradient(90deg, rgba(118,154,196,0.08) 0 1px, transparent 1px 36px),
-        repeating-linear-gradient(0deg, rgba(118,154,196,0.06) 0 1px, transparent 1px 28px);
-    opacity: 0.5;
-}
-
-.project-architecture span {
-    position: absolute;
-    display: block;
-    border-radius: 0.45rem;
-    border: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.08);
-    z-index: 1;
-}
-
-.project-architecture--labs span:nth-child(1) {
-    display: none;
-}
-
-.project-architecture--labs span:nth-child(2) {
-    top: 18%;
-    left: 57%;
-    width: 12%;
-    height: 14%;
-}
-
-.project-architecture--labs span:nth-child(3) {
-    top: 47%;
-    left: 72%;
-    width: 10%;
-    height: 21%;
-}
-
-.project-architecture--labs span:nth-child(4) {
-    display: none;
-}
-
-.project-architecture--labs span:nth-child(5) {
-    top: 43%;
-    left: 46%;
-    width: 8%;
-    height: 13%;
-}
-
-.project-architecture span::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: var(--ai-violet);
-    transform: translateX(-50%);
-}
-
-.project-card:hover .project-architecture span::after {
-    opacity: 0.6;
-    animation: architectureDotPulse 1.6s ease-in-out infinite;
-}
-
-.project-card:hover .project-architecture span:nth-child(2)::after {
-    animation-delay: 0.2s;
-}
-
-.project-card:hover .project-architecture span:nth-child(3)::after {
-    animation-delay: 0.4s;
-}
-
-.project-card:hover .project-architecture span:nth-child(4)::after {
-    animation-delay: 0.6s;
-}
-
-.project-card:hover .project-architecture span:nth-child(5)::after {
-    animation-delay: 0.8s;
-}
-
-[data-theme="light"] .project-cover .project-architecture {
-    border-color: rgba(96, 122, 154, 0.2);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(236, 244, 251, 0.96)),
-        radial-gradient(circle at 76% 20%, rgba(78, 160, 255, 0.14), transparent 34%);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.74),
-        0 12px 24px rgba(32, 56, 85, 0.08);
-}
-
-[data-theme="light"] .project-cover .project-architecture::before {
-    background:
-        repeating-linear-gradient(90deg, rgba(118, 154, 196, 0.08) 0 1px, transparent 1px 36px),
-        repeating-linear-gradient(0deg, rgba(118, 154, 196, 0.07) 0 1px, transparent 1px 28px);
-    opacity: 0.72;
-}
-
-[data-theme="light"] .project-cover .project-architecture span {
-    border-color: rgba(96, 122, 154, 0.18);
-    background: rgba(255, 255, 255, 0.76);
-    box-shadow: 0 6px 12px rgba(32, 56, 85, 0.06);
-}
-
-[data-theme="light"] .project-cover .project-architecture span::after {
-    background: rgba(82, 113, 255, 0.72);
-}
-
-@keyframes architectureDotPulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.8; }
 }
 
 .stats-number {
@@ -2985,8 +2840,8 @@ p {
 }
 
 .form-group textarea {
-    resize: none;
-    overflow-y: hidden;
+    resize: vertical;
+    overflow-y: auto;
     min-height: 120px;
     max-height: 360px;
 }
@@ -3014,6 +2869,14 @@ p {
 
 .form-status--error {
     color: #fca5a5;
+}
+
+[data-theme="light"] .form-status--success {
+    color: #166534;
+}
+
+[data-theme="light"] .form-status--error {
+    color: #b91c1c;
 }
 
 .btn-submit {
@@ -3261,7 +3124,7 @@ p {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity var(--t-base) var(--ease-out), visibility var(--t-base) var(--ease-out);
+    transition: opacity var(--t-base) var(--ease-out);
 }
 
 @supports ((-webkit-backdrop-filter: blur(8px)) or (backdrop-filter: blur(8px))) {
@@ -3313,7 +3176,6 @@ p {
     color: var(--text-1);
     border-color: var(--border-medium);
     background: var(--bg-card-hover);
-    outline: none;
 }
 
 #certModalContent {
@@ -3509,6 +3371,7 @@ p {
         box-shadow: var(--shadow-lg);
         transform: translateY(-110%);
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
         transition:
             opacity var(--t-base) var(--ease-out),
@@ -3530,6 +3393,7 @@ p {
     .nav-links.active {
         transform: translateY(0);
         opacity: 1;
+        visibility: visible;
         pointer-events: all;
     }
 
@@ -3708,7 +3572,7 @@ p {
         padding: 0;
     }
 
-    .project-card h4 {
+    .project-card h3 {
         font-size: 1rem;
     }
 
@@ -3737,7 +3601,7 @@ p {
     *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: 0s !important;
     }
 
     html {
