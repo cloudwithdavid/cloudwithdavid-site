@@ -184,7 +184,11 @@ export async function onRequestPost({ request, env }) {
         return json({ ok: false, error: 'turnstile' }, 403);
     }
 
-    const from = env.RESEND_FROM || 'onboarding@resend.dev';
+    const configuredFrom = String(env.RESEND_FROM || 'onboarding@resend.dev').trim();
+    const fromAddress = configuredFrom.match(/<([^<>]+)>/)?.[1]?.trim() || configuredFrom;
+    const fromName = name.replace(/["\\]/g, '\\$&');
+    const from = `"${fromName}" <${fromAddress}>`;
+    // Keep the recipient fixed so deployment settings cannot redirect form submissions.
     const to = 'contact-form@cloudwithdavid.com';
     const resendBody = {
         from,
@@ -192,12 +196,9 @@ export async function onRequestPost({ request, env }) {
         subject,
         reply_to: email,
         text: [
-            '*Contact form submission*',
-            '',
             message,
             '',
             '---',
-            `Name: ${name}`,
             `Email: ${email}`
         ].join('\n')
     };

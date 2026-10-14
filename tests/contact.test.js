@@ -60,12 +60,12 @@ test('valid submission verifies the token before delivering a normalized plain-t
     const delivery = fetchMock.mock.calls[1].arguments[1];
     const email = JSON.parse(delivery.body);
     assert.equal(delivery.headers.Authorization, `Bearer ${ENV.RESEND_API_KEY}`);
-    assert.equal(email.from, 'sender@example.com');
+    assert.equal(email.from, '"Test Person" <sender@example.com>');
     assert.deepEqual(email.to, ['recipient@example.com']);
     assert.equal(email.reply_to, 'test@example.com');
     assert.equal(email.subject, INPUT.subject);
     assert.ok(email.text.includes(INPUT.message));
-    assert.ok(email.text.includes('Name: Test Person\nEmail: test@example.com'));
+    assert.ok(email.text.includes(`${INPUT.message}\n\n---\nEmail: test@example.com`));
 });
 
 test('other HTTP methods return an explicit API response', async () => {
@@ -88,7 +88,7 @@ test('metadata normalizes mixed control characters and whitespace without flatte
     assert.equal(response.status, 200);
     const email = JSON.parse(fetchMock.mock.calls[1].arguments[1].body);
     assert.equal(email.subject, 'A subject with controls');
-    assert.ok(email.text.includes('Name: Test Person\nEmail: test@example.com'));
+    assert.ok(email.text.includes(`${INPUT.message}\n\n---\nEmail: test@example.com`));
     assert.ok(email.text.includes(INPUT.message));
 });
 
