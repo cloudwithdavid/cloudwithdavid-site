@@ -557,7 +557,8 @@ p {
 }
 
 .brand-accent {
-    color: var(--primary);
+    color: #68C8FF;
+    opacity: 0.7;
 }
 
 .nav-links {
