@@ -54,6 +54,11 @@ export async function onRequest(context) {
         return withSecurityHeaders(Response.redirect(url.toString(), status), securityOptions);
     }
 
+    // Keep the intentionally unavailable resume download from serving the SPA fallback.
+    if (url.pathname === '/assets/DavidRodriguez_Resume.pdf') {
+        return withSecurityHeaders(new Response(null, { status: 404 }), securityOptions);
+    }
+
     const response = await context.next();
     return withSecurityHeaders(response, securityOptions);
 }

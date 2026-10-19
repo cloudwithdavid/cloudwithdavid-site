@@ -21,6 +21,8 @@
     const scrollProgress = $('#scrollProgress');
     const contactForm = $('#contactForm');
     const THEME_STORAGE_KEY = 'cwd-theme';
+    const STATS_ANIMATION_STORAGE_KEY = 'cwd-stats-animation-at';
+    const STATS_ANIMATION_TTL_MS = 5 * 60 * 1000;
     const SKILLS_SPOTLIGHT_CLASS = 'skills-card--spotlight';
     const SKILLS_SPOTLIGHT_DURATION = 2800;
     const skillsSpotlightTimers = new WeakMap();
@@ -613,19 +615,32 @@
     function initCounters() {
         const counters = $$('.stats-number[data-count]');
         if (!counters.length) return;
-        if (reducedMotionMedia.matches || !('IntersectionObserver' in window)) {
+        let lastAnimationAt = 0;
+        try {
+            lastAnimationAt = Number(localStorage.getItem(STATS_ANIMATION_STORAGE_KEY) || 0);
+        } catch (_) {}
+
+        const animationRecentlyRan = lastAnimationAt > 0 && Date.now() - lastAnimationAt < STATS_ANIMATION_TTL_MS;
+        if (reducedMotionMedia.matches || !('IntersectionObserver' in window) || animationRecentlyRan) {
             counters.forEach(el => {
                 el.textContent = parseInt(el.dataset.count, 10) + (el.dataset.suffix || '');
             });
             return;
         }
 
+        let animationWindowStarted = false;
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const el = entry.target;
                     const target = parseInt(el.dataset.count, 10);
                     const suffix = el.dataset.suffix || '';
+                    if (!animationWindowStarted) {
+                        animationWindowStarted = true;
+                        try {
+                            localStorage.setItem(STATS_ANIMATION_STORAGE_KEY, String(Date.now()));
+                        } catch (_) {}
+                    }
                     animateCounter(el, target, suffix);
                     observer.unobserve(el);
                 }

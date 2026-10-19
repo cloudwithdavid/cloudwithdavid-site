@@ -94,6 +94,9 @@
     --scroll-progress-h: 2px;
     --nav-link-pad-x: 0.875rem;
     --nav-divider-gap: 10px;
+    --nav-divider-color: rgba(140, 174, 214, 0.22);
+    /* Slightly stronger than the text's 1.558x dark-theme luminance ratio. */
+    --nav-divider-active-color: rgba(174, 217, 255, 0.22);
 
     /* ---- Badge dots ---- */
     --dot-core: #4BE3B1;
@@ -110,6 +113,9 @@
     --text-3: #677c96;
     --text-body: #314359;
     --text-inv: #f4f8fe;
+    --nav-divider-color: rgba(100, 116, 139, 0.34);
+    /* Slightly stronger than the text's 0.195x light-theme luminance ratio. */
+    --nav-divider-active-color: rgba(40, 48, 58, 0.34);
 
     --bg-body: #eef4fa;
     --bg-surface: #f8fbff;
@@ -351,7 +357,7 @@ p {
     left: 0;
     height: var(--scroll-progress-h);
     width: 100%;
-    background: linear-gradient(135deg, #63c8ab 0%, #5AAEFF 49%, #555BFF 100%);
+    background: linear-gradient(135deg, #5DB6E4 0%, #5AAEFF 47%, #5891FF 100%);
     z-index: 2147483647;
     transform: scaleX(0);
     transform-origin: left center;
@@ -560,7 +566,7 @@ p {
     gap: var(--nav-divider-gap);
     align-items: center;
     margin-left: auto;
-    margin-right: 0.5rem;
+    margin-right: 4rem;
 }
 
 .nav-links li {
@@ -575,8 +581,16 @@ p {
     width: 2px;
     height: 1rem;
     transform: translateY(-50%);
-    background: rgba(140, 174, 214, 0.22);
+    background: var(--nav-divider-color);
     border-radius: var(--r-full);
+    transition: background-color var(--t-fast);
+}
+
+.nav-links li:has(> a:hover)::before,
+.nav-links li:has(> a.active)::before,
+.nav-links li:has(> a:hover) + li::before,
+.nav-links li:has(> a.active) + li::before {
+    background: var(--nav-divider-active-color);
 }
 
 .nav-links a {
@@ -627,7 +641,7 @@ p {
 }
 
 [data-theme="light"] .nav-links li:not(:first-child)::before {
-    background: rgba(100, 116, 139, 0.34);
+    background: var(--nav-divider-color);
 }
 
 .nav-actions {
