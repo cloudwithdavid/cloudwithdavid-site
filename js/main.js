@@ -17,7 +17,6 @@
     const navAnchors = $$('.nav-links a');
     const sections = $$('.page-section[id]');
     const themeToggles = $$('[data-theme-toggle]');
-    const themeSources = $$('source[data-theme-source]');
     const contactForm = $('#contactForm');
     const THEME_STORAGE_KEY = 'cwd-theme';
     const STATS_ANIMATION_STORAGE_KEY = 'cwd-stats-animation-at';
@@ -81,7 +80,7 @@
         document.documentElement.setAttribute('data-theme', nextTheme);
         document.documentElement.style.colorScheme = nextTheme;
         updateThemeControlState(nextTheme);
-        themeSources.forEach(source => {
+        $$('source[data-theme-source]').forEach(source => {
             source.setAttribute('media', source.dataset.themeSource === nextTheme ? 'all' : 'not all');
         });
         if (persist) {
@@ -427,6 +426,7 @@
             const modalType = (badge.dataset.modalType || '').toLowerCase();
             const rawModalSrc = badge.dataset.modalSrc || '';
             const src = normalizeModalSrc(rawModalSrc);
+            const darkSrc = normalizeModalSrc(badge.dataset.modalSrcDark);
             if (modalType !== 'image') return;
             if (!src) {
                 console.error('Invalid modal src:', rawModalSrc);
@@ -441,7 +441,18 @@
             img.src = src;
             img.alt = `${badge.querySelector('img')?.alt || badge.textContent.trim()} certificate`;
             img.loading = 'lazy';
-            modalContent.appendChild(img);
+            if (darkSrc) {
+                const picture = document.createElement('picture');
+                const source = document.createElement('source');
+                source.srcset = darkSrc;
+                source.dataset.themeSource = 'dark';
+                source.media = document.documentElement.dataset.theme === 'dark' ? 'all' : 'not all';
+                picture.appendChild(source);
+                picture.appendChild(img);
+                modalContent.appendChild(picture);
+            } else {
+                modalContent.appendChild(img);
+            }
 
             if (!modal.classList.contains('is-open')) {
                 previousBodyOverflow = document.body.style.overflow;
