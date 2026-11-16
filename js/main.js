@@ -392,8 +392,8 @@
         const modal = $('#certModal');
         const modalClose = $('#certModalClose');
         const modalContent = $('#certModalContent');
-        const pills = $$('.about-cert-item[role="button"][data-modal-type][data-modal-src]');
-        if (!modal || !modalClose || !modalContent || !pills.length) return;
+        const badges = $$('button.about-cert-badge[data-modal-type][data-modal-src]');
+        if (!modal || !modalClose || !modalContent || !badges.length) return;
 
         let previousBodyOverflow = '';
         let previousFocus = null;
@@ -423,9 +423,9 @@
             previousFocus = null;
         };
 
-        const openModal = (pill) => {
-            const modalType = (pill.dataset.modalType || '').toLowerCase();
-            const rawModalSrc = pill.dataset.modalSrc || '';
+        const openModal = (badge) => {
+            const modalType = (badge.dataset.modalType || '').toLowerCase();
+            const rawModalSrc = badge.dataset.modalSrc || '';
             const src = normalizeModalSrc(rawModalSrc);
             if (modalType !== 'image') return;
             if (!src) {
@@ -439,13 +439,13 @@
 
             const img = document.createElement('img');
             img.src = src;
-            img.alt = `${pill.textContent.trim()} credential`;
+            img.alt = `${badge.querySelector('img')?.alt || badge.textContent.trim()} certificate`;
             img.loading = 'lazy';
             modalContent.appendChild(img);
 
             if (!modal.classList.contains('is-open')) {
                 previousBodyOverflow = document.body.style.overflow;
-                previousFocus = pill;
+                previousFocus = badge;
             }
             document.body.style.overflow = 'hidden';
             modal.classList.add('is-open');
@@ -453,13 +453,8 @@
             modalClose.focus({ preventScroll: true });
         };
 
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => openModal(pill));
-            pill.addEventListener('keydown', (e) => {
-                if (e.key !== 'Enter' && e.key !== ' ') return;
-                e.preventDefault();
-                openModal(pill);
-            });
+        badges.forEach(badge => {
+            badge.addEventListener('click', () => openModal(badge));
         });
 
         modalClose.addEventListener('click', closeModal);

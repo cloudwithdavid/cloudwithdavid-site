@@ -424,7 +424,7 @@ p { line-height: 1.7; }
 .about-project-link { text-decoration: underline; text-decoration-color: var(--color-rule); text-underline-offset: .2em; }
 .about-project-link:hover { text-decoration-color: var(--color-accent); }
 .about-cert-badges { display: grid; grid-template-columns: repeat(3, minmax(0, 150px)); align-items: start; gap: var(--space-md); }
-.about-cert-badge { display: block; }
+.about-cert-badge { display: block; padding: 0; border: 0; background: transparent; }
 .about-cert-badge img { width: 100%; height: auto; transition: filter var(--dur-short) var(--ease-out); }
 .about-cert-badge:is(:hover, :focus-visible) img {
   /* Keep the blue glow in sRGB so intermediate filter frames stay blue. */
