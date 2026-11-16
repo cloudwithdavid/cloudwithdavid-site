@@ -17,15 +17,11 @@
     const navAnchors = $$('.nav-links a');
     const sections = $$('.page-section[id]');
     const themeToggles = $$('[data-theme-toggle]');
-    const themeToggleIcons = $$('[data-theme-toggle-icon]');
-    const scrollProgress = $('#scrollProgress');
+    const themeSources = $$('source[data-theme-source]');
     const contactForm = $('#contactForm');
     const THEME_STORAGE_KEY = 'cwd-theme';
     const STATS_ANIMATION_STORAGE_KEY = 'cwd-stats-animation-at';
     const STATS_ANIMATION_TTL_MS = 5 * 60 * 1000;
-    const SKILLS_SPOTLIGHT_CLASS = 'skills-card--spotlight';
-    const SKILLS_SPOTLIGHT_DURATION = 2800;
-    const skillsSpotlightTimers = new WeakMap();
     const viewportHandlers = { scroll: [], resize: [] };
 
     function registerViewportHandler(handler, { scroll = false, resize = false, run = false } = {}) {
@@ -78,12 +74,6 @@
             toggle.setAttribute('aria-label', nextThemeLabel);
             toggle.setAttribute('title', nextThemeLabel);
         });
-
-        themeToggleIcons.forEach(icon => {
-            const showsDarkModeSymbol = theme === 'light';
-            icon.classList.toggle('fa-moon', showsDarkModeSymbol);
-            icon.classList.toggle('fa-sun', !showsDarkModeSymbol);
-        });
     }
 
     function applyTheme(theme, { persist = true } = {}) {
@@ -91,6 +81,9 @@
         document.documentElement.setAttribute('data-theme', nextTheme);
         document.documentElement.style.colorScheme = nextTheme;
         updateThemeControlState(nextTheme);
+        themeSources.forEach(source => {
+            source.setAttribute('media', source.dataset.themeSource === nextTheme ? 'all' : 'not all');
+        });
         if (persist) {
             themePreference = nextTheme;
             try {
@@ -168,32 +161,6 @@
 
     initHeroSubtitleWidth();
 
-    // ===========================
-    // 1c. Footer Positioning Width
-    // ===========================
-    function initFooterPositioningWidth() {
-        const footerBrandText = $('.footer-brand .brand-text');
-        const footerPositioning = $('.footer-positioning');
-        const footerPositioningText = $('.footer-positioning-text');
-        if (!footerBrandText || !footerPositioning || !footerPositioningText) return;
-
-        function syncWidth() {
-            const width = footerBrandText.getBoundingClientRect().width * POSITIONING_LINE_WIDTH_RATIO;
-            if (!width) return;
-            footerPositioning.style.setProperty('--footer-brand-text-width', `${width}px`);
-            // Measure at the browser's actual font size, including any minimum-font setting.
-            footerPositioning.style.removeProperty('--footer-positioning-scale');
-            const textWidth = footerPositioningText.getBoundingClientRect().width;
-            if (textWidth) {
-                footerPositioning.style.setProperty('--footer-positioning-scale', Math.min(1, width / textWidth));
-            }
-        }
-
-        registerViewportHandler(syncWidth, { resize: true, run: true });
-        document.fonts?.ready.then(syncWidth);
-    }
-
-    initFooterPositioningWidth();
 
     // ===========================
     // 2. Mobile Navigation
@@ -245,15 +212,6 @@
         // Navbar shadow
         if (navbar) {
             navbar.classList.toggle('scrolled', scrollY > 50);
-        }
-
-        // Scroll progress bar
-        if (scrollProgress) {
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0
-                ? Math.min(1, Math.max(0, scrollY / docHeight))
-                : 0;
-            scrollProgress.style.transform = `scaleX(${progress})`;
         }
 
     }
@@ -370,7 +328,11 @@
 
     function scrollToAnchorTarget(target, { behavior = 'smooth', extraOffset = 0 } = {}) {
         const navHeight = navbar ? navbar.offsetHeight : 72;
-        const top = getElementDocumentTop(target) - navHeight - ANCHOR_SCROLL_GAP + extraOffset;
+        // Standard sections own their heading inset in CSS. Keep About's
+        // existing scene/fallback alignment and individual card offsets.
+        const standardSection = target.classList.contains('section') && target.id !== 'about';
+        const sectionGap = standardSection || target.classList.contains('is-scroll-scene') ? 0 : ANCHOR_SCROLL_GAP;
+        const top = getElementDocumentTop(target) - navHeight - sectionGap + extraOffset;
         window.scrollTo({ top, behavior: reducedMotionMedia.matches ? 'auto' : behavior });
     }
 
@@ -390,53 +352,6 @@
         scrollToAnchorTarget(target, options);
     }
 
-    function runSkillsCardSpotlight(target) {
-        if (!target || !target.classList.contains('skills-card')) return;
-
-        const activeTimer = skillsSpotlightTimers.get(target);
-        if (activeTimer) {
-            clearTimeout(activeTimer);
-        }
-
-        target.classList.remove(SKILLS_SPOTLIGHT_CLASS);
-        void target.offsetWidth;
-        target.classList.add(SKILLS_SPOTLIGHT_CLASS);
-
-        const cleanupTimer = setTimeout(() => {
-            target.classList.remove(SKILLS_SPOTLIGHT_CLASS);
-            skillsSpotlightTimers.delete(target);
-        }, SKILLS_SPOTLIGHT_DURATION);
-        skillsSpotlightTimers.set(target, cleanupTimer);
-    }
-
-    function spotlightSkillsCardWhenVisible(target) {
-        if (!target || !target.classList.contains('skills-card')) return;
-
-        if (!('IntersectionObserver' in window)) {
-            setTimeout(() => runSkillsCardSpotlight(target), 650);
-            return;
-        }
-
-        let didSpotlight = false;
-        const observer = new IntersectionObserver((entries) => {
-            const isVisible = entries.some(entry => entry.isIntersecting);
-            if (!isVisible || didSpotlight) return;
-
-            didSpotlight = true;
-            observer.disconnect();
-            runSkillsCardSpotlight(target);
-        }, { threshold: 0.45 });
-
-        observer.observe(target);
-
-        setTimeout(() => {
-            if (didSpotlight) return;
-            didSpotlight = true;
-            observer.disconnect();
-            runSkillsCardSpotlight(target);
-        }, 1400);
-    }
-
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             if (e.button > 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
@@ -449,20 +364,6 @@
             if (navAnchors.includes(this)) {
                 setActiveNav(target.id);
                 holdActiveNavUntilScrollStops();
-            }
-
-            if (this.classList.contains('floating-card') && href.startsWith('#skills')) {
-                const floatingCardOffset = -40;
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        if (window.location.hash !== href) {
-                            history.pushState(null, '', href);
-                        }
-                        scrollToAnchorTarget(target, { extraOffset: floatingCardOffset });
-                        spotlightSkillsCardWhenVisible(target);
-                    });
-                });
-                return;
             }
 
             if (window.location.hash !== href) {
@@ -657,39 +558,78 @@
     // ===========================
     function initHeroVisualParallax() {
         const hero = $('#hero');
-        const about = $('#about');
-        const aboutHeader = about ? $('.section-header', about) : null;
-        const heroVisual = $('.hero-visual');
+        const stage = $('.intro-grid');
+        const copy = $('.intro-copy');
         const cloudWrapper = $('.hero-clouds-wrapper');
         const cardsLayer = $('.hero-cards-layer');
-        if (!hero || !heroVisual || !cloudWrapper || !cardsLayer) return;
+        if (!hero || !stage || !copy || !cloudWrapper || !cardsLayer) return;
+
+        const cards = $$('.floating-card', cardsLayer);
+        const clearance = 24;
+        let geometry;
+
+        // Stop the restored loops when the hero or browser tab isn't visible.
+        let heroVisible = true;
+        const updateMotionVisibility = () => hero.classList.toggle('is-offscreen', Boolean(document.hidden) || !heroVisible);
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(entries => {
+                heroVisible = entries.some(entry => entry.isIntersecting);
+                updateMotionVisibility();
+            }).observe(hero);
+        }
+        document.addEventListener('visibilitychange', updateMotionVisibility);
+        updateMotionVisibility();
 
         const updateParallax = () => {
-            const scrolled = reducedMotionMedia.matches ? 0 : window.pageYOffset;
-            const isMobile = window.innerWidth <= 768;
-            const isTablet = window.innerWidth <= 1024;
-            const cloudFactor = isMobile ? 0.1 : isTablet ? 0.16 : 0.2;
-            const cardsFactor = isMobile ? 0.12 : isTablet ? 0.18 : 0.2;
-            const cardClampOffset = isMobile ? 96 : isTablet ? 84 : 0;
-            const heroBottom = hero.offsetTop + hero.offsetHeight;
-            const visualBottom = heroVisual.offsetTop + heroVisual.offsetHeight;
-            const headerLimit = aboutHeader
-                ? (about.offsetTop + aboutHeader.offsetTop)
-                : (heroBottom + 140);
-            const overlapBuffer = isMobile ? 72 : 96;
-            const maxVisibleOffset = Math.max(0, headerLimit - overlapBuffer - visualBottom);
-            const maxOffset = Math.max(0, maxVisibleOffset - cardClampOffset);
-            const cloudOffset = Math.min(scrolled * cloudFactor, maxOffset);
-            const cardsOffset = Math.min(scrolled * cardsFactor, maxOffset);
-            const cloudOffsetValue = `${cloudOffset.toFixed(2)}px`;
-            const cardsOffsetValue = `${cardsOffset.toFixed(2)}px`;
+            if (!geometry) return;
+            const scrolled = reducedMotionMedia.matches ? 0 : Math.max(0, window.pageYOffset - geometry.start);
+            const cloudScrolled = reducedMotionMedia.matches ? 0 : Math.max(0, window.pageYOffset - geometry.cloudStart);
+            const cloudOffset = cloudScrolled * geometry.cloudFactor;
+            const cardsOffset = Math.min(scrolled * geometry.cardsFactor, geometry.cardsLimit);
 
-            cloudWrapper.style.transform =
-                `translate3d(-50%, -50%, 0) translate3d(0, ${cloudOffsetValue}, 0)`;
-            cardsLayer.style.transform = `translate3d(0, ${cardsOffsetValue}, 0)`;
+            cloudWrapper.style.setProperty('--hero-parallax-y', `${cloudOffset.toFixed(2)}px`);
+            cardsLayer.style.setProperty('--hero-parallax-y', `${cardsOffset.toFixed(2)}px`);
         };
 
-        registerViewportHandler(updateParallax, { scroll: true, resize: true, run: true });
+        const measureParallax = () => {
+            // Measure resting positions so scrolling never compounds previous offsets.
+            cloudWrapper.style.setProperty('--hero-parallax-y', '0px');
+            cardsLayer.style.setProperty('--hero-parallax-y', '0px');
+
+            const heroRect = hero.getBoundingClientRect();
+            const bounds = stage.getBoundingClientRect();
+            const copyRect = copy.getBoundingClientRect();
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth <= 1024;
+            const cloudProgress = (from, to) => Math.max(0, Math.min(1, (window.innerWidth - from) / (to - from)));
+            const navHeight = navbar?.getBoundingClientRect?.().height ?? (window.innerWidth <= 800 ? 64 : 72);
+            let cardsLimit = isMobile ? 12 : isTablet ? 16 : 24;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                cardsLimit = Math.min(cardsLimit, bounds.bottom - clearance - rect.bottom);
+                const besideCopy = rect.right + clearance <= copyRect.left || rect.left - clearance >= copyRect.right;
+                if (!besideCopy && rect.top < copyRect.bottom) {
+                    cardsLimit = Math.min(cardsLimit, copyRect.top - clearance - rect.bottom);
+                }
+            });
+
+            geometry = {
+                start: heroRect.top + window.pageYOffset,
+                cloudStart: heroRect.top + window.pageYOffset - navHeight + 64 + 8 * cloudProgress(390, 900),
+                cloudFactor: 0.1 + 0.06 * cloudProgress(390, 900) + 0.04 * cloudProgress(900, 1440),
+                cardsFactor: isMobile ? 0.12 : isTablet ? 0.18 : 0.2,
+                cardsLimit: Math.max(0, cardsLimit)
+            };
+            updateParallax();
+        };
+
+        registerViewportHandler(updateParallax, { scroll: true });
+        registerViewportHandler(measureParallax, { resize: true, run: true });
+        document.fonts?.ready.then(measureParallax);
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(measureParallax).observe(copy);
+        }
         if (typeof reducedMotionMedia.addEventListener === 'function') {
             reducedMotionMedia.addEventListener('change', updateParallax);
         } else if (typeof reducedMotionMedia.addListener === 'function') {

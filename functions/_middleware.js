@@ -11,8 +11,8 @@ const CONTENT_SECURITY_POLICY = [
     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     // Hashes cover the inline theme bootstrap and JSON-LD in index.html.
-    // Keep this policy and _headers in sync; npm test checks the hashes.
-    "script-src 'self' 'sha256-jW63N2sbMMHrCfafQcMA+XnRtdOVJJVrQdKnX7m+bhk=' 'sha256-FCwVCN6JzcXw4hW7BGIfIf/OlX8AFjaSqIWYGhxzeqc=' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+    // Keep this policy and _headers in sync; the local middleware tests check the hashes.
+    "script-src 'self' 'sha256-jW63N2sbMMHrCfafQcMA+XnRtdOVJJVrQdKnX7m+bhk=' 'sha256-dww2fUM9o9UaYnDQ2m8anIsKfWzRGbFOjqIjsoTDusA=' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
     "connect-src 'self' https://challenges.cloudflare.com https://free.freeipapi.com https://cloudflareinsights.com",
     "frame-src https://challenges.cloudflare.com",
     "manifest-src 'self'",

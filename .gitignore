@@ -1,1 +1,10 @@
-.tools/
+/.tools/
+/.vscode/
+/.wrangler/
+/.hallmark/
+/.impeccable/
+/DESIGN.md
+/PRODUCT.md
+/.agents/
+/.codex/
+/.aws/

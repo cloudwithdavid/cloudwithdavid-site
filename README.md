@@ -1,64 +1,24 @@
 # [CloudWithDavid.com](https://cloudwithdavid.com)
 
-## Purpose
+A custom static portfolio built with HTML, CSS, and vanilla JavaScript, deployed on Cloudflare Pages. Contact submissions use Pages Functions, Turnstile, and Resend.
 
-The site functions as my portfolio for projects, blog, and visible proof of progress.
+## Production files
 
-It is a custom-built static frontend with Cloudflare-based serverless handling for contact submissions, security hardening, and deployment.
+- `index.html` — site markup and metadata
+- `css/style.css` — design variables, base styles, components, responsive layouts, and both themes
+- `css/hero-layout.css` — exported hero positions and sizing
+- `js/main.js` — site interactions, theme switching, and contact form
+- `js/scroll-scenes.js` — responsive About and Projects scrolling
+- `assets/` and `favicon.ico` — site artwork, icons, and social preview
+- `functions/` — contact endpoints, canonical redirects, and security middleware
+- `_headers`, `_redirects`, `robots.txt`, and `sitemap.xml` — headers, routing, and SEO
 
-## Stack
-<!-- markdownlint-disable MD033 -->
-<div align="center">
-  <img alt="HTML" src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
-  <img alt="CSS" src="https://img.shields.io/badge/CSS-663399?style=for-the-badge&logo=css&logoColor=white" />
-  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" />
-</div>
+## Deployment
 
-<div align="center">
-  <img alt="Cloudflare Pages Functions Turnstile" src="https://img.shields.io/badge/Cloudflare%20%7C%20Pages%20%7C%20Functions%20%7C%20Turnstile-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" />
-  <img alt="Resend" src="https://img.shields.io/badge/Resend-000000?style=for-the-badge&logo=resend&logoColor=white" />
-</div>
+Use `main` as the Cloudflare Pages production branch and the repository root as the output directory. No build command or package installation is required.
 
-## Notable Implementation Details
+Keep the existing Pages configuration, including `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, the optional `RESEND_FROM` address, and the protected contact-health endpoint settings. The contact recipient is fixed in the server handler.
 
-- custom responsive frontend built without a framework
-- light/dark theme handling with persisted preference
-- custom interactions and animated UI states in vanilla JavaScript
-- Cloudflare Functions-based contact form handling
-- bot protection with Cloudflare Turnstile
-- email delivery through Resend
-- canonical host enforcement and HTTPS redirects
-- security headers via middleware
-- SEO foundations including metadata, canonical tags, robots.txt, sitemap, and structured data
+For a static preview, run `python3 -m http.server 8000`. Contact API requests require the Cloudflare Functions runtime and configured services.
 
-## Project Structure
-
-### Core frontend
-
-- `index.html` - main site markup
-- `css/style.css` - main site styling
-- `js/main.js` - frontend interactions and UI behavior
-
-### Serverless / edge logic
-
-- `functions/api/contact.js` - contact form submission handler
-- `functions/api/contact-health.js` - protected health endpoint for contact flow
-- `functions/_middleware.js` - redirects and security header handling
-
-### Assets
-
-- `assets/certs/` - certification images
-- `assets/favicon/` - favicon and app icon assets
-- `assets/og/` - Open Graph and social preview assets
-
-### Site configuration
-
-- `_headers` - static response headers; keep at the publish root for Cloudflare Pages
-- `_redirects` - redirect rules; keep at the publish root for Cloudflare Pages
-- `robots.txt` - crawler directives; keep at `/robots.txt`
-- `sitemap.xml` - sitemap for search engines; keep at `/sitemap.xml`
-- `favicon.ico` - root favicon; keep at `/favicon.ico`
-
-### Local tooling
-
-- `.vscode/settings.json` - workspace settings
+Private development tools are kept in the ignored `.tools/` directory and are excluded from Git.
