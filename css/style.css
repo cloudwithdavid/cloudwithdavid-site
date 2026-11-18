@@ -75,7 +75,7 @@ button, input, select, textarea { font: inherit; }
 /* Layout and components */
 html { scroll-behavior: smooth; color-scheme: dark; }
 [data-theme="light"] { color-scheme: light; }
-body { width: 100%; }
+body { width: 100%; padding-block-start: var(--nav-h); }
 button, a, input, textarea { -webkit-tap-highlight-color: var(--color-transparent); }
 button { cursor: pointer; }
 a { text-decoration: none; }
@@ -85,7 +85,7 @@ button:disabled, [aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
 h4 { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; line-height: 1.3; margin: 0; overflow-wrap: break-word; min-width: 0; }
 ul, figure { padding: 0; margin: 0; }
 p { line-height: 1.7; }
-.navbar { height: var(--nav-h); position: sticky; top: 0; z-index: var(--z-sticky-nav); background: var(--color-paper); }
+.navbar { height: var(--nav-h); position: fixed; inset: 0 0 auto; z-index: var(--z-sticky-nav); }
 .navbar > .container { display: flex; align-items: center; gap: var(--space-xl); height: 100%; }
 .nav-brand, .footer-brand { display: inline-flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; }
 .brand-mark { width: 38px; height: 38px; flex-shrink: 0; }
@@ -99,12 +99,10 @@ p { line-height: 1.7; }
 .nav-actions, .theme-segmented { display: flex; align-items: center; gap: var(--space-xs); }
 .theme-segment { display: inline-flex; align-items: center; justify-content: center; height: 44px; width: 44px; border: 1px solid var(--color-rule); background: var(--color-paper); border-radius: var(--radius-control); font-size: var(--text-md); }
 .theme-segment:hover { background-color: var(--color-paper-2); }
-.theme-segment--toggle, .theme-segment--toggle:focus-visible { transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
-.theme-segment-icon { position: relative; display: block; width: 1em; height: 1em; }
-.theme-segment-icon i { position: absolute; inset: 0; display: grid; place-items: center; opacity: 1; transform: rotate(0) scale(1); transition: opacity var(--dur-short) var(--ease-out), transform var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
-.theme-segment-icon .fa-moon { opacity: 0; transform: rotate(-60deg) scale(.6); }
-[data-theme="light"] .theme-segment-icon .fa-sun { opacity: 0; transform: rotate(60deg) scale(.6); }
-[data-theme="light"] .theme-segment-icon .fa-moon { opacity: 1; transform: rotate(0) scale(1); }
+.theme-segment--toggle { appearance: none; padding: 0; transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+.theme-segment-icon { display: grid; place-items: center; width: 1em; height: 1em; }
+/* Font Awesome moon. The root theme selects a single glyph from first paint. */
+[data-theme="light"] .theme-segment-icon::before { content: "\f186"; }
 .nav-toggle { display: none; width: 44px; height: 44px; padding: var(--space-sm); border: 1px solid var(--color-rule); border-radius: var(--radius-control); background: var(--color-paper); flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2xs); }
 .nav-toggle span { width: 18px; height: 2px; background: var(--color-ink); transition: transform var(--dur-short) var(--ease-out); }
 .nav-toggle.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
@@ -900,10 +898,23 @@ p { color: var(--text-2); }
 .btn-secondary-cyan { color: #5ecbff; border-color: #5ecbff; }
 [data-theme="light"] .btn-secondary-cyan { color: #187fbc; border-color: rgba(56, 189, 248, 0.44); background: rgba(255, 255, 255, 0.7); }
 .btn-secondary-cyan:is(:hover, :focus-visible) { background: var(--primary); color: var(--text-inv); border-color: rgba(114, 196, 255, 0.88); }
-/* Gently emphasize the site backdrop’s own blue while retaining the existing dimming. */
-.navbar { background: rgba(0, 0, 0, 0.18); border-bottom-color: var(--border-subtle); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%); }
-[data-theme="light"] .navbar { background: rgba(244, 248, 252, 0.72); border-bottom-color: rgba(84, 104, 132, 0.14); }
-.navbar.scrolled { border-bottom-color: var(--border-medium); }
+/* At the top the header covers only the page background. Paint its tint
+   directly so the animated hero never triggers a backdrop blur here. */
+.navbar {
+  background: radial-gradient(ellipse 55% 240% at 79% 110%, #0b1529, transparent 85%), #070e1a;
+  border-bottom-color: var(--border-subtle);
+}
+[data-theme="light"] .navbar {
+  background: #f6f9fd;
+  border-bottom-color: rgba(84, 104, 132, 0.14);
+}
+.navbar.scrolled {
+  background: rgba(0, 0, 0, 0.18);
+  border-bottom-color: var(--border-medium);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
+}
+[data-theme="light"] .navbar.scrolled { background: rgba(244, 248, 252, 0.72); }
 .brand-text { color: var(--text-1); }
 .brand-accent { color: #68C8FF; }
 .nav-links li:not(:first-child)::before { background: var(--nav-divider-color); }
@@ -923,9 +934,9 @@ p { color: var(--text-2); }
 .theme-segmented { background: transparent; }
 .theme-segment { border-color: transparent; background: transparent; color: var(--text-2); }
 .theme-segment--toggle { color: #1e3a5f; border-color: rgba(148, 163, 184, 0.42); background-color: rgba(233, 241, 252, 0.94); background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent); }
-.theme-segment-icon i { color: var(--primary); }
-[data-theme="light"] .theme-segment--toggle .theme-segment-icon i { color: #8fd1ff; }
-[data-theme="dark"] .theme-segment--toggle .theme-segment-icon i { color: #2f6fca; }
+.theme-segment-icon { color: var(--primary); }
+[data-theme="light"] .theme-segment-icon { color: #8fd1ff; }
+[data-theme="dark"] .theme-segment-icon { color: #2f6fca; }
 .theme-segment:hover { color: var(--text-1); background-color: rgba(78, 160, 255, 0.10); }
 .theme-segment--toggle:hover { border-color: rgba(129, 140, 248, 0.34); background-color: rgba(237, 245, 255, 0.96); }
 [data-theme="light"] .theme-segment { color: #475569; }
